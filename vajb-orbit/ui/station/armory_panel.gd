@@ -54,7 +54,6 @@ extends "res://ui/station/station_panel.gd"
 
 const StyleScript := preload("res://ui/station/armory_style.gd")
 
-const TOKENS_TYPE: StringName = &"Tokens"
 const ChromeFamily := preload("res://ui/theme/chrome_family.gd")
 
 const Catalog := preload("res://game/station_catalog.gd")
@@ -1621,9 +1620,7 @@ func _apply_icon_token(payload: Dictionary) -> void:
 func _token(token: StringName) -> Color:
 	if _style != null:
 		return _style.colour(token)
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return Color.WHITE
+	return UiTokensScript.colour(self, token)
 
 
 ## A caption label: the pane's one 13 px label idiom (the `StationCaption` variation,

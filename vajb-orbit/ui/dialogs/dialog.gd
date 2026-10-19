@@ -3,7 +3,7 @@ extends Screen
 ## contract: IMPLEMENTATION_PLAN section 4.4. DialogManager owns its lifecycle;
 ## this scene only reports the outcome.
 
-const TOKENS_TYPE: StringName = &"Tokens"
+const UiTokensScript := preload("res://ui/components/ui_tokens.gd")
 
 const DIMMER_ALPHA: float = 0.6
 
@@ -142,6 +142,4 @@ func _with_alpha(color: Color, alpha: float) -> Color:
 
 
 func _token(token: StringName) -> Color:
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return Color.BLACK
+	return UiTokensScript.colour(self, token, Color.BLACK)

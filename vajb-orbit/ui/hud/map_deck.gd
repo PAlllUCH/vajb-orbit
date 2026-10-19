@@ -22,6 +22,8 @@ extends PanelContainer
 ## rows (Pane outer edge / A5.4-2 service-strip rows / A5.4-3 caption strip), code-drawn
 ## marks only inside their own child rects, shipped chrome and Tokens only.
 
+const UiTokensScript := preload("res://ui/components/ui_tokens.gd")
+
 signal pin_changed(pin: Variant)
 signal autopilot_to(pos: Vector2)
 signal autopilot_cancel()
@@ -381,9 +383,7 @@ func _apply_filter_state(state_label: Label, on: bool) -> void:
 
 
 func _token(token: StringName) -> Color:
-	if has_theme_color(token, &"Tokens"):
-		return get_theme_color(token, &"Tokens")
-	return Color.WHITE
+	return UiTokensScript.colour(self, token)
 
 
 ## --- the pin machine (N4, the fixer's precedence law) --------------------------------

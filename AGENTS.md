@@ -71,7 +71,7 @@ blind to it and the wrapper is the only eye):
 
 ```bash
 python3 staging/gate.py --times 2
-# -> [SUMMARY] passed=1433 failed=0   (the live count is whatever the gate
+# -> [SUMMARY] passed=1436 failed=0   (the live count is whatever the gate
 #    prints; zero failures is the law), byte-identical across runs, hard fail
 #    on any SCRIPT ERROR line. The raw form, for reference only:
 #    $GODOT_CONSOLE --headless --path "$VAJB_PROJ" res://tests/headless_runner.tscn --quit-after 1200
@@ -389,9 +389,13 @@ is written loose in `.agents/gen/`. Full law and migration rules:
 - Update docs first, then code, then tests — never the reverse.
 - **Maintainability invariants (CODE_AUDIT 2026-10-19):** a new station panel
   extends `ui/station/station_panel.gd` and never re-declares its helpers; a
-  new suite uses `tests/support.gd` for the stateless fixtures; `staging/code_audit.py`
-  measures the tree and `tests/test_code_health.gd` is the guard. Never copy a
-  shared helper into a second home.
+  new suite uses `tests/support.gd` for the stateless fixtures; a `_token`
+  delegates to `ui/components/ui_tokens.gd` and a `_format_int` to its
+  `format_int`; `PlayerState.WEAPONS` is the five-family source and the HUD adds
+  its extras explicitly; a node autoload's `_service` delegates to
+  `autoload/service_lookup.gd`; `staging/code_audit.py` measures the tree and
+  `tests/test_code_health.gd` is the guard. Never copy a shared helper into a
+  second home.
 - **UI composition (owner ruling 2026-09-26): containers and relative positioning,
   never coordinates.** A panel's layout is containers + anchors +
   `custom_minimum_size` + size flags; a surface's chrome is a theme stylebox or a

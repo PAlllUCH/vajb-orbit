@@ -7,7 +7,7 @@ signal binding_pressed(action: StringName, index: int)
 signal reset_pressed(action: StringName)
 
 const LISTEN_TEXT := "PRESS KEY…"
-const TOKENS_TYPE: StringName = &"Tokens"
+const UiTokensScript := preload("res://ui/components/ui_tokens.gd")
 const CONFLICT_TOKEN: StringName = &"accent_danger"
 const PRIMARY_INDEX := 0
 const ALTERNATE_INDEX := 1
@@ -98,9 +98,7 @@ func _apply_label_color() -> void:
 
 
 func _token(token: StringName) -> Color:
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return Color.WHITE
+	return UiTokensScript.colour(self, token)
 
 
 func _wire_focus() -> void:

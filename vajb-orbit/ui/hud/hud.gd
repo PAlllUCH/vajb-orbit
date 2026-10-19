@@ -46,7 +46,8 @@ signal map_autopilot_to(pos: Vector2)
 signal map_autopilot_cancel()
 signal map_jump_requested(pos: Vector2)
 
-const TOKENS_TYPE: StringName = &"Tokens"
+const UiTokensScript := preload("res://ui/components/ui_tokens.gd")
+const PlayerStateScript := preload("res://game/player_state.gd")
 const TOKEN_TEXT_PRIMARY: StringName = &"text_primary"
 const TOKEN_TEXT_DIM: StringName = &"text_dim"
 const TOKEN_DANGER: StringName = &"accent_danger"
@@ -74,10 +75,11 @@ const VARIATION_CARGO: StringName = &"SlotButtonCargo"
 ## and `PlayerState.WEAPONS`' five v1 families are joined by the two modules that exist
 ## with no v1 ammo row of their own - the railgun (its own pack since S5) and the
 ## mining laser (a tool, `w_mining`, whose icon is the module cut, not a weapon cut).
+## The five v1 ids have one owner (`PlayerState.WEAPONS`); this table copies them and
+## appends the two HUD-only extras, so a family added to the default cannot drift here.
 ## The tables index a **rack ordinal minus one** for the readout's label and icon.
-const WEAPON_IDS: Array[StringName] = [
-	&"laser", &"cannon", &"rocket", &"mine", &"plasma", &"railgun", &"mining"
-]
+const WEAPON_ID_EXTRAS: Array[StringName] = [&"railgun", &"mining"]
+const WEAPON_IDS: Array[StringName] = PlayerStateScript.WEAPONS + WEAPON_ID_EXTRAS
 const WEAPON_LABELS: Array[String] = [
 	"Laser MkII", "Cannon MkI", "Rocket Pod", "Mine Layer", "Plasma Coil",
 	"Railgun", "Mining Laser",
@@ -2301,21 +2303,11 @@ func _push_zoom_tint(button: TextureButton) -> void:
 
 
 func _format_int(value: int) -> String:
-	var digits := str(absi(value))
-	var grouped := ""
-	var count := 0
-	for index in range(digits.length() - 1, -1, -1):
-		grouped = digits[index] + grouped
-		count += 1
-		if count % 3 == 0 and index > 0:
-			grouped = " " + grouped
-	return ("-" if value < 0 else "") + grouped
+	return UiTokensScript.format_int(value)
 
 
 func _token(token: StringName) -> Color:
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return Color.WHITE
+	return UiTokensScript.colour(self, token)
 
 
 ## --- Slice 2's widgets -------------------------------------------------------------
@@ -2330,7 +2322,7 @@ func _token(token: StringName) -> Color:
 ## as the channel runs, in the running colour, and left complete in `metal_light` while the
 ## lock holds. A child of the reticle, so it needs no position of its own.
 class LockRing extends Control:
-	const TOKENS_TYPE: StringName = &"Tokens"
+	const UiTokensScript := preload("res://ui/components/ui_tokens.gd")
 	const WIDTH := 1.0
 
 	var progress: float = 0.0
@@ -2374,15 +2366,13 @@ class LockRing extends Control:
 		)
 
 	func _token(token: StringName) -> Color:
-		if has_theme_color(token, TOKENS_TYPE):
-			return get_theme_color(token, TOKENS_TYPE)
-		return Color.WHITE
+		return UiTokensScript.colour(self, token)
 
 
 ## §4.2 item 4's marker: a small cross drawn over the reticle's centre, flashed by a Tween
 ## on its own modulate (the house rule: no per-frame UI animation).
 class HitMarker extends Control:
-	const TOKENS_TYPE: StringName = &"Tokens"
+	const UiTokensScript := preload("res://ui/components/ui_tokens.gd")
 	const ARM := 4.0
 	const SECONDS := 0.25
 	const WIDTH := 1.0
@@ -2422,9 +2412,7 @@ class HitMarker extends Control:
 		)
 
 	func _token(token: StringName) -> Color:
-		if has_theme_color(token, TOKENS_TYPE):
-			return get_theme_color(token, TOKENS_TYPE)
-		return Color.WHITE
+		return UiTokensScript.colour(self, token)
 
 
 ## UI_SPEC section 3.6's radial dial: 10 segments across 270 degrees with the gap at the
@@ -2436,7 +2424,7 @@ class HitMarker extends Control:
 ## must never read as a second compass); `set_reading` still takes the heading because the
 ## section 7 feed carries it, and nothing draws it.
 class Speedometer extends Control:
-	const TOKENS_TYPE: StringName = &"Tokens"
+	const UiTokensScript := preload("res://ui/components/ui_tokens.gd")
 	const SEGMENTS := 10
 	const SWEEP := PI * 1.5
 	const OVERDRIVE := 0.9
@@ -2580,14 +2568,10 @@ class Speedometer extends Control:
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
 	func _token(token: StringName) -> Color:
-		if has_theme_color(token, TOKENS_TYPE):
-			return get_theme_color(token, TOKENS_TYPE)
-		return Color.WHITE
+		return UiTokensScript.colour(self, token)
 
 	func _token_or(token: StringName, fallback: Color) -> Color:
-		if has_theme_color(token, TOKENS_TYPE):
-			return get_theme_color(token, TOKENS_TYPE)
-		return fallback
+		return UiTokensScript.colour(self, token, fallback)
 
 
 ## D8 item 10's legend marker: the shape a blip of that kind draws on the map

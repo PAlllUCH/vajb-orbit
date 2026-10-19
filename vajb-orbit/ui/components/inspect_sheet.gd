@@ -15,7 +15,7 @@ extends Control
 
 signal closed
 
-const TOKENS_TYPE: StringName = &"Tokens"
+const UiTokensScript := preload("res://ui/components/ui_tokens.gd")
 
 const MIN_WIDTH := 420.0
 const MAX_WIDTH := 720.0
@@ -246,6 +246,4 @@ func _lines(value: Variant) -> PackedStringArray:
 
 
 func _token(token: StringName) -> Color:
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return Color.WHITE
+	return UiTokensScript.colour(self, token)

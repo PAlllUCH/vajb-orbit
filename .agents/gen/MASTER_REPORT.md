@@ -2145,3 +2145,52 @@ and the two zips SHA256-summed into `builds/SHA256SUMS.txt` (linux
 `fc49631f…`, windows `b1941c63…`). **The owner's playtest of build 3 is
 P4's last exit criterion** — T-179 and the S41 chrome tokens re-present
 there.
+
+**The code audit sweep (2026-10-19, the developer session — the owner's
+"codebase evaluation" ask; housekeeping, not a wave; gate 1430 → 1436/0 ×2
+byte-identical, zero SCRIPT ERROR).** The owner asked for a full code rundown
+because the tree had passed 170k lines with no measure of structural
+duplication. `staging/code_audit.py` (new, stdlib only, deterministic) now
+inventories each layer, clusters exact normalized function bodies and 8-line
+blocks, and prints a class-use matrix; `docs/CODE_AUDIT.md` is the evaluation
+(taxonomy, data stores, duplication tables, runtime measurements, dead-code
+list, ranked P0–P2 plan). **Measured before → after:** production duplicate
+clusters 102 → 88 (1,526 → 942 redundant lines), test clusters 255 → 238
+(4,560 → 3,376), duplicated 8-line blocks 404 → 299; station boot 2,058 →
+**1,029 ms**, nodes 2,427 → **305**, objects 7,821 → **2,536**, static memory
+162.8 → **121.5 MB**; flight unchanged (831 nodes, 1.217 ms physics, 164 FPS).
+**Landed:** `ui/station/station_panel.gd` (the one helper suite the 12 station
+panels now extend — `_tweens`, `_token`, `_format_int`, `_make_tween`,
+`_pulse`, `_profile`, `_active_hull`, `_base_id`, `_vitals`, `_clear_list`,
+`_plate_texture`, `_strip_chip_box`, `_slot_glyph`, `_load_texture`;
+`extends "res://ui/station/station_panel.gd"` is the path form — the bare
+`class_name` form fails a fresh headless parse); `ui/components/ship_slots.gd`
+(the one eight-key slot-glyph table); `tests/support.gd` (stateless fixtures;
+224 helper definitions removed across 164 test-file passes); lazy module and
+service panes in `ui/screens/station.gd` (rail hover/focus prefetch; public
+`panes()` / `pane_for()` / `service_panel()` doors, so tests stop reading the
+private arrays); `tests/test_code_health.gd` (6 guardrail rows: the base
+class, no re-declared helper except the armory's style-aware `_token`, the 11
+NPC archetypes' 22 keys, the token delegation, the weapon-id join and the
+service lookup); `Auction.hot_price` delegates to
+`ModuleCatalog.hot_price`. **Deleted:** the 1,356-line `_mockup_station`
+(`.gd`/`.tscn`/`.uid`; its plan rows are marked DONE) and the orphan
+`inspect_chip.gd` after repointing UI_SPEC's citation. **Tooling:** CODE_MAP's
+orphan logic now follows `class_name` consumers and `tools/` is reported as
+standalone (0 orphans, 129 scenes / 337 scripts / 7 autoloads); its section
+index arithmetic was off by the index height and is fixed. **The shipyard
+`_format_int` nuance resolved:** its removed copy returned
+`StationCatalog.group_int`, which is the same space-grouped algorithm the base
+runs, so no visible output changed. **P1 landed in the same pass:**
+`ui/components/ui_tokens.gd` is the one token read and the `format_int` door
+(it delegates the grouping to CONTRACTS §23.1's `StationCatalog.group_int`);
+the 18 remaining `_token` helpers are one-line delegations, kept so the tests'
+`call(&"_token", …)` reads and the call sites stay unchanged;
+`Hud.WEAPON_IDS` is `PlayerState.WEAPONS + WEAPON_ID_EXTRAS` (railgun,
+mining); `autoload/service_lookup.gd` is the one root lookup and the four node
+autoloads' `_service` doors delegate. **Auction cold open re-measured:** pane
+build 136 ms on rail hover, entry 29 ms; a direct selection with no prefetch is
+156 ms — the hover prefetch already absorbs the build, and the 29 ms entry is
+the shelf advance `enter_pane()` must do (it writes the rotation), so no
+further prewarm was added. **Commits:** `100b465` (tooling + docs), `b564e33`
+(code + tests), and this P1 pass.

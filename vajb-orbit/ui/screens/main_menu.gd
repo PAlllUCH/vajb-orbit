@@ -20,7 +20,7 @@ const MUSIC_TRACK: StringName = &"mus_menu_theme_01"
 const MUSIC_FADE_SECONDS: float = 1.5
 const MUSIC_STOP_SECONDS: float = 0.6
 
-const TOKENS_TYPE: StringName = &"Tokens"
+const UiTokensScript := preload("res://ui/components/ui_tokens.gd")
 const TOKEN_VOID_BASE: StringName = &"void_base"
 const TOKEN_ACCENT: StringName = &"accent_danger_bright"
 const TOKEN_TEXT_PRIMARY: StringName = &"text_primary"
@@ -353,6 +353,4 @@ func _scrim_color(alpha: float) -> Color:
 
 
 func _token(token: StringName) -> Color:
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return Color.BLACK
+	return UiTokensScript.colour(self, token, Color.BLACK)

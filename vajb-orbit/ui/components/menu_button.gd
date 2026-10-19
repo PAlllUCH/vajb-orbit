@@ -9,7 +9,7 @@ signal pressed
 signal hovered
 signal unhovered
 
-const TOKENS_TYPE: StringName = &"Tokens"
+const UiTokensScript := preload("res://ui/components/ui_tokens.gd")
 const IDLE_BORDER_DARK: StringName = &"metal_mid"
 const IDLE_BORDER_LIGHT: StringName = &"metal_light"
 const HOVER_BORDER: StringName = &"text_primary"
@@ -133,9 +133,7 @@ func _refresh_colors() -> void:
 
 
 func _token(token: StringName) -> Color:
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return Color.WHITE
+	return UiTokensScript.colour(self, token)
 
 
 static func _take_breath_offset() -> float:

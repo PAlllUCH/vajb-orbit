@@ -20,7 +20,7 @@ extends Control
 ## blip. The flicker is the only clock this control reads, and it runs only while a
 ## ghost is on the feed, so the map stays frame-free the rest of the time.
 
-const TOKENS_TYPE: StringName = &"Tokens"
+const UiTokensScript := preload("res://ui/components/ui_tokens.gd")
 
 const COLOR_SELF: StringName = &"text_primary"
 const COLOR_HOSTILE: StringName = &"accent_danger"
@@ -598,9 +598,7 @@ func _refresh_colors() -> void:
 
 
 func _token(token: StringName) -> Color:
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return Color.WHITE
+	return UiTokensScript.colour(self, token)
 
 
 ## S29's pin marks (UI_SPEC.md section 9 A5.2(iii): a code-drawn mark draws within its

@@ -5,6 +5,7 @@ extends Node
 signal setting_changed(section: StringName, key: StringName, value: Variant)
 
 const Paths := preload("res://ui/paths.gd")
+const ServiceLookupScript := preload("res://autoload/service_lookup.gd")
 
 const SECTION_GRAPHICS: StringName = &"graphics"
 const SECTION_AUDIO: StringName = &"audio"
@@ -431,8 +432,4 @@ func _modifier_prefix(ctrl: bool, alt: bool, shift: bool, meta: bool) -> String:
 
 
 func _service(service_name: StringName) -> Node:
-	## Autoload names are not resolvable identifiers until the project patch lands
-	## (project.godot is applied by the orchestrator), so services are looked up by name.
-	if not is_inside_tree():
-		return null
-	return get_tree().root.get_node_or_null(NodePath(service_name))
+	return ServiceLookupScript.find(self, service_name)

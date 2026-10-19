@@ -4,7 +4,7 @@ extends Control
 ## The halo is never baked art (docs/design/UI_CHROME_ASSETS_SPEC.md section 3).
 ## This node is outset 6 px around the plate, so its own rect is the halo band.
 
-const TOKENS_TYPE: StringName = &"Tokens"
+const UiTokensScript := preload("res://ui/components/ui_tokens.gd")
 const GLOW_COLOR: StringName = &"menu_glow"
 const HALO_EXPAND: float = 6.0
 
@@ -41,6 +41,4 @@ func _refresh_glow() -> void:
 
 
 func _token(token: StringName) -> Color:
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return Color.TRANSPARENT
+	return UiTokensScript.colour(self, token, Color.TRANSPARENT)

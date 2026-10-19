@@ -11,7 +11,7 @@ extends Control
 ## `set_cursor_position`, and the lock keeps its section 3.10 `set_target` /
 ## `clear_target` pair.
 
-const TOKENS_TYPE: StringName = &"Tokens"
+const UiTokensScript := preload("res://ui/components/ui_tokens.gd")
 const COLOR_LOCK: StringName = &"accent_danger"
 const COLOR_PLAIN: StringName = &"text_dim"
 const COLOR_ENGAGED: StringName = &"text_primary"
@@ -210,6 +210,4 @@ func _refresh_colors() -> void:
 
 
 func _token(token: StringName) -> Color:
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return Color.WHITE
+	return UiTokensScript.colour(self, token)

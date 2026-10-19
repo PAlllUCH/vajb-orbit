@@ -1378,6 +1378,7 @@
    ],
    "extends": "Node",
    "refs": [
+    "res://autoload/service_lookup.gd",
     "res://ui/paths.gd"
    ],
    "signals": []
@@ -1389,7 +1390,9 @@
     "_retry_timer.timeout \u2192 _show_next"
    ],
    "extends": "Node",
-   "refs": [],
+   "refs": [
+    "res://autoload/service_lookup.gd"
+   ],
    "signals": [
     "dialog_cancelled",
     "dialog_confirmed"
@@ -1424,6 +1427,7 @@
    "connects": [],
    "extends": "Node",
    "refs": [
+    "res://autoload/service_lookup.gd",
     "res://ui/paths.gd"
    ],
    "signals": [
@@ -1431,6 +1435,14 @@
     "overlay_pushed",
     "screen_changed"
    ]
+  },
+  "res://autoload/service_lookup.gd": {
+   "autoload": "",
+   "class_name": "ServiceLookup",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [],
+   "signals": []
   },
   "res://autoload/settings_manager.gd": {
    "autoload": "SettingsManager",
@@ -1440,6 +1452,7 @@
    ],
    "extends": "Node",
    "refs": [
+    "res://autoload/service_lookup.gd",
     "res://ui/paths.gd"
    ],
    "signals": [
@@ -4015,7 +4028,11 @@
    "connects": [],
    "extends": "McpTestSuite",
    "refs": [
+    "res://autoload/",
     "res://game/npc_registry.gd",
+    "res://game/player_state.gd",
+    "res://ui/",
+    "res://ui/hud/hud.gd",
     "res://ui/station/",
     "res://ui/station/station_panel.gd"
    ],
@@ -6324,7 +6341,9 @@
    "class_name": "",
    "connects": [],
    "extends": "Control",
-   "refs": [],
+   "refs": [
+    "res://ui/components/ui_tokens.gd"
+   ],
    "signals": []
   },
   "res://ui/components/inspect_sheet.gd": {
@@ -6334,7 +6353,9 @@
     "_dimmer.gui_input \u2192 _on_dimmer_input"
    ],
    "extends": "Control",
-   "refs": [],
+   "refs": [
+    "res://ui/components/ui_tokens.gd"
+   ],
    "signals": [
     "closed"
    ]
@@ -6350,7 +6371,9 @@
     "_button.pressed \u2192 _on_button_pressed"
    ],
    "extends": "Control",
-   "refs": [],
+   "refs": [
+    "res://ui/components/ui_tokens.gd"
+   ],
    "signals": [
     "hovered",
     "pressed",
@@ -6372,7 +6395,9 @@
    "class_name": "SlotButton",
    "connects": [],
    "extends": "TextureButton",
-   "refs": [],
+   "refs": [
+    "res://ui/components/ui_tokens.gd"
+   ],
    "signals": []
   },
   "res://ui/components/tooltip.gd": {
@@ -6381,7 +6406,18 @@
    "connects": [],
    "extends": "PanelContainer",
    "refs": [
+    "res://ui/components/ui_tokens.gd",
     "res://ui/theme/chrome_family.gd"
+   ],
+   "signals": []
+  },
+  "res://ui/components/ui_tokens.gd": {
+   "autoload": "",
+   "class_name": "UiTokens",
+   "connects": [],
+   "extends": "RefCounted",
+   "refs": [
+    "res://game/station_catalog.gd"
    ],
    "signals": []
   },
@@ -6413,6 +6449,7 @@
    "extends": "Control",
    "refs": [
     "res://game/station_catalog.gd",
+    "res://ui/components/ui_tokens.gd",
     "res://ui/station/cargo_summary.gd",
     "res://ui/theme/chrome_family.gd"
    ],
@@ -6428,7 +6465,9 @@
     "_confirm_button.pressed \u2192 _on_confirm_pressed"
    ],
    "extends": "Screen",
-   "refs": [],
+   "refs": [
+    "res://ui/components/ui_tokens.gd"
+   ],
    "signals": []
   },
   "res://ui/hud/cockpit_cluster.gd": {
@@ -6500,7 +6539,9 @@
     "res://assets/ui/ui_gauge_face.png",
     "res://assets/ui/ui_gauge_needle.png",
     "res://assets/ui/ui_panel_frame.png",
+    "res://game/player_state.gd",
     "res://ui/components/slot_button.tscn",
+    "res://ui/components/ui_tokens.gd",
     "res://ui/hud/map_deck.gd",
     "res://ui/hud/ship_status_screen.gd"
    ],
@@ -6523,6 +6564,7 @@
    ],
    "extends": "PanelContainer",
    "refs": [
+    "res://ui/components/ui_tokens.gd",
     "res://ui/hud/minimap.gd"
    ],
    "signals": [
@@ -6538,7 +6580,9 @@
    "class_name": "Minimap",
    "connects": [],
    "extends": "Control",
-   "refs": [],
+   "refs": [
+    "res://ui/components/ui_tokens.gd"
+   ],
    "signals": []
   },
   "res://ui/hud/ship_status_screen.gd": {
@@ -6550,6 +6594,7 @@
    "extends": "Control",
    "refs": [
     "res://ui/components/ship_slots.gd",
+    "res://ui/components/ui_tokens.gd",
     "res://ui/hud/cockpit_style.gd",
     "res://ui/station/repairs_panel.gd"
    ],
@@ -6560,7 +6605,9 @@
    "class_name": "TargetReticle",
    "connects": [],
    "extends": "Control",
-   "refs": [],
+   "refs": [
+    "res://ui/components/ui_tokens.gd"
+   ],
    "signals": []
   },
   "res://ui/paths.gd": {
@@ -6605,7 +6652,9 @@
    "class_name": "",
    "connects": [],
    "extends": "Screen",
-   "refs": [],
+   "refs": [
+    "res://ui/components/ui_tokens.gd"
+   ],
    "signals": []
   },
   "res://ui/screens/loading.gd": {
@@ -6614,6 +6663,7 @@
    "connects": [],
    "extends": "Screen",
    "refs": [
+    "res://ui/components/ui_tokens.gd",
     "res://ui/paths.gd"
    ],
    "signals": []
@@ -6627,7 +6677,9 @@
     "plate.focus_entered \u2192 _on_verb_focused.bind(index"
    ],
    "extends": "Screen",
-   "refs": [],
+   "refs": [
+    "res://ui/components/ui_tokens.gd"
+   ],
    "signals": []
   },
   "res://ui/screens/settings.gd": {
@@ -6662,7 +6714,9 @@
     "_reset.pressed \u2192 _on_reset_button_pressed"
    ],
    "extends": "HBoxContainer",
-   "refs": [],
+   "refs": [
+    "res://ui/components/ui_tokens.gd"
+   ],
    "signals": [
     "binding_pressed",
     "reset_pressed"
@@ -6708,6 +6762,7 @@
     "res://game/station_registry.gd",
     "res://ui/components/inspect_sheet.tscn",
     "res://ui/components/tooltip.tscn",
+    "res://ui/components/ui_tokens.gd",
     "res://ui/dialogs/cargo_overlay.tscn",
     "res://ui/station/",
     "res://ui/station/ and",
@@ -7135,7 +7190,8 @@
    "refs": [
     "res:// path names",
     "res://autoload/player_profile.gd",
-    "res://ui/components/ship_slots.gd"
+    "res://ui/components/ship_slots.gd",
+    "res://ui/components/ui_tokens.gd"
    ],
    "signals": []
   },

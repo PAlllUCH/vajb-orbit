@@ -164,6 +164,12 @@ standalone, never touches the real save).
 One-line outcomes, newest first (full blocks: `MASTER_REPORT.md` §6, same-named
 entries):
 
+- **Code audit sweep + P1** (2026-10-19, the developer session; housekeeping) —
+  the audit tool + `docs/CODE_AUDIT.md`, the `StationPanel` base, shared test
+  fixtures, lazy station panes, the mockup/orphan deletions, then the UI token
+  kit, the weapon-family source and the one service lookup; gate 1430 →
+  **1436/0 ×2**; 12 station panels + 164 test files touched.
+
 - **P4 release close-out** (2026-10-16, the owner rules the phase finished) —
   gate re-verified **1430/0 ×2**; stamp v0.5 at `4b5b65f`; build 3 exported,
   smoke-tested, packaged; the owner's playtest is the last exit criterion.

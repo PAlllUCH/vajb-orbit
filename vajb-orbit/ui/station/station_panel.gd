@@ -16,7 +16,7 @@ extends VBoxContainer
 ## first; everything else in the suite is the one implementation. Reversal: copy
 ## the helper back into the pane it is needed by (the pre-2026-10-19 shape).
 
-const PANEL_TOKENS_TYPE: StringName = &"Tokens"
+const UiTokensScript := preload("res://ui/components/ui_tokens.gd")
 const PANEL_PROFILE_SERVICE: StringName = &"PlayerProfile"
 const PanelProfileScript := preload("res://autoload/player_profile.gd")
 const ShipSlotsScript := preload("res://ui/components/ship_slots.gd")
@@ -37,22 +37,12 @@ func _exit_tree() -> void:
 ## The live theme's colour for one token, white when the theme does not carry it
 ## (the pre-existing fallback every panel used).
 func _token(token: StringName) -> Color:
-	if has_theme_color(token, PANEL_TOKENS_TYPE):
-		return get_theme_color(token, PANEL_TOKENS_TYPE)
-	return Color.WHITE
+	return UiTokensScript.colour(self, token)
 
 
 ## The house integer grouping: `1 234 567`, negative values keep their sign.
 func _format_int(value: int) -> String:
-	var digits := str(absi(value))
-	var grouped := ""
-	var count := 0
-	for index in range(digits.length() - 1, -1, -1):
-		grouped = digits[index] + grouped
-		count += 1
-		if count % 3 == 0 and index > 0:
-			grouped = " " + grouped
-	return ("-" if value < 0 else "") + grouped
+	return UiTokensScript.format_int(value)
 
 
 ## A pane-owned tween: invalid tweens are pruned before a new one is appended, so

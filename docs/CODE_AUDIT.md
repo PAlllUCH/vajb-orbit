@@ -1,24 +1,26 @@
 # CODE_AUDIT — full-code evaluation (2026-10-19)
 
 Status: **executed the same day.** The 2026-10-19 sweep landed the P0 plan below
-(shared panel base, test harness, lazy station panes, guardrails). The
-"Before → after" columns are measured, not estimated; the remaining P1/P2 items
-are what is still open.
+(shared panel base, test harness, lazy station panes, guardrails) and the P1
+consistency pass (UI token kit, weapon-family source, one `_service` lookup).
+The "Before → after" columns are measured, not estimated; the remaining P2
+items are what is still open.
 
 Repeatable half: `python3 staging/code_audit.py` (inventory, duplicate functions,
 duplicate 8-line blocks, class usage). Runtime numbers were taken in the live
 editor on the Linux host, Godot 4.7.2-stable, Forward+, 1920×1080. The gate was
-`python3 staging/gate.py --times 2`; it read **1433/0 ×2 byte-identical, zero
+`python3 staging/gate.py --times 2`; it read **1436/0 ×2 byte-identical, zero
 `SCRIPT ERROR`** on this tree.
 
 ## 0. Headline
 
-- **171,864 GDScript lines**: 69,573 production (104 files) + 102,291 tests
-  (233 files). 35 production scenes, 129 scenes total, 51 production
+- **171,885 GDScript lines**: 69,538 production (106 files) + 102,347 tests
+  (233 files). 35 production scenes, 129 scenes total, 53 production
   `class_name`s, 6 project autoloads.
-- **Duplication is down across the board.** Production: **102 → 89 duplicate
-  clusters**, **1,526 → 995 redundant lines**. Tests: **255 → 238 clusters**,
-  **4,560 → 3,376 redundant lines**.
+- **Duplication is down across the board.** Production: **102 → 88 duplicate
+  clusters**, **1,526 → 942 redundant lines**. Tests: **255 → 238 clusters**,
+  **4,560 → 3,376 redundant lines**. The 18 `_token`\* entries left in the raw
+  count are one-line delegations to `UiTokens.colour`, not copied logic.
 - **The station's eager build is gone.** Boot: **2,058 → 1,029 ms**; nodes:
   **2,427 → 305**; static memory: **162.8 → 121.5 MB**. The first open of a pane
   pays its own build once; the rail's hover/focus prefetch warms it before the
@@ -120,11 +122,13 @@ similar-looking code.
 
 ### 4.1 Production
 
-- **89 duplicate clusters, 995 redundant lines**, 304 duplicated 8-line blocks.
-- Most copied helpers remaining: `_token` ×16, `_notification` ×9,
-  `_make_label` ×7, `_profile` ×5, `_emit_sheet` ×5, `_on_scroll_started` ×4,
-  `_active_id` ×4, `_check` ×4, `_service` ×3, `texture` ×2, `_exit_tree` ×2,
-  `_make_tween` ×2.
+- **88 duplicate clusters, 942 redundant lines**, 299 duplicated 8-line blocks.
+- Most copied helpers remaining: `_notification` ×9, `_make_label` ×7,
+  `_profile` ×5, `_emit_sheet` ×5, `_on_scroll_started` ×4, `_active_id` ×4,
+  `_check` ×4, `texture` ×2, `_exit_tree` ×2, `_make_tween` ×2. The raw count
+  also lists `_token` ×18, but every one is now the same one-line delegation to
+  `UiTokens.colour` (the wrappers stay so the call sites and the tests' `call()`
+  reads keep their names).
 - **What the sweep removed:** the 12 station panels no longer carry their own
   `_token` (except the armory's style override), `_format_int`, `_make_tween`,
   `_exit_tree`, `_pulse`, `_profile`, `_clear_list`, `_base_id`, `_active_hull`,
@@ -134,18 +138,30 @@ similar-looking code.
   glyph stems; the armory, fitting, shipyard and ship-status screen read it.
 - **One hot-price rule:** `Auction.hot_price` delegates to
   `ModuleCatalog.hot_price`; the duplicate 20 % constant is gone.
+- **The shipyard's `_format_int` check:** its removed copy returned
+  `StationCatalog.group_int`, which is byte-identical to the base algorithm
+  (`1 234 567`, space-grouped), so the inheritance changed no visible figure.
 
 Remaining families worth a later pass:
 
 | Helper family | Copies | Where |
 |---|---:|---|
-| `_token` | 17 definitions | HUD, minimap, status screen, inspect sheet, menu/slot buttons, cargo overlay, screens |
 | `_notification` | 10 definitions | station panes and screens; each has pane-specific extra work |
 | `_make_label` | 8 definitions | three signature variants; not a safe mechanical merge |
 | `_profile` | 6 definitions | `game.gd`, cargo overlay, status screen, weapons, NPC/player state |
 | `_emit_sheet` | 6 definitions | station panes; tied to their own `_sheet_payload` and signal |
-| `_service` | 4 definitions | the four node autoloads; a shared lookup is the next small win |
 | `texture` / `_on_scroll_started` / `_active_id` / `_check` | 4 each | one or two screens each; local idioms |
+
+- **One token read, one grouping rule (P1).** `ui/components/ui_tokens.gd` owns
+  `colour(control, token, fallback)` and `format_int` (which delegates to the
+  CONTRACTS §23.1 rule, `StationCatalog.group_int`). Every `_token` outside the
+  kit delegates to it; the station base, the HUD, the cargo overlay and the
+  station shell share the formatter.
+- **One weapon-family source (P1).** `PlayerState.WEAPONS` owns the five v1 ids;
+  the HUD's `WEAPON_IDS` is that const plus `WEAPON_ID_EXTRAS`
+  (`railgun`, `mining`).
+- **One service lookup (P1).** `autoload/service_lookup.gd` holds the root
+  lookup; the four node autoloads' `_service` doors delegate to it.
 
 ### 4.2 Tests
 
@@ -205,9 +221,12 @@ once):
 | Shipyard | 96 ms |
 | Launch | 48 ms |
 
-The Auction is the outlier because its shelf draws on entry. It is the one pane
-worth prewarming further (e.g. a thread-loaded first shelf), but it no longer
-costs every station boot.
+The Auction is the outlier because its shelf draws on entry. Re-measured after
+the P1 pass through `game_eval`: the pane's build is **136 ms** on rail hover,
+and the selection then costs **29 ms**; a direct selection with no prefetch is
+**156 ms**. The hover/focus prefetch already absorbs the build, and the
+remaining 29 ms is the shelf advance `enter_pane()` must do on entry (it writes
+the rotation), so no further prewarm was added.
 
 ### 5.2 Flight (unchanged)
 
@@ -244,7 +263,7 @@ costs every station boot.
 | `ui/components/inspect_chip.gd` | the only true orphan | **deleted 2026-10-19**; `UI_SPEC.md` now cites the §8 P1 / N37 pin directly |
 | `ui/screens/_mockup_station.gd` + `.tscn` | 1,356-line throwaway; STATION_HUB §12.6 and CLEANUP_PLAN both planned deletion when the real screen landed | **deleted 2026-10-19** |
 | `ui/station/fitting_panel.tscn` | not instantiated by production; tests mount it; `auction_panel.gd:52` preloads the script only | keep for tests; do not add production callers |
-| `README.md:34` | quoted `passed=524` | fixed to the gate wrapper / 1433 |
+| `README.md:34` | quoted `passed=524` | fixed to the gate wrapper / 1436 |
 | `CHANGELOG.md` | had 0.2, 0.3 and vote-site only; the records say 0.4 and 0.5 shipped | 0.4/0.5 entries added |
 | `docs/CODE_MAP.md` orphan list | listed `ship_stats.gd`, `cockpit_cluster.gd` and every `tools/` script as orphans | fixed in `staging/build_code_map.py`: `class_name` consumers count, `tools/` is separate |
 | God files | `armory_panel.gd` 4,493; `game.gd` 3,778; `player_profile.gd` 3,305; `hud.gd` 2,686; `weapons.gd` 2,664 | do not split speculatively; split only at the next feature that touches them |
@@ -261,14 +280,16 @@ costs every station boot.
 4. **Guardrails.** `tests/test_code_health.gd` pins the base-class rule, the
    no-re-declaration rule and the NPC required-key rule.
 
-### P1 — next small consistency pass
+### P1 — landed in the same 2026-10-19 pass
 
-5. A shared UI token/format kit for the remaining `_token` copies outside the
-   station panels (HUD, screens, components). This is the largest remaining
-   copy-paste family.
-6. One weapon-family source: `PlayerState.WEAPONS` for the five, with the HUD
-   adding its two extra ids explicitly.
-7. One `_service` lookup for the four node autoloads.
+5. **Done.** `ui/components/ui_tokens.gd` owns the token read and the integer
+   grouping; every `_token` outside the kit is a one-line delegation, the
+   station base, HUD, cargo overlay and station shell share `format_int`, and
+   `tests/test_code_health.gd` gained the delegation guardrail.
+6. **Done.** `Hud.WEAPON_IDS` is `PlayerState.WEAPONS + WEAPON_ID_EXTRAS`, and
+   the guardrail asserts the join.
+7. **Done.** `autoload/service_lookup.gd` holds the root lookup; the four node
+   autoloads delegate, and the guardrail asserts all four.
 8. One `_load_texture` already landed in `StationPanel`; the remaining
    `_on_scroll_started` / `_active_id` / `_check` families are one-per-screen
    idioms and can stay.
@@ -296,7 +317,12 @@ costs every station boot.
 - Made station module/service panes lazy; added rail hover/focus prefetch;
   updated the tests that read the private pane arrays to use the public
   `pane_for` / `panes` / `service_panel` doors.
-- Added `tests/test_code_health.gd` (3 rows) as the maintainability guardrail.
+- Added `tests/test_code_health.gd` (6 rows) as the maintainability guardrail
+  (base class, no re-declared helper, NPC keys, token delegation, weapon-family
+  source, service lookup).
+- Added `ui/components/ui_tokens.gd` and `autoload/service_lookup.gd`; the 18
+  remaining `_token` helpers delegate, the HUD derives its rack ids from
+  `PlayerState.WEAPONS`, and the four autoloads share one lookup.
 - Deleted `_mockup_station.gd` / `.tscn` / `.uid` (the dead approval mockup)
   and the last orphan, `ui/components/inspect_chip.gd`; `CODE_MAP` now reports
   zero orphans.
@@ -307,14 +333,14 @@ costs every station boot.
 - Regenerated `docs/CODE_MAP.md` / `CODE_MAP.json`.
 - Updated `README.md`, `AGENTS.md`, `CHANGELOG.md`, this document and the
   mockup notes in `STATION_HUB.md` / cleanup plans.
-- Gate: **1433/0 ×2**; no gameplay behavior changed.
+- Gate: **1436/0 ×2**; no gameplay behavior changed.
 
 ## 9. Reproduce
 
 ```bash
 python3 staging/code_audit.py            # inventory + duplicates + class usage
 python3 staging/build_code_map.py        # regenerate docs/CODE_MAP.md + .json
-python3 staging/gate.py --times 2        # 1433/0 ×2, zero SCRIPT ERROR
+python3 staging/gate.py --times 2        # 1436/0 ×2, zero SCRIPT ERROR
 ```
 
 Runtime numbers: open the editor with the project, then run

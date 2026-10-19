@@ -13,7 +13,7 @@ extends PanelContainer
 ## hiding it mutates only its own `visible` and `position` (A5.5 is about the panes' state
 ## handlers; the tooltip is an overlay, not in-flow).
 
-const TOKENS_TYPE: StringName = &"Tokens"
+const UiTokensScript := preload("res://ui/components/ui_tokens.gd")
 const ChromeFamily := preload("res://ui/theme/chrome_family.gd")
 ## N47: the cap widens 320 -> 360 and the body's own font is 15 px scoped to this node.
 const CAP_WIDTH := 360.0
@@ -138,9 +138,7 @@ func _place(cursor: Vector2, viewport_size: Vector2) -> void:
 
 
 func _token(token: StringName, fallback: Color = Color.WHITE) -> Color:
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return fallback
+	return UiTokensScript.colour(self, token, fallback)
 
 
 static func _html(colour: Color) -> String:

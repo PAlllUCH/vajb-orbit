@@ -5,7 +5,7 @@ extends Screen
 ## Key presses are ignored and nothing here is focusable, so the scene holds no interactive control.
 ## Boot stays silent: MAIN_MENU_SPEC section 1 defines no audio cue for it.
 
-const TOKENS_TYPE: StringName = &"Tokens"
+const UiTokensScript := preload("res://ui/components/ui_tokens.gd")
 const MAIN_MENU_ROUTE: StringName = &"main_menu"
 
 const LOGO_FADE_START := 0.5
@@ -117,6 +117,4 @@ func _make_tween() -> Tween:
 
 
 func _token(token: StringName) -> Color:
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return Color.BLACK
+	return UiTokensScript.colour(self, token, Color.BLACK)

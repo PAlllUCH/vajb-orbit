@@ -21,7 +21,7 @@ extends Screen
 ##   func disarm() -> bool                                     optional, ui_cancel step 2
 ##   func inspect_focused() -> void                            optional, station_inspect
 
-const TOKENS_TYPE: StringName = &"Tokens"
+const UiTokensScript := preload("res://ui/components/ui_tokens.gd")
 const ChromeFamily := preload("res://ui/theme/chrome_family.gd")
 
 const Catalog := preload("res://game/station_catalog.gd")
@@ -1186,9 +1186,7 @@ func _reserve_credits_width() -> void:
 
 
 func _token(token: StringName) -> Color:
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return Color.WHITE
+	return UiTokensScript.colour(self, token)
 
 
 ## V2 (UI_SPEC section 19): every pane's header band carries a flat backing of

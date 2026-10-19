@@ -1235,6 +1235,29 @@ Laser, one Cannon MkI and one Laser MkII through `SOURCE_AUCTION_STOCK`
 shelf's size unmoved (`Auction.STOCK_TRIO`). STATION_HUB §23.11 row 22 carries
 the supersession.
 
+**The code audit sweep + P1 (2026-10-19, the developer session's housekeeping
+pass — not a wave; gate 1430 → 1436/0 ×2 byte-identical, zero `SCRIPT ERROR`).**
+The Expected line is **`[SUMMARY] passed=1436 failed=0`**, exit 0, twice
+hermetic through `staging/gate.py`. The owner's "codebase evaluation" ask
+produced `staging/code_audit.py` and `docs/CODE_AUDIT.md`, then the P0/P1
+repairs: `ui/station/station_panel.gd` is the shared base the 12 station panes
+extend by path (`extends "res://ui/station/station_panel.gd"` — the bare
+`class_name` form fails a fresh headless parse); `ui/components/ship_slots.gd`
+owns the slot-glyph table; `tests/support.gd` owns the stateless test fixtures;
+the station's module and service panes build on first use with a rail
+hover/focus prefetch and the public `panes()` / `pane_for()` / `service_panel()`
+doors; `ui/components/ui_tokens.gd` is the one token read and `format_int`
+(delegating the grouping to §23.1's `StationCatalog.group_int`);
+`Hud.WEAPON_IDS` is `PlayerState.WEAPONS + WEAPON_ID_EXTRAS` (railgun, mining);
+`autoload/service_lookup.gd` is the one root lookup for the four node
+autoloads; the 1,356-line `_mockup_station` and the orphan `inspect_chip.gd`
+are deleted after their doc citations were repointed. `tests/test_code_health.gd`
+grows to **6 rows** (base class, no re-declared helper, NPC keys, token
+delegation, weapon-id join, service delegation). `docs/CODE_MAP.md` reports
+129 scenes / 339 scripts / 0 orphans. **Reversal:** per item — copy the helper
+back into the pane, restore the literal rack list, and restore the four
+`_service` bodies from the pre-2026-10-19 history.
+
 ## §11 P2 ship frames (2026-09-21)
 
 Pinned before any code worker starts, so five parallel workers agree. Additive only:
@@ -3912,6 +3935,17 @@ bottom (the index-line form is only for retired entries).
   routes through the same check. **No pinned interface moved.**
   **Reversal:** run the raw §9 command by hand and grep its log for
   `SCRIPT ERROR` (the pre-2026-10-12 close-out ritual).
+- **v0.69 (2026-10-19, the code audit sweep + P1 — the developer session, not a
+  wave; gate 1430 → 1436/0 ×2 byte-identical, +3 guardrail rows net)** — the
+  audit's P0/P1 repairs: `StationPanel` as the shared station-pane base,
+  `ShipSlots` as the one slot-glyph table, `tests/support.gd` as the stateless
+  test fixtures, lazy station panes with the rail hover/focus prefetch and the
+  public pane doors, `UiTokens` as the one token read and `format_int`,
+  `Hud.WEAPON_IDS` derived from `PlayerState.WEAPONS`, and `ServiceLookup` as
+  the one autoload root lookup. `tests/test_code_health.gd` grows from 3 to 6
+  rows. The mockup and orphan deletions are recorded in §9's block.
+  **Reversal:** per item, as §9's block names; the pre-2026-10-19 history holds
+  every removed body.
 - **v0.68 (2026-10-16, the armory's stock law + the auction's starter trio —
   the owner's playtest verdict; gate held 1430/0 ×2 byte-identical, net 0)** —
   10 §6.2 pins the stock law (the owner's verbatim verdict: *"In armory i

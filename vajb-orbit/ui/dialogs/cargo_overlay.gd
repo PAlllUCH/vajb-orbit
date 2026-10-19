@@ -35,7 +35,7 @@ const Summary := preload("res://ui/station/cargo_summary.gd")
 ## single home is the shared summary builder; this overlay delegates its reads
 ## and keeps its own chip-bearing rows.
 
-const TOKENS_TYPE: StringName = &"Tokens"
+const UiTokensScript := preload("res://ui/components/ui_tokens.gd")
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
 
 ## A15's floor: the surface may never go under 420 wide (A8's outer band).
@@ -782,6 +782,4 @@ func _viewport_size() -> Vector2:
 
 
 func _token(token: StringName) -> Color:
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return Color.WHITE
+	return UiTokensScript.colour(self, token)

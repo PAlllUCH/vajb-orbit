@@ -12,7 +12,7 @@ const Paths := preload("res://ui/paths.gd")
 const DEFAULT_DESTINATION: StringName = &"game"
 const DEFAULT_LABEL := "ENTERING SPACE"
 const SECTOR_LABEL := "ENTERING SECTOR — %s"
-const TOKENS_TYPE: StringName = &"Tokens"
+const UiTokensScript := preload("res://ui/components/ui_tokens.gd")
 
 const DESTINATION_KEY := "destination"
 const SECTOR_KEY := "sector"
@@ -103,6 +103,4 @@ func _make_tween() -> Tween:
 
 
 func _token(token: StringName) -> Color:
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return Color.BLACK
+	return UiTokensScript.colour(self, token, Color.BLACK)

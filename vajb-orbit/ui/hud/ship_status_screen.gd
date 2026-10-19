@@ -1143,7 +1143,7 @@ class StatusWells extends Control:
 ## code-drawn). The anchor space is the render box's own (`ShipFit.HARDPOINTS`' render px,
 ## origin at the sprite's centre, x right = bow, y down = starboard).
 class HardpointMarkers extends Control:
-	const TOKENS_TYPE: StringName = &"Tokens"
+	const UiTokensScript := preload("res://ui/components/ui_tokens.gd")
 	const ROLE_RING: StringName = &"bone"
 	const ROLE_FILL: StringName = &"accent_danger"
 
@@ -1204,6 +1204,4 @@ class HardpointMarkers extends Control:
 			draw_arc(pos, _radius, 0.0, TAU, 24, _ring_colour, _width, true)
 
 	func _token(token: StringName) -> Color:
-		if has_theme_color(token, TOKENS_TYPE):
-			return get_theme_color(token, TOKENS_TYPE)
-		return Color.WHITE
+		return UiTokensScript.colour(self, token)

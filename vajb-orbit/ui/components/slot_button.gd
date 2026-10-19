@@ -5,7 +5,7 @@ extends TextureButton
 ## Plate states come from the theme variations SlotButtonWeapon / SlotButtonCargo;
 ## the active-weapon frame is script-drawn, never a fifth texture (UI_SPEC 3.2).
 
-const TOKENS_TYPE: StringName = &"Tokens"
+const UiTokensScript := preload("res://ui/components/ui_tokens.gd")
 
 const VARIATION_WEAPON: StringName = &"SlotButtonWeapon"
 const VARIATION_CARGO: StringName = &"SlotButtonCargo"
@@ -157,6 +157,4 @@ func _refresh_frame_color() -> void:
 
 
 func _token(token: StringName) -> Color:
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return Color.WHITE
+	return UiTokensScript.colour(self, token)

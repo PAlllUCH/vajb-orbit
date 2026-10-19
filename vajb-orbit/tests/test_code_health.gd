@@ -1,18 +1,23 @@
 extends McpTestSuite
 ## Suite code_health: the maintainability guardrails from CODE_AUDIT 2026-10-19.
-## It pins the two structural invariants the refactor introduced and the one
+## It pins the structural invariants the refactor introduced and the one
 ## data-table integrity rule the audit found unmeasured:
 ##
 ##   1. every station panel extends the shared `StationPanel` base;
 ##   2. no station panel re-declares a helper the base owns (the armory's
 ##      `_token` override is the one documented exception);
 ##   3. every NPC archetype row carries its required keys, so a copy-paste row
-##      that drops one cannot silently fall back to a default.
+##      that drops one cannot silently fall back to a default;
+##   4. every `_token` outside the kit delegates to `UiTokens.colour`;
+##   5. the HUD's rack ids are `PlayerState.WEAPONS` plus its two extras, and
+##      every autoload `_service` delegates to `ServiceLookup.find`.
 ##
 ## These are maintainability rows, not gameplay rows; they read the shipped
 ## files and the shipped catalogue, and they never touch the live profile.
 
 const NpcRegistryScript := preload("res://game/npc_registry.gd")
+const HudScript := preload("res://ui/hud/hud.gd")
+const PlayerStateScript := preload("res://game/player_state.gd")
 
 const PANEL_DIR := "res://ui/station/"
 const PANELS: Array[String] = [
@@ -117,3 +122,54 @@ func test_every_npc_archetype_answers_its_required_keys() -> void:
 				row.has(key),
 				"archetype %s carries %s" % [String(id), String(key)]
 			)
+
+
+func test_every_token_reader_delegates_to_the_kit() -> void:
+	var offenders: Array[String] = []
+	for path in _gd_files("res://ui/"):
+		var text := FileAccess.get_file_as_string(path)
+		if text.contains("func _token(") and not text.contains("UiTokensScript.colour(self, token"):
+			offenders.append(path)
+	assert_eq(
+		offenders,
+		[] as Array[String],
+		"every _token outside ui/components/ui_tokens.gd delegates to it"
+	)
+
+
+func test_the_hud_weapon_ids_read_the_one_family_source() -> void:
+	var expected: Array[StringName] = PlayerStateScript.WEAPONS.duplicate()
+	expected.append_array(HudScript.WEAPON_ID_EXTRAS)
+	assert_eq(PlayerStateScript.WEAPONS.size(), 5, "the five v1 families")
+	assert_eq(
+		HudScript.WEAPON_IDS,
+		expected,
+		"the rack ids are the default five plus the HUD's railgun and mining entries"
+	)
+
+
+func test_every_autoload_service_delegates_to_the_one_lookup() -> void:
+	var offenders: Array[String] = []
+	var found := 0
+	for path in _gd_files("res://autoload/"):
+		var text := FileAccess.get_file_as_string(path)
+		if not text.contains("func _service("):
+			continue
+		found += 1
+		if not text.contains("ServiceLookupScript.find(self, service_name)"):
+			offenders.append(path)
+	assert_eq(found, 4, "the four node autoloads keep their _service door")
+	assert_eq(offenders, [] as Array[String], "every _service delegates to ServiceLookup")
+
+
+func _gd_files(dir_path: String) -> Array[String]:
+	var files: Array[String] = []
+	var dir := DirAccess.open(dir_path)
+	if dir == null:
+		return files
+	for name in dir.get_files():
+		if name.ends_with(".gd"):
+			files.append(dir_path.path_join(name))
+	for child in dir.get_directories():
+		files.append_array(_gd_files(dir_path.path_join(child)))
+	return files

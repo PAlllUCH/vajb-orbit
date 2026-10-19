@@ -202,15 +202,7 @@ static func held(items: Dictionary, item_id: StringName) -> int:
 ## The grouped-number formatter (the overlay's `_format_int`, moved here as
 ## the shared home - the AMOUNT cell and every summary read it).
 static func format_int(value: int) -> String:
-	var digits := str(absi(value))
-	var grouped := ""
-	var count := 0
-	for index in range(digits.length() - 1, -1, -1):
-		grouped = digits[index] + grouped
-		count += 1
-		if count % 3 == 0 and index > 0:
-			grouped = " " + grouped
-	return ("-" if value < 0 else "") + grouped
+	return Catalog.group_int(value)
 
 
 static func icon_source(icon_path: String) -> String:

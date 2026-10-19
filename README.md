@@ -31,7 +31,7 @@ with every wave.
 
 ```bash
 python3 staging/gate.py --times 2
-# [GATE] 2 runs byte-identical: [SUMMARY] passed=1433 failed=0
+# [GATE] 2 runs byte-identical: [SUMMARY] passed=1436 failed=0
 ```
 
 `vajb-orbit/tests/probe_*.gd` are instruments, not tests: each one measures a
