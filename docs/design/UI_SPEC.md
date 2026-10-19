@@ -1545,7 +1545,7 @@ reversal under the table.
 | Dialog panel, min 420 wide (§5.2; `dialog.tscn:37`) | C12 panel frame | 96×96 | 32 | edges tile — any rect |
 | INSPECT sheet, min 420 / max 720 (`inspect_sheet.gd:20-21`; N28) | C12 panel frame | 96×96 | 32 | edges tile — any rect |
 | Tooltip frame, 360 cap (`CAP_WIDTH` `tooltip.gd:18`; N47) | C7 tooltip frame | 360×240 (3:2) | 12 | h 280–360, v 120–400 |
-| INSPECT chips 96×32 (`inspect_chip.gd:14`) | C3 inline chip | 96×32 | 8 | h 80–160 |
+| INSPECT chips 96×32 (§8 P1; N37 rev) | C3 inline chip | 96×32 | 8 | h 80–160 |
 | HUD hull/shield bars 260×14 (§3.1; `POOL_BAR_SIZE` `hud.gd:127`) + caps (`ui_bar_caps` 42×14, `file`; §6 cross-check) | C10 bar caps + engine fill | 42×14 (3:1) | n/a — cut sprite | none |
 | HUD ammo panel (`_ammo_panel` `hud.gd:903`) | C12 panel frame | 96×96 | 32 | edges tile — any rect |
 | HUD weapon/cargo slot buttons 48/40 (`slot_button.gd:18-19`; §3.2/§3.4) | C8 square plate | 1:1 (48 / 40) | n/a | none — uniform scale only |
@@ -1564,7 +1564,7 @@ reversal under the table.
 | Menu hover glow (`glow_underlay.gd:11-15`; §1.5) | engine | — | — | — (never baked, §1.5) |
 | Logo lockup (`boot.tscn:5`, `main_menu.tscn:8`; frozen — `ASSET_NAMING_SPEC.md` §9) | keep | — | — | — |
 | Loading/boot backdrops (§8 parked) | keep | — | — | — |
-| `_mockup_station` (`ui/screens/_mockup_station.gd`) | dev | — | — | — (retired at §12.6) |
+| `_mockup_station` (`ui/screens/_mockup_station.gd`) | dev | — | — | — (retired at §12.6; deleted 2026-10-19) |
 | `dev_tuning_menu` (`ui/dev/dev_tuning_menu.gd:458-486`) | dev | — | — | — (out of family scope) |
 | `repairs_panel.tscn` (live-unreferenced — mounted only by tests; `PanelRaised` at `repairs_panel.tscn:93`) | retired | — | — | — (out of family scope) |
 | `fitting_panel.tscn` (live-unreferenced — mounted only by tests; 15 `theme_override` hits in the census greps) | retired | — | — | — (out of family scope) |

@@ -92,7 +92,7 @@ disposition needs the owner's tick before it happens.
 
 | Target | Disposition |
 |---|---|
-| `ui/screens/_mockup_main_menu.tscn`, `_mockup_station.tscn`, `_mockup_station.gd` | DELETE when the wave-1 S2 verification close-out lands (already planned in IMPLEMENTATION_PLAN §9.6); note `_mockup_station.gd` still holds the only `SECTOR K-9` strings — dead by design |
+| `ui/screens/_mockup_main_menu.tscn`, `_mockup_station.tscn`, `_mockup_station.gd` | **DELETED 2026-10-19** (CODE_AUDIT sweep; the live screen had replaced it); `_mockup_station.gd` held the only `SECTOR K-9` strings, dead by design |
 | `vajb-orbit/tools/` | must end holding only `build_theme.gd` + `derive_icon_tints.gd` — wave workers already delete their `_probe_wN` files; the pass verifies |
 | `game/game.gd` mock rig (`MOCK_*`, mock target, ESC dock) | retired by engine wave 1 itself (spec §12/§14) — cleanup only verifies removal |
 

@@ -30,8 +30,8 @@ One gate, the headless runner. Zero failures is the law; the pass count moves
 with every wave.
 
 ```bash
-godot --headless --path vajb-orbit res://tests/headless_runner.tscn --quit-after 1200
-# [SUMMARY] passed=524 failed=0
+python3 staging/gate.py --times 2
+# [GATE] 2 runs byte-identical: [SUMMARY] passed=1433 failed=0
 ```
 
 `vajb-orbit/tests/probe_*.gd` are instruments, not tests: each one measures a
@@ -61,9 +61,11 @@ leak-at-exit warning).
 | `docs/design/` | style bible, screen specs, asset specs and the asset catalog |
 | `docs/gameplay/` | the RPG/economy layer (01–19) and the engine contract (`18_engine_spec.md`) |
 | `docs/CONTRACTS.md` | the pinned-interface contract every wave codes against |
+| `docs/CODE_AUDIT.md` | the full-code evaluation: inventory, duplication, runtime cost |
+| `docs/CODE_MAP.md` | generated map of every scene, script, signal and orphan |
 | `AGENTS.md` | how work is specced, dispatched, reviewed and closed out |
 | `.agents/gen/` | agent state: waveboard, backlog, slice briefs and reports |
-| `staging/` | asset pipelines (generation, cutting, keying, review sheets) |
+| `staging/` | asset pipelines plus the wave, gate, wiring and code-audit tools |
 | `asset-library/` | the art library, its manifest and its review sheets |
 | `skills/`, `crush.json`, `crushrc` | the tooling setup this workspace runs on |
 

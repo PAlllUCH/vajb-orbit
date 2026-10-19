@@ -4,8 +4,8 @@
 Why: coders asked "what do I wire into?" and had to grep 700 scripts and 100
 scenes to answer it. This map is the code-side twin of asset-library/_library.json:
 one entry per scene (root type, script, instanced sub-scenes, groups, signal
-wiring) and per script (extends, signals, res:// refs, where it is attached or
-preloaded), plus the orphan scripts nothing references.
+wiring) and per script (extends, signals, res:// refs, where it is attached,
+preloaded or consumed by class_name), plus the orphan scripts nothing references.
 
 Usage (run after any scene or script change):
 
@@ -31,6 +31,9 @@ OUT_JSON = ROOT / "docs" / "CODE_MAP.json"
 
 SKIP_DIRS = {"addons", ".godot"}
 ORPHAN_EXEMPT_PREFIX = ("tests/",)
+# Standalone scripts are run by the engine's `--script` / `--headless` tools, not
+# attached to a scene and not preloaded by another script. They are not orphans.
+STANDALONE_PREFIX = ("tools/",)
 
 EXT_RESOURCE = re.compile(r'^\[ext_resource[^\]]*type="([^"]+)"[^\]]*path="([^"]+)"', re.M)
 NODE_HEADER = re.compile(r'^\[node name="([^"]+)"(?: type="([^"]+)")?([^\]]*)\]', re.M)
@@ -146,10 +149,33 @@ def build() -> tuple[str, dict]:
         for ref in s["scripts"]:
             attached.setdefault(ref, []).append(scene_uri)
 
+    # `class_name` is a global registration, so a class-name-only consumer is a
+    # real reference even though it never spells the res:// path. Without this,
+    # `ShipStats` or `CockpitCluster` read as orphans while dozens of scripts use
+    # them.
+    texts = {uri: (PROJ / uri[len("res://"):]).read_text(encoding="utf-8")
+             for uri in scripts}
+    class_refs: dict[str, list[str]] = {}
+    for uri, s in scripts.items():
+        cls = s["class_name"]
+        if not cls:
+            continue
+        pattern = re.compile(r"\b" + re.escape(cls) + r"\b")
+        class_refs[uri] = sorted(other for other, text in texts.items()
+                                 if other != uri and pattern.search(text))
+
+    standalone = sorted(u for u, s in scripts.items()
+                        if not s["autoload"]
+                        and u not in attached
+                        and u not in preloaded
+                        and not class_refs.get(u)
+                        and u[len("res://"):].startswith(STANDALONE_PREFIX))
     orphans = sorted(u for u, s in scripts.items()
                      if not s["autoload"]
                      and u not in attached
                      and u not in preloaded
+                     and not class_refs.get(u)
+                     and u not in standalone
                      and not u[len("res://"):].startswith(ORPHAN_EXEMPT_PREFIX))
 
     body: list[str] = []
@@ -186,20 +212,31 @@ def build() -> tuple[str, dict]:
         emit(f"| {esc(uri)} | {esc(call)} |")
     emit()
     emit("## 4. Scripts")
-    emit("| Script | Extends | Signals | res:// refs | Attached in / preloaded by |")
+    emit("| Script | Extends | Signals | res:// refs | Attached / preloaded / class_name users |")
     emit("|---|---|---|---|---|")
     for uri in sorted(scripts):
         s = scripts[uri]
-        users = sorted(set(attached.get(uri, []) + preloaded.get(uri, [])))
+        users = sorted(set(attached.get(uri, []) + preloaded.get(uri, [])
+                           + class_refs.get(uri, [])))
         mark = f" **[{s['autoload']}]**" if s["autoload"] else ""
         emit(f"| {esc(uri)}{mark} | {esc(s['extends'])} | {cell(s['signals'])} | "
              f"{cell(s['refs'])} | {cell(users)} |")
     emit()
     emit("## 5. Orphan scripts (attached nowhere, referenced by nothing)")
     emit("Deletion or archival candidates; tests/ is exempt (the runner discovers it).")
+    emit("A `class_name` consumer counts as a reference. Standalone `tools/` scripts")
+    emit("run via `--script` and are listed separately, not as orphans.")
     emit()
     if orphans:
         for uri in orphans:
+            emit(f"- {esc(uri)}")
+    else:
+        emit("(none)")
+    emit()
+    emit("### Standalone tools (run via `--script`; not orphans)")
+    emit()
+    if standalone:
+        for uri in standalone:
             emit(f"- {esc(uri)}")
     else:
         emit("(none)")
@@ -212,7 +249,7 @@ def build() -> tuple[str, dict]:
         ("2. Scenes", 3 + len(scenes)),
         ("3. Signal wiring", 5 + n_conn),
         ("4. Scripts", 3 + len(scripts)),
-        ("5. Orphan scripts", 4 + max(len(orphans), 1)),
+        ("5. Orphan scripts", 7 + max(len(orphans), 1) + max(len(standalone), 1)),
     ]
     header = [
         "# CODE_MAP — what lies where (generated)",
@@ -225,10 +262,10 @@ def build() -> tuple[str, dict]:
         "| Section | Lines |",
         "|---|---|",
     ]
-    at = len(header) + len(index_rows) + 3  # rows + blank + first '## ' offset
+    at = len(header) + len(index_rows) + 2  # last header row + one blank line
     for label, span in index_rows:
         header.append(f"| {label} | L{at + 1}–L{at + span} |")
-        at += span
+        at += span + 1  # the section's own trailing blank line
     header += ["", ""]
 
     md = "\n".join(header + body)
@@ -237,6 +274,7 @@ def build() -> tuple[str, dict]:
         "scenes": dict(sorted(scenes.items())),
         "scripts": dict(sorted(scripts.items())),
         "orphans": orphans,
+        "standalone": standalone,
     }
     return md, data
 

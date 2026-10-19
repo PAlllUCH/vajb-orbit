@@ -50,9 +50,9 @@ Order chosen so the sealed archive is the last thing touched:
    ASSET_EXPANSION_SPECs, PHASE_C_STATUS, ASSET_AUDIT + archive README index.
    Options: owner restarts the session with the env granted, or defer these
    five moves to the Ubuntu session (hook re-registered there anyway).
-7. `_mockup_station.tscn` ⏸ owner tick: deletion is gated on the live S2
-   verification + wave-4 review closing (CODING_REPORT §7). `_mockup_main_menu`
-   is already gone. If S2 is verified live, delete + note in report.
+7. `_mockup_station.tscn` **DONE 2026-10-19** (owner-ordered CODE_AUDIT
+   sweep): deleted together with `_mockup_station.gd` / `.uid` after the live
+   screen landed; `_mockup_main_menu` was already gone.
 8. Write `.agents/gen/cleanup_pass_report.md`; commit 2.
 
 ## Phase D — speed wiring (same pass, no extra wave)

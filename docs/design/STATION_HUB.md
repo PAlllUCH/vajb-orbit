@@ -53,18 +53,18 @@ and every tool result is re-sent on each later request.
 | 9. | Motion table | L1131–L1158 |
 | 10. | Focus and input | L1159–L1179 |
 | 11. | Audio hooks | L1180–L1206 |
-| 12. | Implementation notes for the coder | L1207–L1286 |
-| 13. | Verification performed on the mockup | L1287–L1303 |
-| 14. | Open questions for the owner | L1304–L1337 |
-| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1338–L1517 |
-| 16. | Panel consolidation and the inspector band (amendment 2026-10-03, ow… | L1518–L1556 |
-| 17. | The merged panels — design detail, the inspector law, the panel temp… | L1557–L1668 |
-| 18. | Shell v2 — the TERMINAL drawer, the OVERVIEW pane, the popup sinks (… | L1669–L1712 |
-| 19. | Station shell v2 design detail — the OVERVIEW pane and the one skele… | L1713–L1910 |
-| 20. | The ARMORY two-module rework (amendment 2026-10-04, owner's playtest… | L1911–L1949 |
-| 21. | The two-sector rework — ARMORY's two modes and the REFINERY queue pa… | L1950–L1996 |
-| 22. | The station overhaul — owner rulings and asks (2026-10-12, phase P4 … | L1997–L2099 |
-| 23. | The station overhaul — the D24 design detail (amendment 2026-10-12, … | L2100–L2232 |
+| 12. | Implementation notes for the coder | L1207–L1287 |
+| 13. | Verification performed on the mockup | L1288–L1304 |
+| 14. | Open questions for the owner | L1305–L1338 |
+| 15. | Station services deck & station identity (amendment 2026-10-02, wave… | L1339–L1518 |
+| 16. | Panel consolidation and the inspector band (amendment 2026-10-03, ow… | L1519–L1557 |
+| 17. | The merged panels — design detail, the inspector law, the panel temp… | L1558–L1669 |
+| 18. | Shell v2 — the TERMINAL drawer, the OVERVIEW pane, the popup sinks (… | L1670–L1713 |
+| 19. | Station shell v2 design detail — the OVERVIEW pane and the one skele… | L1714–L1911 |
+| 20. | The ARMORY two-module rework (amendment 2026-10-04, owner's playtest… | L1912–L1950 |
+| 21. | The two-sector rework — ARMORY's two modes and the REFINERY queue pa… | L1951–L1997 |
+| 22. | The station overhaul — owner rulings and asks (2026-10-12, phase P4 … | L1998–L2100 |
+| 23. | The station overhaul — the D24 design detail (amendment 2026-10-12, … | L2101–L2233 |
 
 <!-- section-index:end -->
 
@@ -1282,7 +1282,8 @@ screen computes: the destination line and the `IDS laser · cannon · rocket · 
 
 **12.6 Delete when the real screen lands:** `ui/screens/_mockup_station.tscn`, `_mockup_station.gd`,
 `_mockup_station.gd.uid`, the two `--station-module` / `--station-credits` debug arguments and the local stub
-constants above.
+constants above. **Done 2026-10-19** in the CODE_AUDIT maintainability sweep: the scene, script and uid are
+deleted; the measurements in this document remain the historical record.
 
 ## 13. Verification performed on the mockup
 

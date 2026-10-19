@@ -4,6 +4,35 @@ Player-facing history of Vajb Orbit. Versions are the numbers shown on the
 main menu; each entry summarizes what changed for a player, drawn from the
 wave history in `.agents/gen/MASTER_REPORT.md` §6.
 
+## 0.5 — the station overhaul (2026-10-12 → 2026-10-16, playtest-3 cycle)
+
+- **The station is one screen:** the overview is a 3×3 grid of nine module
+  buttons, and every department opens from it.
+- **Buying is deliberate:** hull and module purchases in the auction, launch
+  insurance and vault rental all ask for confirmation before charging.
+- **The hold follows you:** the Cargo overlay opens on the station and in
+  flight, grouped into ammunition, ore, ingots, components and fuel cells.
+- **Refining and crafting:** the refinery loads all held ore at once, shows
+  each machine's state, and carries a CRAFT tab beside REFINE.
+- **Exchange bulk sell:** mark several items and sell them together.
+- **Shipyard build view:** hull and module shelves in the auction house style,
+  with the materials bill as materials and labour as the only credit figure.
+- **Launch sequence:** undocking, spool-up and the jump now play as one
+  three-second sequence with its own audio.
+- **Capacity and stock law:** every capacity readout uses the resolved hull
+  snapshot; the armory sells common goods only, and the auction's stock shelf
+  always carries a Mining Laser, a Cannon MkI and a Laser MkII.
+
+## 0.4 — the station composition pass (2026-10-12, playtest-2 cycle)
+
+- **Station composition:** scrollbars read on every deck, the action buttons
+  sit in one place, and disabled controls are visually distinct from absent
+  ones.
+- **The overview fits:** the services block no longer falls below the fold
+  without a scroll cue.
+- **Panel polish:** the armory, contracts board, insurance and vaults surfaces
+  were re-seated on the shared composition rules.
+
 ## Vote site (2026-10-07)
 
 - **Release voting is live:** the community can vote on what the next release
