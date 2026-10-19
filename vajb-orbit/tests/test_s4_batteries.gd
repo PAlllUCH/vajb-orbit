@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s4_batteries: the S4 battery **transactions** and the S5 rack **record** -- the
 ## profile-level half of the battery work, with no pane mounted.
 ##
@@ -87,7 +88,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_modules = _profile.call(&"modules")
 	_previous_batteries = _profile.get(&"_batteries")
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 func suite_teardown() -> void:
@@ -103,7 +104,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_batteries", _previous_batteries)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile = null
 
 
@@ -178,21 +179,6 @@ func _with_cells(fit: Dictionary, indices: Array, base_id: StringName) -> Dictio
 func _credits_value() -> int:
 	return int(_profile.call(&"credits"))
 
-
-func _delete_file(path: String) -> void:
-	if not FileAccess.file_exists(path):
-		return
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
-## --------------------------------------------------- the bulk wrappers (S4, rules 7-8)
-
-
-## Rule 7: the batch pairs the base's in-bag instances into the cells **in ascending order**,
-## one per cell, and every instance is out of the bag while it is fitted. The delivered
-## base-keyed module the first cell displaced comes back as its own unit.
 func test_fit_battery_pairs_the_bags_instances_into_ascending_cells() -> void:
 	_seed_standard_fit()
 	var instances: Array[StringName] = []

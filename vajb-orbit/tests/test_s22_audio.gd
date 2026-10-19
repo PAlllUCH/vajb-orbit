@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s22_audio: wave S22's audio half, the S22-B2 subset - the quadrant feed the HUD
 ## pushes every status update (A5 / L241), AUDIO_SPEC section 4.1's exactly three anti-flam
 ## rules enforced in `play_pool` (A6 / L54, AUDIO-2), the mine's sourced CC0 deploy cue
@@ -94,7 +95,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	if _scene == null:
 		fail_setup("game.tscn did not instantiate")
 		return
-	_fixture_host().add_child(_scene)
+	Support.fixture_host().add_child(_scene)
 	_ship = _scene.get_node_or_null(NodePath("PlayerShip")) as Node2D
 	_hud = _scene.get_node_or_null(NodePath("Hud")) as Control
 	_state = _scene.get(&"_state")
@@ -148,7 +149,7 @@ func test_a5_the_hud_pushes_the_four_pools_every_status_update() -> void:
 	## A bearing on the port flank (P2: -135..-45 degrees), so P3's stern multiplier does
 	## not reach the routed amount and the hit lands exactly on the port pool.
 	_state.call(&"damage", quarter, true, {&"direction": -PI / 2.0})
-	assert_true(_near(float(_state.call(&"pool_of", &"port")), 0.0), "the port quadrant breached")
+	assert_true(Support.near(float(_state.call(&"pool_of", &"port")), 0.0), "the port quadrant breached")
 	var rows := _status_rows()
 	assert_eq(
 		String(rows.get(&"port", "")),
@@ -191,7 +192,7 @@ func test_a6_the_anti_flam_numbers_are_the_specs() -> void:
 ## Rule (i): a second trigger of one cue inside 30 ms is dropped, not queued - it plays
 ## nothing and consumes no variant of the round-robin.
 func test_a6_a_double_trigger_inside_thirty_ms_is_dropped() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -220,7 +221,7 @@ func test_a6_a_double_trigger_inside_thirty_ms_is_dropped() -> void:
 ## Rule (ii): a class at its four-voice cap refuses a fifth weapon trigger (a fresh voice);
 ## another class is untouched, and the cap's drop is what refused it, not rule (i).
 func test_a6_a_fifth_weapon_voice_is_refused() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -249,7 +250,7 @@ func test_a6_a_fifth_weapon_voice_is_refused() -> void:
 ## two takes. The probe leaves the cursor pointing at the just-played take via an explicit
 ## tier read, so the next round-robin call would repeat it without the skip.
 func test_a6_the_round_robin_skips_the_last_used_variant() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -280,7 +281,7 @@ func test_a6_the_round_robin_skips_the_last_used_variant() -> void:
 ## resolve and sit under the 0.5 s ceiling, the detonation's unchanged explosion cue, and a
 ## real mine release through the real component playing the sourced take.
 func test_a7_the_mine_release_plays_the_sourced_deploy_cue() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -327,7 +328,7 @@ func test_a7_the_mine_release_plays_the_sourced_deploy_cue() -> void:
 ## The pool's take list is 01-03 (the drop is a pool member, not an asset delete), the
 ## round-robin runs the three in order and starts over, and no take repeats itself.
 func test_a14_the_laser_pool_runs_three_takes_and_04_stays_staged() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -390,7 +391,7 @@ func _status_rows() -> Dictionary:
 
 ## The anti-flam memory, cleared (the runner does the same between methods).
 func _clear_gate() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		return
 	if audio.has_method(&"clear_pool_history"):
@@ -401,7 +402,7 @@ func _clear_gate() -> void:
 
 
 func _snapshot_cursors() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		return
 	var cursors: Variant = audio.get(&"_pool_next")
@@ -414,7 +415,7 @@ func _snapshot_cursors() -> void:
 func _restore_cursors() -> void:
 	if not _had_pool_cursors:
 		return
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		return
 	var cursors: Variant = audio.get(&"_pool_next")
@@ -426,25 +427,9 @@ func _restore_cursors() -> void:
 	_pool_cursors = {}
 	_had_pool_cursors = false
 
-
-func _audio() -> Node:
-	return _tree().root.get_node_or_null(NodePath(AUDIO_SERVICE))
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
 func _profile() -> Node:
-	return _tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
+	return Support.tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
 
-
-func _near(a: float, b: float, epsilon: float = 0.001) -> bool:
-	return absf(a - b) <= epsilon
-
-
-## The fixture's fit and packs, written before the scene is instantiated and handed back in
-## `suite_teardown`, so the account ends this suite exactly as it started.
 func _stage_fixture() -> void:
 	var profile := _profile()
 	if profile == null:
@@ -483,10 +468,3 @@ func _restore_fixture() -> void:
 	_previous_ammo = {}
 	_previous_cargo = {}
 	_previous_rem = {}
-
-
-## Where the scene may enter the tree (the runner's own `_ready` has `/root` busy).
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root

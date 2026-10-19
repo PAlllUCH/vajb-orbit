@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s6_heat: wave S6's heat enforcement and hunters (AC5/AC6) - 13 §5/§7's witness
 ## rule, 13 §7's decay accumulator, 13 §2's fine math and `PlayerProfile.pay_bounty`, the
 ## two refusal axes (dock ← standing 12 §4.1, gate ← heat tier 13 §3), 13 §3's per-faction
@@ -118,14 +119,14 @@ func suite_teardown() -> void:
 	_free_scenes()
 	_free_bare()
 	GameScript._transit_destination = &""
-	var profile := _store()
+	var profile := Support.profile()
 	if profile != null:
 		profile.call(&"reset_to_defaults")
 		profile.call(&"flush")
 		profile.set(&"save_path", _previous_path)
 	Log.log_path = Log.DEFAULT_PATH
-	_delete_file(SCRATCH_PROFILE)
-	_delete_file(SCRATCH_LOG)
+	Support.delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_LOG)
 
 
 ## ---------------------------------------------------------------------------
@@ -143,7 +144,7 @@ func test_a_crime_without_a_witness_writes_nothing() -> void:
 		"13 §7 derives the witness range from the tree's only scan range"
 	)
 	var scene := _open_game()
-	var profile := _store()
+	var profile := Support.profile()
 	assert_true(scene != null and profile != null, "game.tscn and the profile autoload exist")
 	if scene == null or profile == null:
 		return
@@ -164,7 +165,7 @@ func test_a_crime_without_a_witness_writes_nothing() -> void:
 ## 13 §2's witness surcharge, and the value is the victim's own row plus that surcharge.
 func test_a_neutral_witness_scores_the_crime_plus_the_witness_extra() -> void:
 	var scene := _open_game()
-	var profile := _store()
+	var profile := Support.profile()
 	if scene == null or profile == null:
 		return
 	profile.call(&"set_heat", {})
@@ -184,7 +185,7 @@ func test_a_neutral_witness_scores_the_crime_plus_the_witness_extra() -> void:
 ## the value (a patrol kill is +25 + the surcharge).
 func test_a_patrol_witness_scores_the_crime_too() -> void:
 	var scene := _open_game()
-	var profile := _store()
+	var profile := Support.profile()
 	if scene == null or profile == null:
 		return
 	profile.call(&"set_heat", {})
@@ -202,7 +203,7 @@ func test_a_patrol_witness_scores_the_crime_too() -> void:
 ## nothing, and a hull past `WITNESS_RANGE` is not a witness however clear the line.
 func test_a_blocked_line_or_a_witness_past_the_range_is_no_witness() -> void:
 	var scene := _open_game()
-	var profile := _store()
+	var profile := Support.profile()
 	if scene == null or profile == null:
 		return
 	profile.call(&"set_heat", {})
@@ -245,7 +246,7 @@ func test_the_witness_line_is_the_brains_own_rock_check() -> void:
 		"while the hull body's mask is the rock|ship pair S21 widened it to"
 	)
 	var scene := _open_game()
-	var profile := _store()
+	var profile := Support.profile()
 	if scene == null or profile == null:
 		return
 	profile.call(&"set_heat", {})
@@ -264,7 +265,7 @@ func test_the_witness_line_is_the_brains_own_rock_check() -> void:
 ## station stands in for the turret bolted to it.
 func test_the_station_is_a_witness() -> void:
 	var scene := _open_game()
-	var profile := _store()
+	var profile := Support.profile()
 	if scene == null or profile == null:
 		return
 	var sector: Node = scene.get(&"_sector")
@@ -285,7 +286,7 @@ func test_the_station_is_a_witness() -> void:
 ## and returns 3 heat with no witness in sight and no surcharge.
 func test_the_pirate_reduction_needs_no_witness_and_never_surcharges() -> void:
 	var scene := _open_game()
-	var profile := _store()
+	var profile := Support.profile()
 	if scene == null or profile == null:
 		return
 	assert_false(bool(scene.call(&"_witnessed", DEAD_SPACE)), "no witness at the kill point")
@@ -306,7 +307,7 @@ func test_the_pirate_reduction_needs_no_witness_and_never_surcharges() -> void:
 ## 13 §2's bound: a gain is clamped to 100 and a reduction to 0, per faction.
 func test_heat_is_clamped_to_the_zero_to_hundred_band() -> void:
 	var scene := _open_game()
-	var profile := _store()
+	var profile := Support.profile()
 	if scene == null or profile == null:
 		return
 	profile.call(&"set_heat", {"concord": 95})
@@ -330,7 +331,7 @@ func test_heat_is_clamped_to_the_zero_to_hundred_band() -> void:
 ## moved to dead space: a stub victim could not show this.
 func test_a_dead_neutral_hull_does_not_witness_its_own_kill() -> void:
 	var scene := _open_game()
-	var profile := _store()
+	var profile := Support.profile()
 	if scene == null or profile == null:
 		return
 	var sector: Node = scene.get(&"_sector")
@@ -368,7 +369,7 @@ func test_a_dead_neutral_hull_does_not_witness_its_own_kill() -> void:
 ## minute banks rather than rounds.
 func test_heat_decays_one_per_minute_of_play() -> void:
 	var scene := _open_game()
-	var profile := _store()
+	var profile := Support.profile()
 	if scene == null or profile == null:
 		return
 	profile.call(&"set_heat", {"concord": 40, "meridian": 5})
@@ -397,7 +398,7 @@ func test_heat_decays_one_per_minute_of_play() -> void:
 
 ## 13 §2's own worked row: `fine = heat x 25 CR`, so 40 heat costs 1 000 CR.
 func test_the_fine_is_heat_times_twenty_five() -> void:
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		return
 	profile.call(&"set_heat", {})
@@ -417,7 +418,7 @@ func test_the_fine_is_heat_times_twenty_five() -> void:
 ## 17 §5's law on the success path: one charge, one `BOUNTY` log line, that faction's heat
 ## cleared and every other faction's left alone.
 func test_pay_bounty_clears_that_faction_and_logs_one_line() -> void:
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		return
 	profile.call(&"set_heat", {"concord": FINE_HEAT, "meridian": 12})
@@ -440,7 +441,7 @@ func test_pay_bounty_clears_that_faction_and_logs_one_line() -> void:
 ## "Refusals write nothing": a zero heat and a short balance both return `false` with the
 ## profile byte-identical and no log line.
 func test_pay_bounty_refusals_write_nothing() -> void:
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		return
 	profile.call(&"set_heat", {})
@@ -469,7 +470,7 @@ func test_pay_bounty_refusals_write_nothing() -> void:
 ## writes nothing, not even the vitals an allowed dock files.
 func test_the_gate_reads_heat_and_the_dock_reads_standing() -> void:
 	var scene := _open_game()
-	var profile := _store()
+	var profile := Support.profile()
 	if scene == null or profile == null:
 		return
 	var sector: Node = scene.get(&"_sector")
@@ -517,7 +518,7 @@ func test_the_gate_reads_heat_and_the_dock_reads_standing() -> void:
 ## docked faction (13 §7's bounty row reads it) and routes through `loading`.
 func test_an_allowed_dock_files_the_report_and_the_docked_faction() -> void:
 	var scene := _open_game()
-	var profile := _store()
+	var profile := Support.profile()
 	if scene == null or profile == null:
 		return
 	var sector: Node = scene.get(&"_sector")
@@ -599,7 +600,7 @@ func test_the_hunter_row_carries_doc_13_7s_map_and_no_band() -> void:
 ## nothing.
 func test_wanted_spawns_two_to_three_hunters_on_sector_entry() -> void:
 	var scene := _open_game()
-	var profile := _store()
+	var profile := Support.profile()
 	if scene == null or profile == null:
 		return
 	profile.call(&"set_heat", {})
@@ -627,7 +628,7 @@ func test_wanted_spawns_two_to_three_hunters_on_sector_entry() -> void:
 ## 13 §3's Outlaw row: a wing that dies comes back after 60 s, and only Outlaw perma-tails.
 func test_outlaw_respawns_the_tail_after_sixty_seconds() -> void:
 	var scene := _open_game()
-	var profile := _store()
+	var profile := Support.profile()
 	if scene == null or profile == null:
 		return
 	profile.call(&"set_heat", {String(_owner()): 85})
@@ -651,7 +652,7 @@ func test_outlaw_respawns_the_tail_after_sixty_seconds() -> void:
 ## faction spawns nothing in another faction's space, and nobody hunts in nobody's space.
 func test_hunters_are_per_faction_and_only_in_that_factions_space() -> void:
 	var scene := _open_game()
-	var profile := _store()
+	var profile := Support.profile()
 	if scene == null or profile == null:
 		return
 	assert_ne(_owner(), NpcRegistryScript.space_owner(&"sector_3"), "sector 3 is another faction's")
@@ -715,7 +716,7 @@ func test_a_hunter_drops_its_band_table_plus_the_hunter_extra() -> void:
 ## 14 §7's condition: the row is shown for the docked station's faction while its heat is
 ## above zero, and its label carries the profile's own fine.
 func test_the_bounty_row_shows_only_for_the_docked_factions_heat() -> void:
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		return
 	profile.call(&"set_heat", {})
@@ -749,7 +750,7 @@ func test_the_bounty_row_shows_only_for_the_docked_factions_heat() -> void:
 ## 14 §7's single confirm: a press pays through the profile, the row collapses and the pane
 ## says so; a short balance refuses with the profile untouched.
 func test_the_bounty_row_pays_and_writes_nothing_on_a_refusal() -> void:
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		return
 	profile.call(&"set_heat", {"concord": FINE_HEAT})
@@ -792,7 +793,7 @@ func test_the_bounty_row_pays_and_writes_nothing_on_a_refusal() -> void:
 ## brain's Scan state). This is the K3 seam - the kill's heat reaching the brain.
 func test_a_witnessed_crime_turns_the_sector_suspect() -> void:
 	var scene := _open_game()
-	var profile := _store()
+	var profile := Support.profile()
 	if scene == null or profile == null:
 		return
 	var sector: Node = scene.get(&"_sector")
@@ -855,7 +856,7 @@ func _victim(archetype: StringName) -> Node2D:
 	var hull := StubHull.new()
 	hull.name = "Stub%s" % String(archetype).capitalize()
 	hull.archetype_id = archetype
-	_fixture_host().add_child(hull)
+	Support.fixture_host().add_child(hull)
 	_bare.append(hull)
 	return hull
 
@@ -868,7 +869,7 @@ func _witness(at: Vector2, blip: StringName, hostility_id: StringName = &"") -> 
 	hull.blip = blip
 	hull.hostility_id = hostility_id
 	hull.add_to_group(NpcRegistryScript.GROUP)
-	_fixture_host().add_child(hull)
+	Support.fixture_host().add_child(hull)
 	hull.global_position = at
 	_bare.append(hull)
 	return hull
@@ -952,10 +953,10 @@ func _mount_panel() -> void:
 	_host.name = "HeatHost"
 	_host.theme = ThemeRes
 	_host.size = Vector2(1920.0, 1080.0)
-	_fixture_host().add_child(_host)
+	Support.fixture_host().add_child(_host)
 	_panel = LaunchScene.instantiate() as Control
 	_host.add_child(_panel)
-	var profile := _store()
+	var profile := Support.profile()
 	if profile != null:
 		profile.connect(&"profile_changed", Callable(_panel, &"refresh_profile"))
 	_panel.connect(&"status_requested", _on_status)
@@ -986,7 +987,7 @@ func _open_game() -> Node2D:
 	var scene := packed.instantiate() as Node2D
 	if scene == null:
 		return null
-	_fixture_host().add_child(scene)
+	Support.fixture_host().add_child(scene)
 	_scenes.append(scene)
 	return scene
 
@@ -1025,22 +1026,6 @@ func _lines_with(event: String) -> Array[String]:
 		if line.contains(", %s," % event):
 			out.append(line)
 	return out
-
-
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-func _store() -> Node:
-	return _tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
-
-
 func _free_scenes() -> void:
 	for scene: Node2D in _scenes:
 		if is_instance_valid(scene):
@@ -1056,7 +1041,7 @@ func _free_bare() -> void:
 
 
 func _stage_scratch_store() -> void:
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		return
 	_previous_path = String(profile.get(&"save_path"))
@@ -1064,9 +1049,3 @@ func _stage_scratch_store() -> void:
 	profile.call(&"reset_to_defaults")
 	profile.call(&"flush")
 	Log.log_path = SCRATCH_LOG
-
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())

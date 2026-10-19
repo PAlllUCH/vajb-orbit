@@ -1,4 +1,4 @@
-extends VBoxContainer
+extends "res://ui/station/station_panel.gd"
 ## FITTING module panel: the active hull's SLOT LAYOUT grid (the shipyard's own recipe, made
 ## selectable), the OWNED MODULES rows, and the footer strip that carries the power meter, the
 ## selected cell's line and the per-cell REMOVE. Contract: docs/design/STATION_HUB.md sections
@@ -76,18 +76,6 @@ const HARDPOINT_CAPTION := "SLOT LAYOUT · %d CELLS · %d ENGINES"
 ## 09 section 1's slot glyph per slot-type key. The glyph files are named by the document's own
 ## stems (`icon_slot_engine`, `icon_slot_power`, `icon_slot_w`, ...), which are not the API's
 ## key names, so the mapping is stated once here - the shipyard's own table, cell for cell.
-const SLOT_GLYPHS: Dictionary = {
-	&"engines": "engine",
-	&"power": "power",
-	&"weapons": "w",
-	&"shields": "s",
-	&"armour": "h",
-	&"computers": "c",
-	&"boosters": "b",
-	&"utility": "u",
-}
-const SLOT_GLYPH_DIR := "res://assets/icons/slot/"
-const SLOT_GLYPH_TEMPLATE := "icon_slot_%s.svg"
 
 ## The module catalogue's own slot key for an ENGINE module is 09 section 1's singular type
 ## name (`engine`), while the fit's set key is `engines` (`ShipFit.FIT_SLOT_KEYS`) - the same
@@ -210,7 +198,6 @@ var _stat_block_text: String = ""
 var _selected_row: Button = null
 ## The payload `station_inspect` (N34) inspects: the focused row or sub-row.
 var _focused_payload: Dictionary = {}
-var _tweens: Array[Tween] = []
 
 
 func _ready() -> void:
@@ -228,13 +215,6 @@ func _notification(what: int) -> void:
 	if what == NOTIFICATION_THEME_CHANGED and is_node_ready():
 		_apply_tokens()
 		_refresh_footer()
-
-
-func _exit_tree() -> void:
-	for tween: Tween in _tweens:
-		if tween.is_valid():
-			tween.kill()
-
 
 func refresh_profile(key: StringName) -> void:
 	## STATION_HUB section 12.4: &"fits" and &"modules" rebuild this pane's grid, its OWNED
@@ -565,19 +545,6 @@ func _make_slot_cell(cell: Dictionary) -> Dictionary:
 	plate.pressed.connect(_on_cell_pressed.bind(payload))
 	plate.focus_entered.connect(_on_cell_focused.bind(payload))
 	return payload
-
-
-## 09 section 1's shipped slot glyph for a slot-type key: `icon_slot_<stem>_48.png`. Null for a
-## type with no glyph (never one of the eight), so the cell then draws its plate alone.
-func _slot_glyph(slot_key: StringName) -> Texture2D:
-	var stem := String(SLOT_GLYPHS.get(slot_key, ""))
-	if stem.is_empty():
-		return null
-	var path := SLOT_GLYPH_DIR + SLOT_GLYPH_TEMPLATE % stem
-	if not ResourceLoader.exists(path):
-		return null
-	return load(path) as Texture2D
-
 
 func _apply_selection() -> void:
 	for payload: Dictionary in _cells:
@@ -1525,27 +1492,6 @@ func _row_target_cell(module_id: StringName) -> Dictionary:
 		return {}
 	return _selected
 
-
-## The fit stores a module *instance* id (15 section 6) and the catalogue reads base ids, so
-## every id the pane names goes through the profile's own bridge.
-func _base_id(profile: ProfileScript, entry: StringName) -> StringName:
-	if profile == null or entry == &"":
-		return entry
-	return StringName(profile.call(&"base_module_id", entry))
-
-
-## ------------------------------------------------------- the stat block (15 section 7)
-##
-## STATION_HUB section 5.3's S3 amendment: where the selected cell holds an instance, the pane
-## adds the instance's stat block below the selection line - "the base module's catalogue stats
-## plus one line per rolled affix (15 section 7's two-line block)". Nothing here is applied to
-## a flight stat (15 section 9.3): every number is read off the catalogue's own `effects` dict
-## or off 15 section 3/4's own rows, so the block cannot promise a stat the game does not roll.
-
-
-## The block's own node, built in script under the footer's selection line: no scene file
-## carries it (the pane's rows carry their own nodes the same way), so the frozen
-## `fitting_panel.tscn` needs no edit for this surface.
 func _refresh_stat_block(profile: ProfileScript, fit: Dictionary) -> void:
 	## S30 (UI_SPEC section 12.5 row 2, N30): a string write, never a node - the block's
 	## bytes go to the N27 tooltip through `_inspect_row`.
@@ -1684,13 +1630,6 @@ static func _row_id_of(raw: Variant) -> String:
 		return String(raw)
 	return ""
 
-
-func _active_hull(profile: ProfileScript) -> StringName:
-	if profile == null:
-		return &""
-	return StringName(profile.call(&"active_ship"))
-
-
 func _refresh_all() -> void:
 	var profile := _profile()
 	var hull := _active_hull(profile)
@@ -1734,31 +1673,3 @@ func _apply_name_tint(payload: Dictionary) -> void:
 	var tint: StringName = payload.get(&"tint", &"")
 	if title is Label and is_instance_valid(title) and tint != &"":
 		(title as Label).add_theme_color_override(&"font_color", _rarity_color(tint))
-
-
-func _token(token: StringName) -> Color:
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return Color.WHITE
-
-
-func _profile() -> ProfileScript:
-	## Autoloads are children of /root; STATION_HUB section 12.4 names a bare
-	## ^"PlayerProfile" path, which would resolve against this node instead, so the
-	## lookup is anchored at the tree root the way router.gd anchors its services.
-	if not is_inside_tree():
-		return null
-	var service := get_tree().root.get_node_or_null(NodePath(PROFILE_SERVICE))
-	if service == null:
-		return null
-	var profile: ProfileScript = service
-	return profile
-
-
-func _make_tween() -> Tween:
-	for index in range(_tweens.size() - 1, -1, -1):
-		if not _tweens[index].is_valid():
-			_tweens.remove_at(index)
-	var tween := create_tween()
-	_tweens.append(tween)
-	return tween

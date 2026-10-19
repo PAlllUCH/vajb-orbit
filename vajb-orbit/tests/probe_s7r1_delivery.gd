@@ -1,4 +1,5 @@
 extends Node
+const Support := preload("res://tests/support.gd")
 ## S7-R1 reviewer probe C: the delivery side re-measured with the reviewer's own rig.
 ##
 ## Independent of `tests/test_s7_weapon_affixes.gd`: its own sink/rock/peer doubles,
@@ -85,11 +86,6 @@ func _check(ok: bool, label: String, detail: String) -> void:
 		_fail += 1
 	print("[S7R1-C] %s %s %s" % ["OK " if ok else "BAD", label, detail])
 
-
-func _near(a: float, b: float) -> bool:
-	return absf(a - b) <= 0.0001
-
-
 func _state(weapons: Array, affixes: Array) -> PlayerState:
 	var state := PlayerStateScript.new()
 	var ids: Array[StringName] = []
@@ -139,8 +135,8 @@ func _keen_per_barrel() -> void:
 	var d1 := float(one.call(&"damage_amount"))
 	var d2 := float(two.call(&"damage_amount"))
 	print("[S7R1-C] keen base=%.6f barrel1=%.6f barrel2=%.6f" % [base, d1, d2])
-	_check(_near(d1, base), "keen leaves barrel 1 alone", "%.6f" % [d1])
-	_check(_near(d2, base * 1.15), "keen scales barrel 2", "%.6f" % [d2])
+	_check(Support.near(d1, base), "keen leaves barrel 1 alone", "%.6f" % [d1])
+	_check(Support.near(d2, base * 1.15), "keen scales barrel 2", "%.6f" % [d2])
 	one.free()
 	two.free()
 	# The mirror: Keen in cell 1.
@@ -152,8 +148,8 @@ func _keen_per_barrel() -> void:
 		"[S7R1-C] keen mirror barrel1=%.6f barrel2=%.6f"
 		% [float(m1.call(&"damage_amount")), float(m2.call(&"damage_amount"))]
 	)
-	_check(_near(float(m1.call(&"damage_amount")), base * 1.15), "mirror cell 1", "%.6f" % [base * 1.15])
-	_check(_near(float(m2.call(&"damage_amount")), base), "mirror cell 2 untouched", "%.6f" % [base])
+	_check(Support.near(float(m1.call(&"damage_amount")), base * 1.15), "mirror cell 1", "%.6f" % [base * 1.15])
+	_check(Support.near(float(m2.call(&"damage_amount")), base), "mirror cell 2 untouched", "%.6f" % [base])
 	m1.free()
 	m2.free()
 
@@ -175,8 +171,8 @@ func _keen_and_multiply_once() -> void:
 		"[S7R1-C] keen+mult base=%.6f shot=%.6f dealt=%.6f once=%.6f thrice=%.6f hits=%d"
 		% [base, float(shot.call(&"damage_amount")), sink.total, once, twice, sink.hits]
 	)
-	_check(_near(sink.total, once), "keen and damage_mult each once", "%.6f" % [sink.total])
-	_check(not _near(sink.total, twice), "not applied twice", "%.6f" % [twice])
+	_check(Support.near(sink.total, once), "keen and damage_mult each once", "%.6f" % [sink.total])
+	_check(not Support.near(sink.total, twice), "not applied twice", "%.6f" % [twice])
 	_check(sink.hits == 1, "one delivery", "%d" % [sink.hits])
 	shot.free()
 	sink.free()
@@ -207,8 +203,8 @@ func _beam_weight() -> void:
 		"[S7R1-C] beam plain=%.6f (2 x %.6f) weighted=%.6f want=%.6f"
 		% [plain, base, weighted, base * 2.15]
 	)
-	_check(_near(plain, base * 2.0), "affix-free frame is the barrel count", "%.6f" % [plain])
-	_check(_near(weighted, base * 2.15), "keen weights the frame", "%.6f" % [weighted])
+	_check(Support.near(plain, base * 2.0), "affix-free frame is the barrel count", "%.6f" % [plain])
+	_check(Support.near(weighted, base * 2.15), "keen weights the frame", "%.6f" % [weighted])
 
 
 func _dicts(cells: Array) -> Array[Dictionary]:
@@ -226,8 +222,8 @@ func _rapid_interval() -> void:
 	var i0 := float(guns.call(&"_barrel_interval", 0))
 	var i1 := float(guns.call(&"_barrel_interval", 1))
 	print("[S7R1-C] rapid base=%.6f barrel1=%.6f barrel2=%.6f want=%.6f" % [base, i0, i1, base / 1.15])
-	_check(_near(i0, base), "rapid leaves barrel 1", "%.6f" % [i0])
-	_check(_near(i1, base / 1.15), "rapid divides barrel 2", "%.6f" % [i1])
+	_check(Support.near(i0, base), "rapid leaves barrel 1", "%.6f" % [i0])
+	_check(Support.near(i1, base / 1.15), "rapid divides barrel 2", "%.6f" % [i1])
 	state.set_ammo(0, 30)
 	state.set_ammo(1, 30)
 	var row: Dictionary = WeaponScript.row_of(CANNON_FAMILY)
@@ -235,8 +231,8 @@ func _rapid_interval() -> void:
 	guns.call(&"_fire_projectile", 1, CANNON_FAMILY, row)
 	var timers: Array = guns.get(&"_barrel_timers")
 	print("[S7R1-C] rapid timers=%s" % [timers])
-	_check(_near(float(timers[0]), base), "barrel 1's timer", "%.6f" % [float(timers[0])])
-	_check(_near(float(timers[1]), base / 1.15), "barrel 2's timer", "%.6f" % [float(timers[1])])
+	_check(Support.near(float(timers[0]), base), "barrel 1's timer", "%.6f" % [float(timers[0])])
+	_check(Support.near(float(timers[1]), base / 1.15), "barrel 2's timer", "%.6f" % [float(timers[1])])
 
 
 ## Frugal: `floor(shots x (1 + sum))` rounds leave the pack, and the bank lands at 0.
@@ -248,7 +244,7 @@ func _frugal_bank() -> void:
 		guns.call(&"_consume_ammo_at", 0, CANNON_FAMILY)
 	print("[S7R1-C] frugal 20 shots at -0.15 spent=%d bank=%.6f" % [300 - int(state.ammo[0]), state.ammo_frac[0]])
 	_check(state.ammo[0] == 283, "frugal spends floor(20 x 0.85) = 17", "%d" % [300 - int(state.ammo[0])])
-	_check(_near(state.ammo_frac[0], 0.0), "the bank lands on zero", "%.6f" % [state.ammo_frac[0]])
+	_check(Support.near(state.ammo_frac[0], 0.0), "the bank lands on zero", "%.6f" % [state.ammo_frac[0]])
 	# A non-Frugal barrel keeps the shipped family spend: `ammo_slot` resolves the
 	# family's index in the **const** `PlayerState.WEAPONS`, not in the fit-order list
 	# (LOW L90, unchanged by this wave), so the state here is the shipped const list.
@@ -284,7 +280,7 @@ func _damage_mult_five_sites() -> void:
 	var stats := _stats(0.15)
 	var mult := float(stats.damage_mult)
 	print("[S7R1-C] damage_mult resolved=%.6f (c_target 0.15)" % [mult])
-	_check(_near(mult, 1.15), "c_target resolves 1.15", "%.6f" % [mult])
+	_check(Support.near(mult, 1.15), "c_target resolves 1.15", "%.6f" % [mult])
 
 	# 1. the beam's hull delivery
 	var delta := 0.1
@@ -295,8 +291,8 @@ func _damage_mult_five_sites() -> void:
 	var guns := _rig([LASER], state, stats)
 	guns.call(&"_apply_beam", &"laser", WeaponScript.row_of(&"laser"), sink, Vector2.ZERO, delta, 1.0)
 	print("[S7R1-C] site1 beam dealt=%.6f want=%.6f twice=%.6f" % [sink.total, frame * 1.15, frame * 1.15 * 1.15])
-	_check(_near(sink.total, frame * 1.15), "site 1 beam x1.15 once", "%.6f" % [sink.total])
-	_check(not _near(sink.total, frame * 1.15 * 1.15), "site 1 not squared", "%.6f" % [frame * 1.15 * 1.15])
+	_check(Support.near(sink.total, frame * 1.15), "site 1 beam x1.15 once", "%.6f" % [sink.total])
+	_check(not Support.near(sink.total, frame * 1.15 * 1.15), "site 1 not squared", "%.6f" % [frame * 1.15 * 1.15])
 	_check(sink.hits == 1, "site 1 one delivery", "%d" % [sink.hits])
 
 	# 2. the beam's rock chip
@@ -306,7 +302,7 @@ func _damage_mult_five_sites() -> void:
 	guns.call(&"_apply_beam", &"laser", WeaponScript.row_of(&"laser"), rock, Vector2.ZERO, delta, 1.0)
 	var want_chip := frame * WeaponScript.GUN_CHIP_RATE * 1.15
 	print("[S7R1-C] site2 beam chip=%.6f want=%.6f calls=%d" % [rock.work, want_chip, rock.calls])
-	_check(_near(rock.work, want_chip), "site 2 chip x1.15 once", "%.6f" % [rock.work])
+	_check(Support.near(rock.work, want_chip), "site 2 chip x1.15 once", "%.6f" % [rock.work])
 	_check(rock.calls == 1, "site 2 one chip", "%d" % [rock.calls])
 
 	# 3. the projectile's hull delivery
@@ -316,8 +312,8 @@ func _damage_mult_five_sites() -> void:
 	add_child(psink)
 	shot.call(&"_deliver", psink, 100.0, false, Vector2.ZERO, Vector2.ZERO)
 	print("[S7R1-C] site3 projectile dealt=%.6f want=%.6f twice=%.6f" % [psink.total, 115.0, 132.25])
-	_check(_near(psink.total, 115.0), "site 3 projectile x1.15 once", "%.6f" % [psink.total])
-	_check(not _near(psink.total, 132.25), "site 3 not squared", "%.6f" % [132.25])
+	_check(Support.near(psink.total, 115.0), "site 3 projectile x1.15 once", "%.6f" % [psink.total])
+	_check(not Support.near(psink.total, 132.25), "site 3 not squared", "%.6f" % [132.25])
 	_check(psink.hits == 1, "site 3 one delivery", "%d" % [psink.hits])
 
 	# 4. the projectile's rock chip
@@ -328,7 +324,7 @@ func _damage_mult_five_sites() -> void:
 	add_child(rock2)
 	shot2.call(&"_hit_rock", rock2, Vector2.ZERO)
 	print("[S7R1-C] site4 projectile chip=%.6f want=%.6f calls=%d" % [rock2.work, 11.5, rock2.calls])
-	_check(_near(rock2.work, 11.5), "site 4 chip x1.15 once", "%.6f" % [rock2.work])
+	_check(Support.near(rock2.work, 11.5), "site 4 chip x1.15 once", "%.6f" % [rock2.work])
 	_check(rock2.calls == 1, "site 4 one chip", "%d" % [rock2.calls])
 
 	# 5. the ram
@@ -345,7 +341,7 @@ func _damage_mult_five_sites() -> void:
 	var ram_base := ImpactScript.collision_damage(110.0, 5.0, 100.0)
 	ship.call(&"_on_hull_body_entered", peer)
 	print("[S7R1-C] site5 ram base=%.6f got=%.6f want=%.6f calls=%d" % [ram_base, peer.amount, ram_base * 1.15, peer.calls])
-	_check(_near(peer.amount, ram_base * 1.15), "site 5 ram x1.15 once", "%.6f" % [peer.amount])
+	_check(Support.near(peer.amount, ram_base * 1.15), "site 5 ram x1.15 once", "%.6f" % [peer.amount])
 	_check(peer.calls == 1, "site 5 one ram call", "%d" % [peer.calls])
 
 	# no computer: byte-identical
@@ -355,8 +351,8 @@ func _damage_mult_five_sites() -> void:
 	var plain_guns := _rig([LASER], _state([LASER], [{}]), plain_stats)
 	plain_guns.call(&"_apply_beam", &"laser", WeaponScript.row_of(&"laser"), plain_sink, Vector2.ZERO, delta, 1.0)
 	print("[S7R1-C] site1 no computer dealt=%.6f want=%.6f mult=%.6f" % [plain_sink.total, frame, plain_stats.damage_mult])
-	_check(_near(plain_sink.total, frame), "no computer is today's figure", "%.6f" % [plain_sink.total])
-	_check(_near(plain_stats.damage_mult, 1.0), "no computer mult 1.0", "%.6f" % [plain_stats.damage_mult])
+	_check(Support.near(plain_sink.total, frame), "no computer is today's figure", "%.6f" % [plain_sink.total])
+	_check(Support.near(plain_stats.damage_mult, 1.0), "no computer mult 1.0", "%.6f" % [plain_stats.damage_mult])
 
 	# the projectile with no damage_mult key
 	var bare: Node2D = ProjectileScript.new() as Node2D
@@ -365,7 +361,7 @@ func _damage_mult_five_sites() -> void:
 	add_child(bare_sink)
 	bare.call(&"_deliver", bare_sink, 100.0, false, Vector2.ZERO, Vector2.ZERO)
 	print("[S7R1-C] site3 no key dealt=%.6f" % [bare_sink.total])
-	_check(_near(bare_sink.total, 100.0), "a shot with no key is 100.0", "%.6f" % [bare_sink.total])
+	_check(Support.near(bare_sink.total, 100.0), "a shot with no key is 100.0", "%.6f" % [bare_sink.total])
 
 
 ## A null stats argument is the shipped eight-suite convention: 1.0, never a crash.
@@ -376,11 +372,11 @@ func _null_stats() -> void:
 	guns.call(&"_apply_beam", &"laser", WeaponScript.row_of(&"laser"), sink, Vector2.ZERO, 0.1, 1.0)
 	var frame := WeaponScript.dps_of(&"laser") * 0.1
 	print("[S7R1-C] null stats dealt=%.6f want=%.6f" % [sink.total, frame])
-	_check(_near(sink.total, frame), "null stats deliver un-multiplied", "%.6f" % [sink.total])
+	_check(Support.near(sink.total, frame), "null stats deliver un-multiplied", "%.6f" % [sink.total])
 	var ship: Node2D = PlayerShipScript.new() as Node2D
 	add_child(ship)
-	_check(_near(float(ship.call(&"_damage_scale")), 1.0), "PlayerShip null stats 1.0", "%.6f" % [float(ship.call(&"_damage_scale"))])
-	_check(_near(float(ship.call(&"_booster_cooldown_scale")), 1.0), "PlayerShip null Spry 1.0", "%.6f" % [float(ship.call(&"_booster_cooldown_scale"))])
+	_check(Support.near(float(ship.call(&"_damage_scale")), 1.0), "PlayerShip null stats 1.0", "%.6f" % [float(ship.call(&"_damage_scale"))])
+	_check(Support.near(float(ship.call(&"_booster_cooldown_scale")), 1.0), "PlayerShip null Spry 1.0", "%.6f" % [float(ship.call(&"_booster_cooldown_scale"))])
 
 
 ## Embers: an NPC hull only, both deliveries, 10 % of the dealt amount, clamped.
@@ -396,22 +392,22 @@ func _embers() -> void:
 	var guns := _rig([LASER], state, null)
 	guns.call(&"_deliver", npc, 200.0, false, Vector2.ZERO, &"energy", Vector2.ZERO)
 	print("[S7R1-C] embers beam npc shield=%.6f want=120.0" % [state.shield])
-	_check(_near(state.shield, 120.0), "beam Embers heals 10%% of 200", "%.6f" % [state.shield])
+	_check(Support.near(state.shield, 120.0), "beam Embers heals 10%% of 200", "%.6f" % [state.shield])
 	state.set_shield(100.0)
 	var rock := Rock.new()
 	rock.add_to_group(ProjectileScript.ROCK_GROUP)
 	add_child(rock)
 	guns.call(&"_deliver", rock, 200.0, false, Vector2.ZERO, &"energy", Vector2.ZERO)
-	_check(_near(state.shield, 100.0), "a rock heals nothing", "%.6f" % [state.shield])
+	_check(Support.near(state.shield, 100.0), "a rock heals nothing", "%.6f" % [state.shield])
 	state.set_shield(100.0)
 	var own := Sink.new()
 	own.add_to_group(&"player_ship")
 	add_child(own)
 	guns.call(&"_deliver", own, 200.0, false, Vector2.ZERO, &"energy", Vector2.ZERO)
-	_check(_near(state.shield, 100.0), "the player's own hull heals nothing", "%.6f" % [state.shield])
+	_check(Support.near(state.shield, 100.0), "the player's own hull heals nothing", "%.6f" % [state.shield])
 	state.set_shield(state.shield_max - 5.0)
 	guns.call(&"_deliver", npc, 200.0, false, Vector2.ZERO, &"energy", Vector2.ZERO)
-	_check(_near(state.shield, state.shield_max), "the beam heal clamps", "%.6f" % [state.shield])
+	_check(Support.near(state.shield, state.shield_max), "the beam heal clamps", "%.6f" % [state.shield])
 	# The heal is 10 % of the *delivered* amount (post-multiplier).
 	var mult_state := _state([LASER], [{}])
 	mult_state.setup()
@@ -420,7 +416,7 @@ func _embers() -> void:
 	var mult_guns := _rig([LASER], mult_state, _stats(0.15))
 	mult_guns.call(&"_deliver", npc, 200.0, false, Vector2.ZERO, &"energy", Vector2.ZERO)
 	print("[S7R1-C] embers beam with mult shield=%.6f want=%.6f" % [mult_state.shield, 200.0 * 1.15 * 0.10])
-	_check(_near(mult_state.shield, 200.0 * 1.15 * 0.10), "Embers heals the delivered amount", "%.6f" % [mult_state.shield])
+	_check(Support.near(mult_state.shield, 200.0 * 1.15 * 0.10), "Embers heals the delivered amount", "%.6f" % [mult_state.shield])
 	# The projectile path heals through the source.
 	var p_state := _state([CANNON_FAMILY], [{}])
 	p_state.setup()
@@ -433,17 +429,17 @@ func _embers() -> void:
 	shot.call(&"configure", {&"kind": &"bolt", &"damage": 200.0, &"embers": true, &"source": ship})
 	shot.call(&"_deliver", npc, 200.0, false, Vector2.ZERO, Vector2.ZERO)
 	print("[S7R1-C] embers projectile shield=%.6f want=120.0" % [p_state.shield])
-	_check(_near(p_state.shield, 120.0), "projectile Embers heals through the source", "%.6f" % [p_state.shield])
+	_check(Support.near(p_state.shield, 120.0), "projectile Embers heals through the source", "%.6f" % [p_state.shield])
 	p_state.set_shield(100.0)
 	shot.call(&"_deliver", rock, 200.0, false, Vector2.ZERO, Vector2.ZERO)
-	_check(_near(p_state.shield, 100.0), "projectile Embers skips a rock", "%.6f" % [p_state.shield])
+	_check(Support.near(p_state.shield, 100.0), "projectile Embers skips a rock", "%.6f" % [p_state.shield])
 	# No flag: no heal.
 	var quiet := _state([LASER], [{}])
 	quiet.setup()
 	quiet.set_shield(100.0)
 	var quiet_guns := _rig([LASER], quiet, null)
 	quiet_guns.call(&"_deliver", npc, 200.0, false, Vector2.ZERO, &"energy", Vector2.ZERO)
-	_check(_near(quiet.shield, 100.0), "no flag, no heal", "%.6f" % [quiet.shield])
+	_check(Support.near(quiet.shield, 100.0), "no flag, no heal", "%.6f" % [quiet.shield])
 
 
 ## Spry: the afterburner's own line writes the row's 8.0 s x the ship stat.
@@ -455,8 +451,8 @@ func _spry() -> void:
 	print(
 		"[S7R1-C] spry mult=%.6f plain=%.6f" % [spry_stats.booster_cooldown_mult, plain_stats.booster_cooldown_mult]
 	)
-	_check(_near(spry_stats.booster_cooldown_mult, 0.85), "spry resolves 0.85", "%.6f" % [spry_stats.booster_cooldown_mult])
-	_check(_near(plain_stats.booster_cooldown_mult, 1.0), "no spry 1.0", "%.6f" % [plain_stats.booster_cooldown_mult])
+	_check(Support.near(spry_stats.booster_cooldown_mult, 0.85), "spry resolves 0.85", "%.6f" % [spry_stats.booster_cooldown_mult])
+	_check(Support.near(plain_stats.booster_cooldown_mult, 1.0), "no spry 1.0", "%.6f" % [plain_stats.booster_cooldown_mult])
 	var state := _state([CANNON_FAMILY], [{}])
 	var ship: Node2D = PlayerShipScript.new() as Node2D
 	ship.set(&"_stats", spry_stats)
@@ -467,4 +463,4 @@ func _spry() -> void:
 	Input.action_release(PlayerShipScript.BOOST_ACTION)
 	var cooldown := float(ship.get(&"_boost_cooldown"))
 	print("[S7R1-C] spry afterburner cooldown=%.6f want=6.8" % [cooldown])
-	_check(_near(cooldown, 6.8), "8.0 s x 0.85 = 6.8 s", "%.6f" % [cooldown])
+	_check(Support.near(cooldown, 6.8), "8.0 s x 0.85 = 6.8 s", "%.6f" % [cooldown])

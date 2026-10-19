@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## P1 refinery suite: the ore -> ingot conversion, its fee sink and its log.
 ## Contract: docs/gameplay/04_refinery.md sections 2 (the conversion rule) and
 ## 3 (the fee schedule), amended by section 7 (S34: jobs, slots, inventory) and
@@ -63,19 +64,9 @@ func suite_teardown() -> void:
 
 
 func _delete_files() -> void:
-	_delete(LOG_PATH)
-	_delete(SAVE_PATH)
+	Support.delete_file(LOG_PATH)
+	Support.delete_file(SAVE_PATH)
 
-
-func _delete(path: String) -> void:
-	if not FileAccess.file_exists(path):
-		return
-	var dir := DirAccess.open(path.get_base_dir())
-	if dir != null:
-		dir.remove(path.get_file())
-
-
-## Log lines carrying the given event marker, in file order.
 func _lines_with(marker: String) -> PackedStringArray:
 	var matches := PackedStringArray()
 	if not FileAccess.file_exists(LOG_PATH):

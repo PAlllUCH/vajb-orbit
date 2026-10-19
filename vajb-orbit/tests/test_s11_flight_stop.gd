@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s11_flight_stop: the acceptance half of CONTRACTS section 23.5's one-vector inertia
 ## (owner ruling 2026-09-24, item 18): *"released from a commanded forward+strafe at cruise,
 ## the hull's velocity direction holds within 5 degrees of its release bearing while the
@@ -183,11 +184,11 @@ func test_the_one_damp_is_the_only_linear_decay_the_hull_carries() -> void:
 	var sideways := float(ship.call(&"_lateral_damp"))
 	var extra := float(ship.call(&"_lateral_extra_damp"))
 	assert_true(
-		_near(forward, 1.0 / float(stats.coast_time), 1e-9),
+		Support.near(forward, 1.0 / float(stats.coast_time), 1e-9),
 		"the body's damp is 1 / coast_time (%.6f)" % forward
 	)
 	assert_true(
-		_near(sideways, forward, 1e-9),
+		Support.near(sideways, forward, 1e-9),
 		"the sideways damp is the same number, one rate on both axes (%.6f)" % sideways
 	)
 	assert_true(
@@ -195,7 +196,7 @@ func test_the_one_damp_is_the_only_linear_decay_the_hull_carries() -> void:
 		"the explicit lateral drag is 0.0, so `_step_lateral_drag` is inert (%.9f)" % extra
 	)
 	assert_true(
-		_near(body.linear_damp, forward, BODY_DAMP_TOLERANCE),
+		Support.near(body.linear_damp, forward, BODY_DAMP_TOLERANCE),
 		"and the body carries the one damp the engine integrates"
 	)
 	assert_true(
@@ -203,7 +204,7 @@ func test_the_one_damp_is_the_only_linear_decay_the_hull_carries() -> void:
 		"the angular damp multiplier is the pinned 0.5 (23.5's T2)"
 	)
 	assert_true(
-		_near(
+		Support.near(
 			float(ship.call(&"_angular_damp")),
 			ShipFitScript.ANGULAR_DAMP_MULT / float(stats.turn_spinup),
 			1e-9
@@ -449,14 +450,9 @@ func _launch(hull_id: StringName) -> Array:
 ## takes children all through the run, whereas the root viewport is busy adding the runner
 ## scene during `_ready` (see `test_engine2_fixes.gd`).
 func _host() -> Node:
-	var root := _tree().root
+	var root := Support.tree().root
 	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
 	return host if host != null else root
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
 
 func _press(action: StringName) -> void:
 	Input.action_press(action)
@@ -469,13 +465,6 @@ func _release_all() -> void:
 		Input.action_release(action)
 	_pressed.clear()
 
-
-func _near(measured: float, expected: float, tolerance: float = 1e-9) -> bool:
-	return absf(measured - expected) <= tolerance
-
-
-## The difference between two readings relative to the larger of them, with two zeros
-## defined as equal (the S2.6 suite's own reading).
 func _relative(a: float, b: float) -> float:
 	var scale := maxf(absf(a), absf(b))
 	if is_zero_approx(scale):

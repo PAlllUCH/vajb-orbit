@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s29_station_panels: wave S29's merged station panels (STATION_HUB section 16
 ## P4-P7, section 17's P8-P14, UI_SPEC section 8 P1-P3 and the D17 leftovers A7 owns).
 ##
@@ -59,7 +60,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_credits = int(_profile.call(&"credits"))
 	_previous_docked = StringName(_profile.get(&"_docked_station"))
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 func suite_teardown() -> void:
@@ -73,7 +74,7 @@ func suite_teardown() -> void:
 	_profile.call(&"set_docked_station", _previous_docked)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile = null
 
 
@@ -88,13 +89,6 @@ func setup() -> void:
 	## all spelled by a sector with no station row (S7's own sentinel) - the fixture these
 	## rows always meant, and the one that keeps the list prices.
 	_profile.call(&"set_docked_station", &"sector_7")
-
-
-func _delete_file(path: String) -> void:
-	var absolute := ProjectSettings.globalize_path(path)
-	if FileAccess.file_exists(absolute):
-		DirAccess.remove_absolute(absolute)
-
 
 func _mount(scene: PackedScene) -> Control:
 	var host := Control.new()
@@ -376,7 +370,7 @@ func test_the_shipyard_and_launch_idle_paths_never_arm_the_tooltip() -> void:
 	host.size = Vector2(1920.0, 1080.0)
 	_profile.add_child(host)
 	host.add_child(screen)
-	var panels: Array = screen.get(&"_panels")
+	var panels: Array = screen.call(&"panes")
 	assert_eq(panels.size(), 6, "P7's folded rail carries six panes")
 	## S30-F1 (F5, UI_SPEC section 12.2/N33): P6's band fill is retired with the inspector
 	## band (STATION_HUB section 18's ledger), so the unhover/pane-show path publishes the

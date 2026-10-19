@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite d6_status: wave D6's ship status screen (UI_SPEC section 3.8, CONTRACTS section 18).
 ##
 ## Covers the toggle behind `InputMap.has_action` with no input row present (and the positive
@@ -100,7 +101,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 		return
 	_previous_path = String(_profile.get(&"save_path"))
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 func suite_teardown() -> void:
@@ -111,7 +112,7 @@ func suite_teardown() -> void:
 	## running timer carries a test's account home.
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile = null
 
 
@@ -122,7 +123,7 @@ func setup() -> void:
 		fail_setup("hud.tscn did not instantiate")
 		return
 	_hud.theme = HudTheme
-	_fixture_host().add_child(_hud)
+	Support.fixture_host().add_child(_hud)
 
 
 func teardown() -> void:
@@ -130,22 +131,6 @@ func teardown() -> void:
 	if _hud != null and is_instance_valid(_hud):
 		_hud.free()
 	_hud = null
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-## Where a fixture may enter the tree; see `test_engine2_hud.gd` for why the profile autoload
-## is the host rather than the busy root viewport.
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(PROFILE_SERVICE))
-	return host if host != null else root
-
-
-## Every read enters through here, and a fixture that did not build the screen is a red
-## assertion rather than a null dereference the runner would still score as a pass.
 func _screen() -> Control:
 	var screen: Control = null
 	if _hud != null:
@@ -181,20 +166,6 @@ func _resolved_fit(hull: StringName) -> Dictionary:
 	var fit: Variant = _profile.call(&"resolved_fit", hull)
 	return fit if fit is Dictionary else {}
 
-
-func _delete_file(path: String) -> void:
-	if not FileAccess.file_exists(path):
-		return
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
-## ---------------------------------------------------------------- the input row (runtime only)
-
-## Seeds the `ship_status` row at runtime when the project carries none, so the toggle's
-## positive branch is provable without touching `project.godot`. Only a row this suite created
-## is ever erased (see `_drop_seeded_action`), so a close-out row is never disturbed.
 func _seed_action() -> void:
 	if InputMap.has_action(ACTION):
 		return
@@ -579,7 +550,7 @@ func test_a_screen_whose_first_hull_arrives_after_build_keeps_the_box_in_the_wel
 	if screen == null:
 		return
 	screen.name = "FreshStatusScreen"
-	_fixture_host().add_child(screen)
+	Support.fixture_host().add_child(screen)
 	screen.theme = HudTheme
 	screen.call(&"apply_theme")
 	screen.call(&"set_hull", VANGUARD)

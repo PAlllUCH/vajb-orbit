@@ -1,4 +1,5 @@
 extends Node
+const Support := preload("res://tests/support.gd")
 ## P2-B1 R1 review probe, fifth pass: the rendered construct, read off the laid-out pane
 ## rather than from the scene file. Verifies STATION_HUB section 5.1's render order (the
 ## FITTED WEAPONS strip, then the MODULES rows, then the ammo rows), the 48 px module icon
@@ -46,7 +47,7 @@ func _borrow() -> void:
 	}
 	Log.log_path = LOG_SCRATCH
 	_profile.set(&"save_path", SCRATCH)
-	_remove(SCRATCH)
+	Support.delete_file(SCRATCH)
 	_profile.set(&"_credits", 40000)
 	_profile.set(&"_active_ship", VANGUARD)
 	_profile.set(&"_owned_ships", [VANGUARD] as Array[StringName])
@@ -78,15 +79,8 @@ func _restore() -> void:
 	_profile.set(&"_modules", _saved[&"modules"])
 	_profile.call(&"flush")
 	_profile.set(&"save_path", String(_saved[&"path"]))
-	_remove(SCRATCH)
-	_remove(LOG_SCRATCH)
-
-
-func _remove(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
+	Support.delete_file(SCRATCH)
+	Support.delete_file(LOG_SCRATCH)
 
 func _rect(node: Control) -> String:
 	var position := node.global_position

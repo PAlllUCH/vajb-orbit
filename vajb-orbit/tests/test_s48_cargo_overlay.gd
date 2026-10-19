@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s48_cargo_overlay: UI_SPEC section 18 A7-A13's C-key cargo overlay - the
 ## 18.2 rework (owner 2026-10-14: refinery look, armory categories, per-slot
 ## dispose, sort by categories) on the two A7 planes. One row per pinned
@@ -124,7 +125,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_ammo = (_profile.get(&"_ammo") as Dictionary).duplicate(true)
 	_previous_cargo = (_profile.get(&"_cargo") as Dictionary).duplicate(true)
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile.set(&"_active_ship", SHIP)
 	_profile.set(&"_credits", 50000)
 	_profile.call(&"set_fit", SHIP, FIXTURE_FIT)
@@ -147,7 +148,7 @@ func suite_teardown() -> void:
 	_stage_cargo(_previous_cargo)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile = null
 
 
@@ -170,15 +171,6 @@ func _stage_cargo(cargo: Dictionary) -> void:
 	_profile.set(&"_cargo", cargo.duplicate(true))
 	_profile.call(&"flush")
 
-
-func _delete_file(path: String) -> void:
-	var absolute := ProjectSettings.globalize_path(path)
-	if FileAccess.file_exists(absolute):
-		DirAccess.remove_absolute(absolute)
-
-
-## A fresh shell per row under a themed host, added to the profile autoload (the runner
-## calls every test from inside its own `_ready`, when `/root` is still busy).
 func _mount() -> Control:
 	var host := Control.new()
 	host.name = "S48Host"

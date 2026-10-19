@@ -1,4 +1,5 @@
 extends Node
+const Support := preload("res://tests/support.gd")
 ## R1 evidence probe (P2-B proper review, part 2 of 2): the shipped station screen measured
 ## in memory with the shipped scenes and theme - the rail swap and the retirement's reach, the
 ## SLOT LAYOUT grid against the shipyard's own recipe, the power meter against
@@ -141,7 +142,7 @@ func _borrow() -> void:
 		&"vitals": _profile.get(&"_vitals"),
 	}
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 func _return() -> void:
@@ -155,16 +156,7 @@ func _return() -> void:
 	_profile.set(&"_vitals", _saved[&"vitals"])
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _saved[&"path"])
-	_delete(PROFILE_PATH)
-
-
-func _delete(path: String) -> void:
-	if not FileAccess.file_exists(path):
-		return
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
+	Support.delete_file(PROFILE_PATH)
 
 func _seed(hull: StringName, modules: Dictionary, with_fit: bool) -> void:
 	_profile.set(&"_credits", 10000)

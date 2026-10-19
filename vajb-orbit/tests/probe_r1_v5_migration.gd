@@ -1,4 +1,5 @@
 extends Node
+const Support := preload("res://tests/support.gd")
 ## R1 evidence probe (P2-B proper review): the save v5 flag day, measured from R1's own
 ## fixtures. Every fixture here is built by this file, not borrowed from a worker suite:
 ## the retired `upgrades` record is written in both spellings `ConfigFile` can carry
@@ -36,7 +37,7 @@ var _frames := 0
 
 
 func _ready() -> void:
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_probe_the_table()
 	_probe_the_v4_fixture()
 	_probe_the_dict_spelling()
@@ -44,7 +45,7 @@ func _ready() -> void:
 	_probe_a_v3_fixture_without_the_record()
 	_probe_a_v5_fixture()
 	_probe_the_retired_api_is_gone()
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	print("[R1-MIGRATION] done")
 	get_tree().quit(0)
 
@@ -77,15 +78,6 @@ func _fresh() -> Node:
 	profile.call(&"_load_catalog")
 	profile.reload()
 	return profile
-
-
-func _delete_file(path: String) -> void:
-	if not FileAccess.file_exists(path):
-		return
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
 
 func _on_disk() -> ConfigFile:
 	var file := ConfigFile.new()

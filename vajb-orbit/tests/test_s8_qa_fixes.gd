@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s8_qa_fixes: the S8 QA wave's physics + exchange + copy + bundle family
 ## (CONTRACTS section 21). Every reading is taken off the shipped scenes and the borrowed
 ## `PlayerProfile` autoload, so what is measured is the tree's own behaviour.
@@ -73,7 +74,7 @@ func suite_name() -> String:
 
 
 func suite_setup(_ctx: Dictionary) -> void:
-	_profile = _fixture_host()
+	_profile = Support.fixture_host()
 	if _profile == null or not _profile.has_method(&"battery_groups"):
 		fail_setup("the PlayerProfile autoload is the store this suite measures")
 		return
@@ -87,7 +88,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_market = (_profile.get(&"_market") as Dictionary).duplicate(true)
 	_previous_vitals = (_profile.get(&"_vitals") as Dictionary).duplicate(true)
 	_profile.set(&"save_path", SCRATCH_PROFILE)
-	_remove(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 
 
 func suite_teardown() -> void:
@@ -105,7 +106,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_vitals", _previous_vitals)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_remove(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 	_profile = null
 
 
@@ -338,7 +339,7 @@ func test_the_four_warning_ledger_files_parse_clean() -> void:
 func _mount_field() -> Node2D:
 	var field := FieldScript.new() as Node2D
 	field.name = "S8Field"
-	_fixture_host().add_child(field)
+	Support.fixture_host().add_child(field)
 	_fields.append(field)
 	return field
 
@@ -349,7 +350,7 @@ func _mount(scene: PackedScene) -> Control:
 		_host.name = "S8QaFixesHost"
 		_host.theme = ThemeRes
 		_host.size = Vector2(1920.0, 1080.0)
-		_fixture_host().add_child(_host)
+		Support.fixture_host().add_child(_host)
 	var node := scene.instantiate() as Control
 	_host.add_child(node)
 	return node
@@ -366,16 +367,6 @@ func _free_fields() -> void:
 		if is_instance_valid(field):
 			field.free()
 	_fields.clear()
-
-
-func _fixture_host() -> Node:
-	var tree := Engine.get_main_loop() as SceneTree
-	if tree == null:
-		return null
-	var root := tree.root
-	var host := root.get_node_or_null(NodePath(PROFILE_SERVICE))
-	return host if host != null else root
-
 
 func _strip(panel: Control) -> String:
 	return String((panel.get(&"_confirm_strip") as Label).text)
@@ -435,9 +426,3 @@ func _record(id: String, base: String) -> Dictionary:
 		"rarity": "common",
 		"suffixes": [],
 	}
-
-
-func _remove(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())

@@ -1,4 +1,5 @@
 extends Node
+const Support := preload("res://tests/support.gd")
 ## P2-B1 R1 review probe (written by R1 for this review pass, independent of W2's
 ## `probe_p2b1_panel_fit.gd`). It mounts the shipped OUTFITTING pane behind the shell's own
 ## wiring and re-measures the wave's claims from outside the wave:
@@ -95,9 +96,9 @@ func _borrow() -> void:
 	}
 	_log_path_before = String(Log.log_path)
 	Log.log_path = LOG_SCRATCH
-	_remove(LOG_SCRATCH)
+	Support.delete_file(LOG_SCRATCH)
 	_profile.set(&"save_path", SCRATCH)
-	_remove(SCRATCH)
+	Support.delete_file(SCRATCH)
 	_profile.connect(&"profile_changed", _on_changed)
 	_profile.connect(&"purchase_failed", _on_failed)
 
@@ -138,8 +139,8 @@ func _restore() -> void:
 	_profile.set(&"_modules", _saved[&"modules"])
 	_profile.call(&"flush")
 	_profile.set(&"save_path", String(_saved[&"path"]))
-	_remove(SCRATCH)
-	_remove(LOG_SCRATCH)
+	Support.delete_file(SCRATCH)
+	Support.delete_file(LOG_SCRATCH)
 	Log.log_path = _log_path_before
 
 
@@ -163,15 +164,6 @@ func _last_status() -> String:
 func _last_danger() -> bool:
 	return _danger[_danger.size() - 1] if not _danger.is_empty() else false
 
-
-func _remove(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
-## Every loop in this probe is bounded: a stale cell, a refused write or a signal that
-## never arrives must not wedge the run.
 func _tick(limit: int) -> void:
 	_watchdog += 1
 	if _watchdog > limit:

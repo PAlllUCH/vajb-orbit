@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s29_hyperdrive: wave S29's `e_hyperdrive` row (A3, `10_ship_acquisition.md`'s
 ## 2026-10-03 block R-S29-1: name "Hyperdrive", tier 3, slot `engine`, 12 000 CR,
 ## draw 3, one jump per 30 s cooldown, 1 s spool, no fuel charge) and the N5 machine's
@@ -60,7 +61,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_fits = (_profile.get(&"_fits") as Dictionary).duplicate(true)
 	_previous_modules = (_profile.get(&"_modules") as Dictionary).duplicate(true)
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 func suite_teardown() -> void:
@@ -72,7 +73,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_modules", _previous_modules)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile = null
 
 
@@ -332,8 +333,3 @@ func _host() -> Node:
 	var root := (Engine.get_main_loop() as SceneTree).root
 	var profile := root.get_node_or_null(NodePath(PROFILE_SERVICE))
 	return profile if profile != null else root
-
-
-func _delete_file(path: String) -> void:
-	if FileAccess.file_exists(path):
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(path))

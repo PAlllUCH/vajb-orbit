@@ -1,4 +1,5 @@
 extends Node
+const Support := preload("res://tests/support.gd")
 ## W2 evidence probe: the FITTING pane measured in memory, with the shipped scene and theme.
 ## No shipped file is written and the owner's profile is borrowed and handed back (the suite
 ## `test_p2b_fitting_panel`'s own hygiene), so the probe is re-runnable byte-identically.
@@ -71,7 +72,7 @@ func _borrow() -> void:
 		&"modules": _profile.call(&"modules"),
 	}
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 func _return() -> void:
@@ -82,16 +83,7 @@ func _return() -> void:
 	_profile.set(&"_modules", _saved[&"modules"])
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _saved[&"path"])
-	_delete_file(PROFILE_PATH)
-
-
-func _delete_file(path: String) -> void:
-	if not FileAccess.file_exists(path):
-		return
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
+	Support.delete_file(PROFILE_PATH)
 
 func _records(modules: Dictionary) -> Dictionary:
 	var records: Dictionary = {}
@@ -279,8 +271,8 @@ func _probe_rows() -> void:
 			module_id,
 			(row.find_child("Title", true, false) as Label).text,
 			(row.find_child("Meta", true, false) as Label).text,
-			_cell_text(row, "Owned"),
-			_cell_text(row, "Action"),
+			Support.cell_text(row, "Owned"),
+			Support.cell_text(row, "Action"),
 		])
 		print("[W2-FITTING]   icon=%s tinted=%s cell=%s draw=%d" % [
 			_string_icon(row),
@@ -327,18 +319,6 @@ func _row(panel: Control, module_id: StringName) -> Button:
 		if row != null and StringName(row.get_meta(&"id", &"")) == module_id:
 			return row
 	return null
-
-
-func _cell_text(row: Button, cell_name: String) -> String:
-	var cell := row.find_child(cell_name, true, false) as Control
-	if cell == null:
-		return ""
-	var value := cell.get_node_or_null(^"Value") as Label
-	return value.text if value != null else ""
-
-
-## --------------------------------------------------------------------------- the meter
-
 
 func _probe_meter() -> void:
 	var profile := _profile

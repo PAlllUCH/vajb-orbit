@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s7_weapon_affixes: the launch + barrel half of the affix application
 ## (CONTRACTS section 20; 15 sections 3/9.3; 09 sections 3.1/5).
 ##
@@ -124,7 +125,7 @@ func suite_name() -> String:
 
 
 func suite_setup(_ctx: Dictionary) -> void:
-	var tree := _tree()
+	var tree := Support.tree()
 	if tree == null:
 		fail_setup("a SceneTree is needed")
 		return
@@ -138,7 +139,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_owned = _profile.call(&"owned_ships")
 	_previous_modules = _profile.call(&"modules")
 	_profile.set(&"save_path", SCRATCH_PROFILE)
-	_delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 
 
 func suite_teardown() -> void:
@@ -151,7 +152,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_modules", _previous_modules)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 	_profile = null
 
 
@@ -173,18 +174,10 @@ func teardown() -> void:
 	_state = null
 	_restore_pools()
 
-
-func _audio() -> Node:
-	var tree := _tree()
-	if tree == null:
-		return null
-	return tree.root.get_node_or_null(NodePath(AUDIO_SERVICE))
-
-
 func _save_pools() -> void:
 	_pool_state = {}
 	_had_pool_state = false
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		return
 	var cursors: Variant = audio.get(&"_pool_next")
@@ -198,7 +191,7 @@ func _save_pools() -> void:
 func _restore_pools() -> void:
 	if not _had_pool_state:
 		return
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		return
 	var cursors: Variant = audio.get(&"_pool_next")
@@ -232,7 +225,7 @@ func test_the_launch_hands_the_summary_the_slot_affixes_and_the_flags() -> void:
 	var list: Array = affixes
 	assert_eq(list.size(), 1, "one entry per fitted weapon slot")
 	var slot: Dictionary = list[0]
-	assert_true(_near(float(slot.get(&"keen", 0.0)), 0.15), "and Keen rides that slot")
+	assert_true(Support.near(float(slot.get(&"keen", 0.0)), 0.15), "and Keen rides that slot")
 	var flags: Variant = state.get(&"affix_flags")
 	assert_true(flags is Array and (flags as Array).has(&"embers"), "the suffix flag is set")
 	var summary: Variant = scene.get(&"_launch_summary")
@@ -242,7 +235,7 @@ func test_the_launch_hands_the_summary_the_slot_affixes_and_the_flags() -> void:
 	var rows: Array = (summary as Dictionary).get(&"instances", [])
 	assert_eq(rows.size(), 1, "one instance row")
 	var stats: Variant = scene.get(&"_stats")
-	assert_true(_near(float(stats.get(&"damage_mult")), 1.0), "no computer, no multiplier")
+	assert_true(Support.near(float(stats.get(&"damage_mult")), 1.0), "no computer, no multiplier")
 
 
 ## The bank is flight state seeded empty at every launch/seed point (CONTRACTS section
@@ -253,10 +246,10 @@ func test_the_frugal_bank_is_seeded_empty_by_every_sizing_point() -> void:
 	assert_eq(_state.ammo_frac.size(), 1, "one bank entry per slot")
 	_state.ammo_frac[0] = 0.75
 	_state.setup()
-	assert_true(_near(_state.ammo_frac[0], 0.0), "setup re-seeds the bank empty")
+	assert_true(Support.near(_state.ammo_frac[0], 0.0), "setup re-seeds the bank empty")
 	_state.ammo_frac[0] = 0.75
 	_state.set_weapons([&"cannon"])
-	assert_true(_near(_state.ammo_frac[0], 0.0), "so does set_weapons")
+	assert_true(Support.near(_state.ammo_frac[0], 0.0), "so does set_weapons")
 
 
 ## ---------------------------------------------------------------------------
@@ -275,26 +268,26 @@ func test_keen_scales_only_its_own_barrels_shot_damage() -> void:
 	var base := WeaponScript.shot_damage(CANNON_FAMILY)
 	var shot_one := _spawn(guns, CANNON_FAMILY, row, 0)
 	var shot_two := _spawn(guns, CANNON_FAMILY, row, 1)
-	assert_true(_near(shot_one.call(&"damage_amount"), base), "no affix: barrel 1 is today's shot")
-	assert_true(_near(shot_two.call(&"damage_amount"), base), "and barrel 2 with it")
+	assert_true(Support.near(shot_one.call(&"damage_amount"), base), "no affix: barrel 1 is today's shot")
+	assert_true(Support.near(shot_two.call(&"damage_amount"), base), "and barrel 2 with it")
 	_set_affixes([{}, {&"keen": 0.15}])
 	shot_one = _spawn(guns, CANNON_FAMILY, row, 0)
 	shot_two = _spawn(guns, CANNON_FAMILY, row, 1)
 	assert_true(
-		_near(shot_one.call(&"damage_amount"), base),
+		Support.near(shot_one.call(&"damage_amount"), base),
 		"Keen in cell 2 leaves barrel 1 byte-identical (%.6f)" % float(shot_one.call(&"damage_amount"))
 	)
 	assert_true(
-		_near(shot_two.call(&"damage_amount"), base * 1.15),
+		Support.near(shot_two.call(&"damage_amount"), base * 1.15),
 		"and scales barrel 2 by 1 + sum(keen) (%.6f)" % float(shot_two.call(&"damage_amount"))
 	)
 	## The mirror: Keen in cell 1 scales barrel 1 and leaves barrel 2 alone.
 	_set_affixes([{&"keen": 0.15}, {}])
 	assert_true(
-		_near(_spawn(guns, CANNON_FAMILY, row, 0).call(&"damage_amount"), base * 1.15), "cell 1's Keen"
+		Support.near(_spawn(guns, CANNON_FAMILY, row, 0).call(&"damage_amount"), base * 1.15), "cell 1's Keen"
 	)
 	assert_true(
-		_near(_spawn(guns, CANNON_FAMILY, row, 1).call(&"damage_amount"), base), "leaves barrel 2"
+		Support.near(_spawn(guns, CANNON_FAMILY, row, 1).call(&"damage_amount"), base), "leaves barrel 2"
 	)
 
 
@@ -314,7 +307,7 @@ func test_keen_weights_the_beam_frame_per_barrel() -> void:
 	guns.call(&"tick", delta)
 	var base := WeaponScript.dps_of(&"laser") * delta
 	assert_true(
-		_near(sink.total, base * 2.0),
+		Support.near(sink.total, base * 2.0),
 		"no affix: two barrels deal 2 x dps x delta (%.6f)" % sink.total
 	)
 	guns.call(&"set_firing", false)
@@ -324,7 +317,7 @@ func test_keen_weights_the_beam_frame_per_barrel() -> void:
 	guns.call(&"set_firing", true)
 	guns.call(&"tick", delta)
 	assert_true(
-		_near(sink.total, base * 2.15),
+		Support.near(sink.total, base * 2.15),
 		"cell 2 Keen weights the frame by 1 + 1.15 (%.6f, expected %.6f)" % [sink.total, base * 2.15]
 	)
 	guns.call(&"set_firing", false)
@@ -345,15 +338,15 @@ func test_rapid_shortens_only_its_own_barrels_interval() -> void:
 	if guns == null:
 		return
 	var base := WeaponScript.interval_of(CANNON_FAMILY)
-	assert_true(_near(guns.call(&"_barrel_interval", 0), base), "no affix: barrel 1's cadence")
-	assert_true(_near(guns.call(&"_barrel_interval", 1), base), "and barrel 2's")
+	assert_true(Support.near(guns.call(&"_barrel_interval", 0), base), "no affix: barrel 1's cadence")
+	assert_true(Support.near(guns.call(&"_barrel_interval", 1), base), "and barrel 2's")
 	_set_affixes([{}, {&"rapid": 0.15}])
 	assert_true(
-		_near(guns.call(&"_barrel_interval", 0), base),
+		Support.near(guns.call(&"_barrel_interval", 0), base),
 		"Rapid in cell 2 leaves barrel 1 byte-identical"
 	)
 	assert_true(
-		_near(guns.call(&"_barrel_interval", 1), base / 1.15),
+		Support.near(guns.call(&"_barrel_interval", 1), base / 1.15),
 		"and divides barrel 2's interval by 1 + sum(rapid) (%.6f)" % float(guns.call(&"_barrel_interval", 1))
 	)
 	_state.set_ammo(0, 30)
@@ -361,8 +354,8 @@ func test_rapid_shortens_only_its_own_barrels_interval() -> void:
 	var timers: Array = guns.get(&"_barrel_timers")
 	guns.call(&"_fire_projectile", 0, CANNON_FAMILY, WeaponScript.row_of(CANNON_FAMILY))
 	guns.call(&"_fire_projectile", 1, CANNON_FAMILY, WeaponScript.row_of(CANNON_FAMILY))
-	assert_true(_near(timers[0], base), "the released barrel 1 re-arms on the family cadence")
-	assert_true(_near(timers[1], base / 1.15), "while barrel 2's timer is the Rapid interval")
+	assert_true(Support.near(timers[0], base), "the released barrel 1 re-arms on the family cadence")
+	assert_true(Support.near(timers[1], base / 1.15), "while barrel 2's timer is the Rapid interval")
 
 
 ## ---------------------------------------------------------------------------
@@ -385,7 +378,7 @@ func test_frugal_spends_exactly_floor_of_the_fractional_bank() -> void:
 	for _shot in 20:
 		guns.call(&"_consume_ammo_at", 0, CANNON_FAMILY)
 	assert_eq(_state.ammo[0], 283, "20 shots at -0.15 spend exactly 17 rounds")
-	assert_true(_near(_state.ammo_frac[0], 0.0), "and the bank lands on zero")
+	assert_true(Support.near(_state.ammo_frac[0], 0.0), "and the bank lands on zero")
 	print(
 		"[s7-affixes] frugal: 20 shots at -0.15 spent %d rounds (bank %.6f)"
 		% [300 - int(_state.ammo[0]), _state.ammo_frac[0]]
@@ -435,8 +428,8 @@ func test_frugal_banks_are_per_slot() -> void:
 ## be inert (CONTRACTS section 20's measured defect).
 func test_a_targeting_computer_resolves_a_fifteen_percent_multiplier() -> void:
 	var stats := _computer_stats()
-	assert_true(_near(stats.damage_mult, 1.15), "c_target's 0.15 resolves to 1.15")
-	assert_true(_near(_computerless_stats().damage_mult, 1.0), "no computer stays 1.0")
+	assert_true(Support.near(stats.damage_mult, 1.15), "c_target's 0.15 resolves to 1.15")
+	assert_true(Support.near(_computerless_stats().damage_mult, 1.0), "no computer stays 1.0")
 
 
 ## Site 1, the beam's hull delivery: the frame's amount is multiplied once at
@@ -449,7 +442,7 @@ func test_damage_mult_lands_once_on_the_beam_delivery() -> void:
 	var guns := _rig([LASER], _computer_stats())
 	guns.call(&"_apply_beam", &"laser", WeaponScript.row_of(&"laser"), sink, Vector2.ZERO, delta, 1.0)
 	assert_true(
-		_near(sink.total, base * 1.15),
+		Support.near(sink.total, base * 1.15),
 		"one beam frame x1.15 (%.6f, expected %.6f)" % [sink.total, base * 1.15]
 	)
 	assert_eq(sink.hits, 1, "and the frame is still one delivery")
@@ -460,7 +453,7 @@ func test_damage_mult_lands_once_on_the_beam_delivery() -> void:
 	null_guns.call(
 		&"_apply_beam", &"laser", WeaponScript.row_of(&"laser"), null_sink, Vector2.ZERO, delta, 1.0
 	)
-	assert_true(_near(null_sink.total, base), "null stats deliver the un-multiplied amount")
+	assert_true(Support.near(null_sink.total, base), "null stats deliver the un-multiplied amount")
 
 
 ## Site 2, the beam's rock chip: `amount x GUN_CHIP_RATE x damage_mult`, once.
@@ -473,7 +466,7 @@ func test_damage_mult_lands_once_on_the_beam_chip() -> void:
 	var guns := _rig([LASER], _computer_stats())
 	guns.call(&"_apply_beam", &"laser", WeaponScript.row_of(&"laser"), rock, Vector2.ZERO, delta, 1.0)
 	assert_true(
-		_near(rock.work, base * WeaponScript.GUN_CHIP_RATE * 1.15),
+		Support.near(rock.work, base * WeaponScript.GUN_CHIP_RATE * 1.15),
 		"beam chip x1.15 (%.6f, expected %.6f)"
 		% [rock.work, base * WeaponScript.GUN_CHIP_RATE * 1.15]
 	)
@@ -487,14 +480,14 @@ func test_damage_mult_lands_once_on_the_projectile_delivery() -> void:
 	_staged.append(sink)
 	var shot := _shot({&"kind": &"bolt", &"damage": 100.0, &"damage_mult": 1.15})
 	shot.call(&"_deliver", sink, 100.0, false, Vector2.ZERO, Vector2.ZERO)
-	assert_true(_near(sink.total, 115.0), "one bolt x1.15 (%.6f)" % sink.total)
+	assert_true(Support.near(sink.total, 115.0), "one bolt x1.15 (%.6f)" % sink.total)
 	assert_eq(sink.hits, 1, "one delivery")
 	var plain := DamageSink.new()
 	_staged.append(plain)
 	_shot({&"kind": &"bolt", &"damage": 100.0}).call(
 		&"_deliver", plain, 100.0, false, Vector2.ZERO, Vector2.ZERO
 	)
-	assert_true(_near(plain.total, 100.0), "no damage_mult key is today's 100.0")
+	assert_true(Support.near(plain.total, 100.0), "no damage_mult key is today's 100.0")
 
 
 ## Site 4, the projectile's rock chip: `damage x chip x damage_mult`, once.
@@ -504,7 +497,7 @@ func test_damage_mult_lands_once_on_the_projectile_chip() -> void:
 	_staged.append(rock)
 	var shot := _shot({&"kind": &"bolt", &"damage": 100.0, &"chip": 0.10, &"damage_mult": 1.15})
 	shot.call(&"_hit_rock", rock, Vector2.ZERO)
-	assert_true(_near(rock.work, 100.0 * 0.10 * 1.15), "projectile chip x1.15 (%.6f)" % rock.work)
+	assert_true(Support.near(rock.work, 100.0 * 0.10 * 1.15), "projectile chip x1.15 (%.6f)" % rock.work)
 	assert_eq(rock.calls, 1, "one chip call")
 	var plain := WorkRock.new()
 	plain.add_to_group(ProjectileScript.ROCK_GROUP)
@@ -512,7 +505,7 @@ func test_damage_mult_lands_once_on_the_projectile_chip() -> void:
 	_shot({&"kind": &"bolt", &"damage": 100.0, &"chip": 0.10}).call(
 		&"_hit_rock", plain, Vector2.ZERO
 	)
-	assert_true(_near(plain.work, 10.0), "no damage_mult key is today's 10.0")
+	assert_true(Support.near(plain.work, 10.0), "no damage_mult key is today's 10.0")
 
 
 ## Site 5, the ram: the peer's half takes the multiplier exactly once
@@ -528,7 +521,7 @@ func test_damage_mult_lands_once_on_the_ram() -> void:
 	ship.call(&"_on_hull_body_entered", peer)
 	assert_eq(peer.calls, 1, "one ram offers the peer one amount")
 	assert_true(
-		_near(peer.amount, base * 1.15),
+		Support.near(peer.amount, base * 1.15),
 		"the peer's half x1.15 (%.6f, expected %.6f)" % [peer.amount, base * 1.15]
 	)
 	## No computer: byte-identical.
@@ -538,7 +531,7 @@ func test_damage_mult_lands_once_on_the_ram() -> void:
 	_staged.append(plain_peer)
 	var plain_ship := _ram_ship(_computerless_stats())
 	plain_ship.call(&"_on_hull_body_entered", plain_peer)
-	assert_true(_near(plain_peer.amount, base), "no computer ram is today's figure")
+	assert_true(Support.near(plain_peer.amount, base), "no computer ram is today's figure")
 
 
 ## ---------------------------------------------------------------------------
@@ -555,23 +548,23 @@ func test_embers_heals_the_beam_delivery_on_an_npc_sink_only() -> void:
 	var npc := _sink_in([&"npc_ship"])
 	var guns := _rig([LASER], null)
 	guns.call(&"_deliver", npc, 200.0, false, Vector2.ZERO, &"energy", Vector2.ZERO)
-	assert_true(_near(_state.shield, 120.0), "beam Embers heals 10 %% of 200 (%.3f)" % _state.shield)
+	assert_true(Support.near(_state.shield, 120.0), "beam Embers heals 10 %% of 200 (%.3f)" % _state.shield)
 	## A rock is excluded (K0 F7): its sink answers no ship group.
 	_state.set_shield(100.0)
 	var rock := WorkRock.new()
 	rock.add_to_group(ProjectileScript.ROCK_GROUP)
 	_staged.append(rock)
 	guns.call(&"_deliver", rock, 200.0, false, Vector2.ZERO, &"energy", Vector2.ZERO)
-	assert_true(_near(_state.shield, 100.0), "a rock heals nothing")
+	assert_true(Support.near(_state.shield, 100.0), "a rock heals nothing")
 	## The player's own hull is excluded too.
 	_state.set_shield(100.0)
 	var own := _sink_in([&"player_ship"])
 	guns.call(&"_deliver", own, 200.0, false, Vector2.ZERO, &"energy", Vector2.ZERO)
-	assert_true(_near(_state.shield, 100.0), "the player's own hull heals nothing")
+	assert_true(Support.near(_state.shield, 100.0), "the player's own hull heals nothing")
 	## The clamp: 595 + 20 would be 615, held at shield_max.
 	_state.set_shield(_state.shield_max - 5.0)
 	guns.call(&"_deliver", npc, 200.0, false, Vector2.ZERO, &"energy", Vector2.ZERO)
-	assert_true(_near(_state.shield, _state.shield_max), "the heal clamps at shield_max")
+	assert_true(Support.near(_state.shield, _state.shield_max), "the heal clamps at shield_max")
 
 
 ## Without the flag nothing heals, on either delivery.
@@ -581,10 +574,10 @@ func test_embers_without_the_flag_is_a_no_op() -> void:
 	var npc := _sink_in([&"npc_ship"])
 	var guns := _rig([LASER], null)
 	guns.call(&"_deliver", npc, 200.0, false, Vector2.ZERO, &"energy", Vector2.ZERO)
-	assert_true(_near(_state.shield, 100.0), "no flags, no heal (beam)")
+	assert_true(Support.near(_state.shield, 100.0), "no flags, no heal (beam)")
 	var shot := _shot({&"kind": &"bolt", &"damage": 200.0})
 	shot.call(&"_deliver", npc, 200.0, false, Vector2.ZERO, Vector2.ZERO)
-	assert_true(_near(_state.shield, 100.0), "no flags, no heal (projectile)")
+	assert_true(Support.near(_state.shield, 100.0), "no flags, no heal (projectile)")
 
 
 ## The projectile delivery heals through `PlayerShip.heal_from_damage` on its
@@ -598,25 +591,25 @@ func test_embers_heals_the_projectile_delivery_through_the_source() -> void:
 	var npc := _sink_in([&"npc_ship"])
 	var shot := _shot({&"kind": &"bolt", &"damage": 200.0, &"embers": true, &"source": ship})
 	shot.call(&"_deliver", npc, 200.0, false, Vector2.ZERO, Vector2.ZERO)
-	assert_true(_near(_state.shield, 120.0), "projectile Embers heals 10 %% (%.3f)" % _state.shield)
+	assert_true(Support.near(_state.shield, 120.0), "projectile Embers heals 10 %% (%.3f)" % _state.shield)
 	## A rock sink is excluded.
 	_state.set_shield(100.0)
 	var rock := WorkRock.new()
 	rock.add_to_group(ProjectileScript.ROCK_GROUP)
 	_staged.append(rock)
 	shot.call(&"_deliver", rock, 200.0, false, Vector2.ZERO, Vector2.ZERO)
-	assert_true(_near(_state.shield, 100.0), "a rock heals nothing on the projectile path")
+	assert_true(Support.near(_state.shield, 100.0), "a rock heals nothing on the projectile path")
 	## No source: the seam is a no-op, never a crash.
 	_state.set_shield(100.0)
 	var sourceless := _shot({&"kind": &"bolt", &"damage": 200.0, &"embers": true})
 	sourceless.call(&"_deliver", npc, 200.0, false, Vector2.ZERO, Vector2.ZERO)
-	assert_true(_near(_state.shield, 100.0), "no source, no heal")
+	assert_true(Support.near(_state.shield, 100.0), "no source, no heal")
 	## A ship with no state is a no-op too.
 	var bare := PlayerShipScript.new()
 	_staged.append(bare)
 	var bare_shot := _shot({&"kind": &"bolt", &"damage": 200.0, &"embers": true, &"source": bare})
 	bare_shot.call(&"_deliver", npc, 200.0, false, Vector2.ZERO, Vector2.ZERO)
-	assert_true(_near(_state.shield, 100.0), "a source with no state heals nothing")
+	assert_true(Support.near(_state.shield, 100.0), "a source with no state heals nothing")
 
 
 ## The clamp on the projectile path too.
@@ -629,7 +622,7 @@ func test_embers_clamps_on_the_projectile_path() -> void:
 	var npc := _sink_in([&"npc_ship"])
 	var shot := _shot({&"kind": &"bolt", &"damage": 200.0, &"embers": true, &"source": ship})
 	shot.call(&"_deliver", npc, 200.0, false, Vector2.ZERO, Vector2.ZERO)
-	assert_true(_near(_state.shield, _state.shield_max), "the projectile heal clamps at shield_max")
+	assert_true(Support.near(_state.shield, _state.shield_max), "the projectile heal clamps at shield_max")
 
 
 ## ---------------------------------------------------------------------------
@@ -641,16 +634,16 @@ func test_embers_clamps_on_the_projectile_path() -> void:
 ## line multiplies the row's 8.0 s cooldown by it (CONTRACTS section 20): -0.15 -> 6.8 s.
 func test_spry_shortens_the_afterburner_cooldown() -> void:
 	var stats := FitData.resolve(VANGUARD, {&"boosters": [AFTERBURNER]}, {&"spry": -0.15})
-	assert_true(_near(stats.booster_cooldown_mult, 0.85), "Spry -0.15 resolves to 0.85")
+	assert_true(Support.near(stats.booster_cooldown_mult, 0.85), "Spry -0.15 resolves to 0.85")
 	var ship := PlayerShipScript.new()
 	ship.set(&"_stats", stats)
 	ship.set(&"_state", _state)
 	_staged.append(ship)
-	assert_true(_near(ship.call(&"_booster_cooldown_scale"), 0.85), "the hull reads the field")
+	assert_true(Support.near(ship.call(&"_booster_cooldown_scale"), 0.85), "the hull reads the field")
 	var row: Dictionary = FitData.MODULES[AFTERBURNER][&"effects"]
-	assert_true(_near(float(row.get(&"cooldown", 0.0)), 8.0), "the afterburner's row states 8.0 s")
+	assert_true(Support.near(float(row.get(&"cooldown", 0.0)), 8.0), "the afterburner's row states 8.0 s")
 	assert_true(
-		_near(float(row.get(&"cooldown", 0.0)) * float(ship.call(&"_booster_cooldown_scale")), 6.8),
+		Support.near(float(row.get(&"cooldown", 0.0)) * float(ship.call(&"_booster_cooldown_scale")), 6.8),
 		"8.0 x 0.85 = 6.8"
 	)
 	## And the line itself, driven through the real action state: a press arms the burner
@@ -659,7 +652,7 @@ func test_spry_shortens_the_afterburner_cooldown() -> void:
 	ship.call(&"_update_boosters", 0.0)
 	Input.action_release(PlayerShipScript.BOOST_ACTION)
 	assert_true(
-		_near(float(ship.get(&"_boost_cooldown")), 6.8),
+		Support.near(float(ship.get(&"_boost_cooldown")), 6.8),
 		"the afterburner's cooldown line writes 6.8 s (%.6f)" % float(ship.get(&"_boost_cooldown"))
 	)
 	## No Spry: 1.0, byte-identical.
@@ -667,7 +660,7 @@ func test_spry_shortens_the_afterburner_cooldown() -> void:
 	plain.set(&"_stats", FitData.resolve(VANGUARD, {&"boosters": [AFTERBURNER]}))
 	plain.set(&"_state", _state)
 	_staged.append(plain)
-	assert_true(_near(plain.call(&"_booster_cooldown_scale"), 1.0), "no booster affix stays 1.0")
+	assert_true(Support.near(plain.call(&"_booster_cooldown_scale"), 1.0), "no booster affix stays 1.0")
 
 
 ## ---------------------------------------------------------------------------
@@ -707,7 +700,7 @@ func _flags(ids: Array) -> Array[StringName]:
 ## and a beam test plays its flash). `stats` may be null, which is the shipped
 ## eight-suite convention.
 func _rig(ids: Array, stats: ShipStats = null, spy := false) -> Node2D:
-	var host := _fixture_host()
+	var host := Support.fixture_host()
 	if host == null:
 		skip("no PlayerProfile autoload to host the rig")
 		return null
@@ -809,7 +802,7 @@ func _launch(hull_id: StringName, fit: Dictionary) -> Node2D:
 	if _scene == null:
 		skip("game.tscn did not instantiate")
 		return null
-	_fixture_host().add_child(_scene)
+	Support.fixture_host().add_child(_scene)
 	return _scene
 
 
@@ -818,21 +811,8 @@ func _free_scene() -> void:
 		_scene.free()
 		_scene = null
 
-
-## Where a fixture may enter the tree: the runner calls every test from inside its own
-## `_ready`, when the root viewport is still busy, so the profile autoload hosts them.
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
 func _shots() -> Array[Node]:
-	var tree := _tree()
+	var tree := Support.tree()
 	if tree == null:
 		return []
 	return tree.get_nodes_in_group(ProjectileScript.PROJECTILE_GROUP)
@@ -842,13 +822,3 @@ func _clear_shots() -> void:
 	for shot: Node in _shots():
 		if is_instance_valid(shot):
 			shot.free()
-
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
-func _near(measured: float, expected: float, tolerance := 0.0001) -> bool:
-	return absf(measured - expected) <= tolerance

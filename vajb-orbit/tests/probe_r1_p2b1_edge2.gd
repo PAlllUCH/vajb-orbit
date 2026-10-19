@@ -1,4 +1,5 @@
 extends Node
+const Support := preload("res://tests/support.gd")
 ## P2-B1 R1 review probe, third pass: the three checks the first two passes left open.
 ##
 ##   1. the focus order of STATION_HUB section 5.1 (strip, then module rows, then ammo);
@@ -57,9 +58,9 @@ func _borrow() -> void:
 	}
 	_log_path_before = String(Log.log_path)
 	Log.log_path = LOG_SCRATCH
-	_remove(LOG_SCRATCH)
+	Support.delete_file(LOG_SCRATCH)
 	_profile.set(&"save_path", SCRATCH)
-	_remove(SCRATCH)
+	Support.delete_file(SCRATCH)
 	_profile.set(&"_credits", 40000)
 	_profile.set(&"_active_ship", VANGUARD)
 	_profile.set(&"_owned_ships", [VANGUARD] as Array[StringName])
@@ -92,20 +93,13 @@ func _restore() -> void:
 	_profile.set(&"_modules", _saved[&"modules"])
 	_profile.call(&"flush")
 	_profile.set(&"save_path", String(_saved[&"path"]))
-	_remove(SCRATCH)
-	_remove(LOG_SCRATCH)
+	Support.delete_file(SCRATCH)
+	Support.delete_file(LOG_SCRATCH)
 	Log.log_path = _log_path_before
 
 
 func _on_status(message: String, danger: bool) -> void:
 	_status.append(message)
-
-
-func _remove(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
 
 func _row(module_id: StringName) -> Button:
 	for child: Node in _module_rows.get_children():

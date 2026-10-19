@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s2_6_beam: the beam's own feel - FX_SPEC section 1.6's 2026-09-22 amendment and
 ## the mining shaft's own chip read (L65). Slice S2.6's AC3 (the drawn beam ends at the
 ## pinned sink and the contact FX scatter inside the pinned disc) and AC4 (the mining beam
@@ -112,7 +113,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_snapshot_pools()
 	_root = Node2D.new()
 	_root.name = &"S26BeamFixture"
-	_fixture_host().add_child(_root)
+	Support.fixture_host().add_child(_root)
 
 
 func suite_teardown() -> void:
@@ -167,12 +168,12 @@ func _assert_weapon_beam_sinks() -> void:
 	var drawn := core.points[1]
 	var expected := resolved.lerp(centre, WeaponScript.BEAM_SINK)
 	assert_true(
-		_near(drawn.distance_to(centre), expected.distance_to(centre), TOLERANCE),
+		Support.near(drawn.distance_to(centre), expected.distance_to(centre), TOLERANCE),
 		"the drawn end is the resolved point pulled 45 %% towards the body's centre "
 		+ "(drawn %.3f u out, expected %.3f u)" % [drawn.distance_to(centre), SINK_OFFSET * 0.55]
 	)
 	assert_true(
-		_near(drawn.x, resolved.x, TOLERANCE),
+		Support.near(drawn.x, resolved.x, TOLERANCE),
 		"a sink does not slide the shaft along the ray (x %.3f, the ray's own %.3f)"
 		% [drawn.x, resolved.x]
 	)
@@ -186,7 +187,7 @@ func _assert_weapon_beam_sinks() -> void:
 	if blasts.is_empty():
 		return
 	assert_true(
-		_near((blasts[0] as Node2D).global_position.distance_to(resolved), 0.0, TOLERANCE),
+		Support.near((blasts[0] as Node2D).global_position.distance_to(resolved), 0.0, TOLERANCE),
 		"and the blast stays on the point the ray resolved, not on the drawn end"
 	)
 
@@ -198,7 +199,7 @@ func _assert_mining_beam_sinks() -> void:
 	var laser := _laser()
 	var rock := _rock(AsteroidScript.SIZE_LARGE, Vector2(200.0, 0.0), 20)
 	var radius := float(rock.call(&"world_radius"))
-	assert_true(_near(radius, 66.0, TOLERANCE), "the Large look's own collision radius (%.1f)" % radius)
+	assert_true(Support.near(radius, 66.0, TOLERANCE), "the Large look's own collision radius (%.1f)" % radius)
 	var contact := rock.global_position + Vector2(radius, 0.0)
 	laser.set(&"_target", rock)
 	laser.set(&"_hit_point", contact)
@@ -210,16 +211,16 @@ func _assert_mining_beam_sinks() -> void:
 	var drawn := laser.to_global(core.points[1])
 	var expected := contact.lerp(rock.global_position, MiningLaserScript.BEAM_SINK)
 	assert_true(
-		_near(drawn.distance_to(expected), 0.0, TOLERANCE),
+		Support.near(drawn.distance_to(expected), 0.0, TOLERANCE),
 		"the mining shaft's drawn end is the resolved contact pulled 45 %% towards the rock"
 	)
 	assert_true(
-		_near(drawn.distance_to(rock.global_position), radius * (1.0 - MiningLaserScript.BEAM_SINK)),
+		Support.near(drawn.distance_to(rock.global_position), radius * (1.0 - MiningLaserScript.BEAM_SINK)),
 		"so it stops %.1f u short of the rock's centre, where the rim was %.1f u out"
 		% [drawn.distance_to(rock.global_position), radius]
 	)
 	assert_true(
-		_near((laser.call(&"target_position") as Vector2).distance_to(contact), 0.0, TOLERANCE),
+		Support.near((laser.call(&"target_position") as Vector2).distance_to(contact), 0.0, TOLERANCE),
 		"while the contact the reticle reads is still the point the ray resolved"
 	)
 
@@ -253,16 +254,16 @@ func _assert_pinned_disc_arithmetic() -> void:
 	assert_eq(WeaponScript.HIT_FX_JITTER_MAX, 48.0, "the pinned ceiling")
 	assert_eq(MiningLaserScript.HIT_FX_JITTER_MIN, 8.0, "the mining shaft's floor")
 	assert_eq(MiningLaserScript.HIT_FX_JITTER_MAX, 48.0, "and its ceiling")
-	assert_true(_near(_disc(24.0), 8.4), "a Small rock's 24 u radius gives the pin's 8.4 u")
-	assert_true(_near(_disc(42.0), 14.7), "a Medium's 42 u gives 14.7 u")
-	assert_true(_near(_disc(66.0), 23.1), "a Large's 66 u gives 23.1 u")
-	assert_true(_near(_disc(30.0), 10.5), "a hull's 30 u collider gives 10.5 u")
-	assert_true(_near(_disc(0.0), 8.0), "a radius-less target lands on the 8 u floor")
+	assert_true(Support.near(_disc(24.0), 8.4), "a Small rock's 24 u radius gives the pin's 8.4 u")
+	assert_true(Support.near(_disc(42.0), 14.7), "a Medium's 42 u gives 14.7 u")
+	assert_true(Support.near(_disc(66.0), 23.1), "a Large's 66 u gives 23.1 u")
+	assert_true(Support.near(_disc(30.0), 10.5), "a hull's 30 u collider gives 10.5 u")
+	assert_true(Support.near(_disc(0.0), 8.0), "a radius-less target lands on the 8 u floor")
 	assert_true(
-		_near(_disc(ProjectileScript.HIT_RADIUS), 8.0),
+		Support.near(_disc(ProjectileScript.HIT_RADIUS), 8.0),
 		"and so does a destructible shot's own 4 u detection circle, far below the floor"
 	)
-	assert_true(_near(_disc(200.0), 48.0), "the ceiling is where the disc stops growing")
+	assert_true(Support.near(_disc(200.0), 48.0), "the ceiling is where the disc stops growing")
 
 
 ## The radius the disc is measured from, read off the shipped objects themselves.
@@ -270,26 +271,26 @@ func _assert_radius_sources() -> void:
 	var small := _rock(AsteroidScript.SIZE_SMALL, Vector2(400.0, 400.0), 5)
 	var medium := _rock(AsteroidScript.SIZE_MEDIUM, Vector2(500.0, 400.0), 5)
 	var large := _rock(AsteroidScript.SIZE_LARGE, Vector2(600.0, 400.0), 5)
-	assert_true(_near(_radius(small), 24.0), "a Small rock answers its own world_radius() (24 u)")
-	assert_true(_near(_radius(medium), 42.0), "a Medium answers its own 42 u")
-	assert_true(_near(_radius(large), 66.0), "a Large answers its own 66 u")
+	assert_true(Support.near(_radius(small), 24.0), "a Small rock answers its own world_radius() (24 u)")
+	assert_true(Support.near(_radius(medium), 42.0), "a Medium answers its own 42 u")
+	assert_true(Support.near(_radius(large), 66.0), "a Large answers its own 66 u")
 	var hull := _hull(100.0)
 	assert_true(
-		_near(_radius(hull[&"ship"]), 30.0),
+		Support.near(_radius(hull[&"ship"]), 30.0),
 		"a hull's radius is its CollisionShape2D's own figure (30 u), read through the sink"
 	)
 	assert_true(
-		_near(_radius(hull[&"body"]), 30.0),
+		Support.near(_radius(hull[&"body"]), 30.0),
 		"and the bare collider a ray hands back reads the same figure"
 	)
 	var bare := _hull(100.0, 0.0)
 	assert_true(
-		_near(_radius(bare[&"ship"]), 0.0),
+		Support.near(_radius(bare[&"ship"]), 0.0),
 		"a hull whose art is missing carries no shape, and the floor is what binds it"
 	)
 	var shot := _staged_rocket(_rig([&"laser"])[&"guns"], Vector2(60.0, 0.0))
 	assert_true(
-		_near(_radius(shot), ProjectileScript.HIT_RADIUS),
+		Support.near(_radius(shot), ProjectileScript.HIT_RADIUS),
 		"a destructible shot carries no radius but its own 4 u detection circle"
 	)
 
@@ -300,7 +301,7 @@ func _assert_radius_sources() -> void:
 
 
 func test_a_bare_hull_draws_no_sheet_and_the_shield_ring_scatters() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -344,7 +345,7 @@ func test_a_bare_hull_draws_no_sheet_and_the_shield_ring_scatters() -> void:
 
 
 func test_the_mining_beam_draws_the_chip_sparks_on_its_own_chip() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -395,7 +396,7 @@ func test_the_mining_beam_draws_the_chip_sparks_on_its_own_chip() -> void:
 	assert_eq(fresh.size(), 2, "two cycles yield two pickups")
 	for pickup: Node in fresh:
 		assert_true(
-			_near((pickup as Node2D).global_position.distance_to(contact), 0.0, TOLERANCE),
+			Support.near((pickup as Node2D).global_position.distance_to(contact), 0.0, TOLERANCE),
 			"and every pickup sits on the resolved contact, never on the scattered effect"
 		)
 
@@ -634,20 +635,14 @@ func _pickups() -> Array[Node]:
 
 
 func _world_parent() -> Node:
-	var tree := _tree()
+	var tree := Support.tree()
 	if tree == null:
 		return null
 	var scene := tree.current_scene
 	return scene if scene != null else tree.root
 
-
-func _near(measured: float, expected: float, tolerance := TOLERANCE) -> bool:
-	return absf(measured - expected) <= tolerance
-
-
-## The shared pool cursors, as found.
 func _snapshot_pools() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		return
 	var cursors: Variant = audio.get(&"_pool_next")
@@ -661,7 +656,7 @@ func _snapshot_pools() -> void:
 func _restore_pools() -> void:
 	if not _had_pool_state:
 		return
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		return
 	var cursors: Variant = audio.get(&"_pool_next")
@@ -677,7 +672,7 @@ func _restore_pools() -> void:
 ## A clean fixture: no leftover effects and no leftover shots (a shot of another test's
 ## would be a target on the beam's segment).
 func _clear() -> void:
-	var tree := _tree()
+	var tree := Support.tree()
 	if tree != null:
 		for shot: Node in tree.get_nodes_in_group(ProjectileScript.PROJECTILE_GROUP):
 			if is_instance_valid(shot):
@@ -692,25 +687,8 @@ func _clear() -> void:
 ## Put every bed out, by name: a bed left sounding would make the next test's reading one of
 ## this one's leftovers.
 func _clear_loops() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null or not audio.has_method(&"sounding_loops"):
 		return
 	for cue: Variant in (audio.call(&"sounding_loops") as Array).duplicate():
 		audio.call(&"stop_loop", 0.0, StringName(cue))
-
-
-func _audio() -> Node:
-	var tree := _tree()
-	if tree == null:
-		return null
-	return tree.root.get_node_or_null(NodePath(AUDIO_SERVICE))
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root

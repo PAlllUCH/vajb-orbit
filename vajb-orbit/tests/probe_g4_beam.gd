@@ -1,4 +1,5 @@
 extends Node
+const Support := preload("res://tests/support.gd")
 ## G4 (reviewer) beam probe: the three beam claims of the flight-feel/beam wave measured
 ## from outside the worker's own suite, on a live physics space.
 ##
@@ -74,7 +75,7 @@ func _endpoints() -> void:
 		## The ray stops on the shape's surface, so the expected stop is d - r.
 		var expected := distance - ROCK_RADIUS
 		_check(
-			_near(endpoint, expected, 1.0),
+			Support.near(endpoint, expected, 1.0),
 			"hit d=%.0f endpoint=%.3f expected=%.3f resolved=%.3f" % [
 				distance, endpoint, expected, resolved
 			]
@@ -90,7 +91,7 @@ func _endpoints() -> void:
 	guns_miss.call(&"tick", BEAM_FRAME)
 	var far_endpoint := _beam_endpoint(guns_miss)
 	_check(
-		_near(far_endpoint, WeaponScript.range_of(&"laser"), 0.5),
+		Support.near(far_endpoint, WeaponScript.range_of(&"laser"), 0.5),
 		"miss (aim %.0f) endpoint=%.3f reach=%.1f" % [
 			FAR_AIM, far_endpoint, WeaponScript.range_of(&"laser")
 		]
@@ -104,7 +105,7 @@ func _endpoints() -> void:
 	guns_near.call(&"tick", BEAM_FRAME)
 	var near_endpoint := _beam_endpoint(guns_near)
 	_check(
-		_near(near_endpoint, NEAR_AIM, 0.5),
+		Support.near(near_endpoint, NEAR_AIM, 0.5),
 		"miss inside the range (aim %.0f) endpoint=%.3f" % [NEAR_AIM, near_endpoint]
 	)
 	guns_near.call(&"set_firing", false)
@@ -159,7 +160,7 @@ func _rock_read() -> void:
 		_check(
 			frames != null
 			and frames.get_frame_count(FxScript.ANIMATION) == 4
-			and _near(frames.get_animation_speed(FxScript.ANIMATION), 20.0),
+			and Support.near(frames.get_animation_speed(FxScript.ANIMATION), 20.0),
 			"the burst is FX_SPEC 1.6's 4-frame sheet at 20 FPS"
 		)
 		_check(
@@ -169,7 +170,7 @@ func _rock_read() -> void:
 			"drawn additively, like every other FX sheet"
 		)
 	_check(
-		_near(rock.work, 30.0 * BEAM_FRAME * WeaponScript.GUN_CHIP_RATE),
+		Support.near(rock.work, 30.0 * BEAM_FRAME * WeaponScript.GUN_CHIP_RATE),
 		"the first frame's chip work is dps x delta x %.2f = %.4f" % [
 			WeaponScript.GUN_CHIP_RATE, rock.work
 		]
@@ -188,7 +189,7 @@ func _rock_read() -> void:
 		total, expected, WeaponScript.BEAM_HIT_INTERVAL
 	])
 	_check(
-		_near(rock.work, 30.0 * float(frames + 1) * BEAM_FRAME * WeaponScript.GUN_CHIP_RATE),
+		Support.near(rock.work, 30.0 * float(frames + 1) * BEAM_FRAME * WeaponScript.GUN_CHIP_RATE),
 		"the chip work stays dps x time x %.2f (%.4f)" % [
 			WeaponScript.GUN_CHIP_RATE, rock.work
 		]
@@ -201,7 +202,7 @@ func _rock_read() -> void:
 		before - after, BEAM_FRAME, float(WeaponScript.row_of(&"laser").get(&"draw", 0.0))
 	])
 	_check(
-		_near(before - after, 6.0 * BEAM_FRAME, 0.0001),
+		Support.near(before - after, 6.0 * BEAM_FRAME, 0.0001),
 		"the beam spends the row's own 6 E/s"
 	)
 	guns.call(&"set_firing", false)
@@ -224,7 +225,7 @@ func _held_feedback() -> void:
 		WeaponScript.FLASH_FPS,
 	])
 	_check(
-		_near(WeaponScript.FLASH_SECONDS, float(WeaponScript.FLASH_FRAMES.size()) / WeaponScript.FLASH_FPS),
+		Support.near(WeaponScript.FLASH_SECONDS, float(WeaponScript.FLASH_FRAMES.size()) / WeaponScript.FLASH_FPS),
 		"the repeat cycle is the flash sheet's own 4/20 s"
 	)
 	var frames := 100
@@ -420,11 +421,6 @@ func _audio() -> Node:
 	if tree == null:
 		return null
 	return tree.root.get_node_or_null("AudioManager")
-
-
-func _near(a: float, b: float, tolerance: float = 0.001) -> bool:
-	return absf(a - b) <= tolerance
-
 
 func _check(ok: bool, message: String) -> void:
 	if ok:

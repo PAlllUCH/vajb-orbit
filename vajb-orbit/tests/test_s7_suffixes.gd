@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s7_suffixes: the suffix side of the affix application (CONTRACTS section 20;
 ## 15 section 4) - the three seams this worker owns, plus the staged rows' no-op proof.
 ##
@@ -107,15 +108,15 @@ func suite_teardown() -> void:
 	_free_scenes()
 	_free_bare()
 	_free_profiles()
-	var profile := _store()
+	var profile := Support.profile()
 	if profile != null:
 		profile.call(&"reset_to_defaults")
 		profile.call(&"flush")
 		profile.set(&"save_path", _previous_path)
 	Log.log_path = Log.DEFAULT_PATH
-	_delete_file(PROFILE_PATH)
-	_delete_file(SCRATCH_PROFILE)
-	_delete_file(SCRATCH_LOG)
+	Support.delete_file(PROFILE_PATH)
+	Support.delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_LOG)
 
 
 ## ---------------------------------------------------------------------------
@@ -128,7 +129,7 @@ func suite_teardown() -> void:
 ## credit (the `KILL` economy-log line). The percentage, the pool and the flag are all
 ## read off their owners, so a band or a hull change moves the expectation with it.
 func test_leeches_heals_five_percent_of_the_hull_maximum_on_a_credited_kill() -> void:
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		return
 	var ship: StringName = profile.active_ship()
@@ -193,7 +194,7 @@ func test_a_launch_without_leeches_leaves_the_hull_alone() -> void:
 ## densities guarantee a derelict and an anomaly per sector, and both kinds start fogged,
 ## so the reading is not vacuous.
 func test_cartograph_reveals_the_sectors_pois_at_entry() -> void:
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		return
 	var ship: StringName = profile.active_ship()
@@ -344,7 +345,7 @@ func test_the_staged_suffixes_are_byte_identical_no_ops() -> void:
 	var with_staged: ShipStats = FitData.resolve(ship, fit, summary)
 	var without: ShipStats = FitData.resolve(ship, fit, {})
 	assert_true(
-		_deep_eq(_snapshot(with_staged), _snapshot(without)),
+		Support.deep_eq(_snapshot(with_staged), _snapshot(without)),
 		"resolve is byte-identical with the staged five fitted: %s" % [_snapshot(with_staged)]
 	)
 	assert_eq(
@@ -372,7 +373,7 @@ func _victim(archetype: StringName) -> Node2D:
 	var hull := StubHull.new()
 	hull.name = "Stub%s" % String(archetype).capitalize()
 	hull.archetype_id = archetype
-	_fixture_host().add_child(hull)
+	Support.fixture_host().add_child(hull)
 	_bare.append(hull)
 	return hull
 
@@ -384,7 +385,7 @@ func _open_game() -> Node2D:
 	var scene := packed.instantiate() as Node2D
 	if scene == null:
 		return null
-	_fixture_host().add_child(scene)
+	Support.fixture_host().add_child(scene)
 	_scenes.append(scene)
 	return scene
 
@@ -436,22 +437,6 @@ func _lines_with(event: String) -> Array[String]:
 		if line.contains(", %s," % event):
 			out.append(line)
 	return out
-
-
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-func _store() -> Node:
-	return _tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
-
-
 func _free_scenes() -> void:
 	for scene: Node2D in _scenes:
 		if is_instance_valid(scene):
@@ -474,7 +459,7 @@ func _free_profiles() -> void:
 
 
 func _reset_store() -> void:
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		return
 	profile.call(&"reset_to_defaults")
@@ -482,7 +467,7 @@ func _reset_store() -> void:
 
 
 func _stage_scratch_store() -> void:
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		return
 	_previous_path = String(profile.get(&"save_path"))
@@ -491,15 +476,6 @@ func _stage_scratch_store() -> void:
 	profile.call(&"flush")
 	Log.log_path = SCRATCH_LOG
 
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
-## Every field of one resolved snapshot, so an A/B comparison cannot miss one
-## (`test_s7_affixes.gd`'s own reading).
 func _snapshot(stats: ShipStats) -> Dictionary:
 	return {
 		"max_speed": stats.max_speed,
@@ -524,35 +500,6 @@ func _snapshot(stats: ShipStats) -> Dictionary:
 		"boosters": stats.boosters,
 		"booster_cooldown_mult": stats.booster_cooldown_mult,
 	}
-
-
-## Structural equality with a float tolerance: `==` on nested dictionaries and typed
-## arrays is not dependable.
-func _deep_eq(a: Variant, b: Variant) -> bool:
-	if a is Dictionary and b is Dictionary:
-		var left: Dictionary = a
-		var right: Dictionary = b
-		if left.size() != right.size():
-			return false
-		for key: Variant in left.keys():
-			if not right.has(key):
-				return false
-			if not _deep_eq(left[key], right[key]):
-				return false
-		return true
-	if a is Array and b is Array:
-		var left_array: Array = a
-		var right_array: Array = b
-		if left_array.size() != right_array.size():
-			return false
-		for index: int in range(left_array.size()):
-			if not _deep_eq(left_array[index], right_array[index]):
-				return false
-		return true
-	if (a is float) or (b is float):
-		return is_equal_approx(float(a), float(b))
-	return a == b
-
 
 func assert_close(actual: float, expected: float, msg: String) -> void:
 	assert_true(

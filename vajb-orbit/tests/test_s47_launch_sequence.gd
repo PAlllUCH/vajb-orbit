@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s47_launch_sequence: wave S47 - P48's departure sequence (STATION_HUB
 ## section 23.3; AUDIO_SPEC section 8.7 AUDIO-4/5) and T-174's briefing box
 ## (STATION_HUB section 23.9). One row per pinned acceptance:
@@ -64,7 +65,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_ship = StringName(_profile.get(&"_active_ship"))
 	_previous_credits = int(_profile.call(&"credits"))
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile.set(&"_active_ship", SHIP)
 	_profile.set(&"_credits", 50000)
 
@@ -77,7 +78,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_credits", _previous_credits)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile = null
 
 
@@ -90,23 +91,6 @@ func _free_screen() -> void:
 	if _station != null and is_instance_valid(_station):
 		_station.get_parent().free()
 	_station = null
-
-
-func _delete_file(path: String) -> void:
-	var absolute := ProjectSettings.globalize_path(path)
-	if FileAccess.file_exists(absolute):
-		DirAccess.remove_absolute(absolute)
-
-
-func _audio() -> Node:
-	var tree := Engine.get_main_loop() as SceneTree
-	if tree == null:
-		return null
-	return tree.root.get_node_or_null(NodePath(AUDIO_SERVICE))
-
-
-## A fresh shell per row under a themed host, added to the profile autoload (the
-## runner calls every test from inside its own `_ready`, when `/root` is still busy).
 func _mount() -> Control:
 	var host := Control.new()
 	host.name = "S47Host"
@@ -120,7 +104,7 @@ func _mount() -> Control:
 
 
 func _launch_pane(screen: Control) -> Node:
-	var panels: Array = screen.get(&"_panels")
+	var panels: Array = screen.call(&"panes")
 	return panels[LAUNCH_DECK]
 
 
@@ -240,7 +224,7 @@ func test_press_two_opens_the_departure_overlay_in_its_seat() -> void:
 func test_the_beats_play_the_pinned_cues_and_end_at_the_route() -> void:
 	var screen := _mount()
 	screen.connect(&"route_requested", _on_route)
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -324,7 +308,7 @@ func test_the_beat_timers_are_the_screen_s_own() -> void:
 func test_the_fired_pair_no_longer_plays_at_the_route_instant() -> void:
 	var screen := _mount()
 	screen.connect(&"route_requested", _on_route)
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -466,7 +450,7 @@ func test_t174_the_brief_rows_keep_their_labels_and_values() -> void:
 ## ----------------- 7. AUDIO-4's world class rides the gate (the F1 cure)
 
 func test_the_undock_cue_rides_the_world_pool_cap() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return

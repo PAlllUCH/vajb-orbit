@@ -98,10 +98,6 @@ const TIER_ORDER: Array[int] = [1, 2, 3]
 ## Magic floor is clamped by `ModuleCatalog.roll_rarity` itself.
 const AUCTION_FACTION_LOTS_INTERIM := true
 
-## 10 section 2.1 / 15 section 1: the one hot slot's -20 %, applied after the
-## rarity step and never stacked with anything.
-const HOT_DISCOUNT_PERCENT := 20
-
 ## 12 section 4.1's Known band opens at +11 (V4's "at Known and above"), and it is the only
 ## band boundary this file spells: the other three floors and the deltas live in
 ## `StationRegistry` (V1/V2/V7) and are read from there.
@@ -804,12 +800,9 @@ static func _slot_order(bases: Array) -> Array[StringName]:
 ## ---------------------------------------------------------------------------
 
 
-## 10 section 2.1's hot slot: `HOT_DISCOUNT_PERCENT` off, applied to a price that
-## already carries 15 section 1's rarity multiplier. Never stacked with anything.
+## 10 section 2.1's hot slot: the one discount rule lives in `ModuleCatalog`.
 static func hot_price(price: int) -> int:
-	if price <= 0:
-		return 0
-	return price * (100 - HOT_DISCOUNT_PERCENT) / 100
+	return ModuleData.hot_price(price)
 
 
 ## 15 section 6 / 10 sections 2.3 and 2.4: the sell side, rarity-aware. CONTRACTS

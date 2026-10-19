@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s7_affixes: the affix bridge and the ship-stat half of the affix
 ## application (CONTRACTS section 20; 15 sections 3/4; 09 section 5).
 ##
@@ -99,7 +100,7 @@ func suite_name() -> String:
 
 
 func setup() -> void:
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile = _fresh()
 
 
@@ -111,7 +112,7 @@ func teardown() -> void:
 
 
 func suite_teardown() -> void:
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 ## ---------------------------------------------------------------------------
@@ -214,15 +215,15 @@ func test_resolve_without_a_summary_is_the_pre_s7_fixture() -> void:
 	)
 	assert_true(plain != null, "the standard fit resolves")
 	assert_true(
-		_deep_eq(_snapshot(empty), _snapshot(plain)),
+		Support.deep_eq(_snapshot(empty), _snapshot(plain)),
 		"`{}` is byte-identical to the two-argument call"
 	)
 	assert_true(
-		_deep_eq(_snapshot(bridged), _snapshot(plain)),
+		Support.deep_eq(_snapshot(bridged), _snapshot(plain)),
 		"and so is the empty summary a base-id fit builds"
 	)
 	assert_true(
-		_deep_eq(_snapshot(plain), PRE_S7_VANGUARD),
+		Support.deep_eq(_snapshot(plain), PRE_S7_VANGUARD),
 		"the full pre-S7 fixture holds: %s" % [_snapshot(plain)]
 	)
 	assert_eq(plain.damage_mult, 1.0, "no computer, no damage multiplier")
@@ -480,7 +481,7 @@ func test_a_fitted_overflowing_instance_changes_nothing() -> void:
 	assert_eq(float(summary[&"overflowing"]), 2.0, "the summary does carry the staged prefix")
 	var after := _resolve(VANGUARD)
 	assert_true(
-		_deep_eq(_snapshot(after), _snapshot(before)),
+		Support.deep_eq(_snapshot(after), _snapshot(before)),
 		"and the resolved snapshot is byte-identical with it fitted"
 	)
 	assert_close(after.energy_max, 100.0, "the reactor's own pool is untouched")
@@ -502,15 +503,6 @@ func _fresh():
 	_profiles.append(profile)
 	return profile
 
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
-## One instance of `base_id` carrying `prefixes`/`suffixes`, taken out of the bag
-## (CONTRACTS section 15: fitting is `count` 1 -> 0, and the record survives).
 func _fitted(base_id: StringName, prefixes: Array = [], suffixes: Array = []) -> StringName:
 	var id: StringName = _profile.add_instance(base_id, &"rare", prefixes, suffixes)
 	_profile.take_instance(id)
@@ -599,31 +591,3 @@ func assert_close(actual: float, expected: float, msg: String) -> void:
 	assert_true(
 		is_equal_approx(actual, expected), "%s (got %.6f, want %.6f)" % [msg, actual, expected]
 	)
-
-
-## Structural equality with a float tolerance, exactly as `test_s3_instances` reads
-## a nested record: `==` on nested dictionaries and typed arrays is not dependable.
-func _deep_eq(a: Variant, b: Variant) -> bool:
-	if a is Dictionary and b is Dictionary:
-		var left: Dictionary = a
-		var right: Dictionary = b
-		if left.size() != right.size():
-			return false
-		for key: Variant in left.keys():
-			if not right.has(key):
-				return false
-			if not _deep_eq(left[key], right[key]):
-				return false
-		return true
-	if a is Array and b is Array:
-		var left_array: Array = a
-		var right_array: Array = b
-		if left_array.size() != right_array.size():
-			return false
-		for index: int in range(left_array.size()):
-			if not _deep_eq(left_array[index], right_array[index]):
-				return false
-		return true
-	if (a is float) or (b is float):
-		return is_equal_approx(float(a), float(b))
-	return a == b

@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite p1_repairs: the station REPAIRS module and the `vitals` profile
 ## extension (docs/gameplay/01_economy_core.md sections 6 and 7).
 ##
@@ -36,7 +37,7 @@ func suite_name() -> String:
 
 
 func setup() -> void:
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_reset_log()
 	Clock.set_override(NOW)
 
@@ -50,8 +51,8 @@ func teardown() -> void:
 
 
 func suite_teardown() -> void:
-	_delete_file(PROFILE_PATH)
-	_delete_file(LOG_PATH)
+	Support.delete_file(PROFILE_PATH)
+	Support.delete_file(LOG_PATH)
 	Log.log_path = Log.DEFAULT_PATH
 	Clock.clear_override()
 
@@ -168,13 +169,6 @@ func _fresh():
 	profile.save_path = PROFILE_PATH
 	_profiles.append(profile)
 	return profile
-
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
 
 func _reset_log() -> void:
 	Log.log_path = LOG_PATH

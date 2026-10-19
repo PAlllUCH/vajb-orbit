@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## S34 refinery queue suite: the timed job model, its slots, its inventory and its
 ## persistence. Contract: docs/gameplay/04_refinery.md section 7 (values R1-R8) and
 ## STATION_HUB section 21.3 (P42/P43). File under test: game/refinery.gd plus the
@@ -53,20 +54,9 @@ func suite_teardown() -> void:
 
 
 func _delete_files() -> void:
-	_delete(LOG_PATH)
-	_delete(SAVE_PATH)
+	Support.delete_file(LOG_PATH)
+	Support.delete_file(SAVE_PATH)
 
-
-func _delete(path: String) -> void:
-	if not FileAccess.file_exists(path):
-		return
-	var dir := DirAccess.open(path.get_base_dir())
-	if dir != null:
-		dir.remove(path.get_file())
-
-
-## Force every running job ready (the fake-ready probe, R6): a test never waits on
-## the wall clock.
 func _force_ready() -> void:
 	var jobs := Ref.jobs(_profile)
 	for job: Dictionary in jobs:

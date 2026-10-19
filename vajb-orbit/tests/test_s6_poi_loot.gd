@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s6_poi_loot: wave S6's POIs and loot - the kill roll and its hunter extra
 ## (`game/loot_tables.gd`), the derelict scan channel and its reward roll, the three
 ## anomaly kinds with the Hollows' doubled rift, the beacon reveal, 11 §5's soft-fog
@@ -97,14 +98,14 @@ func suite_teardown() -> void:
 	_free_scenes()
 	_free_bare()
 	GameScript._transit_destination = &""
-	var profile := _store()
+	var profile := Support.profile()
 	if profile != null:
 		profile.call(&"reset_to_defaults")
 		profile.call(&"flush")
 		profile.set(&"save_path", _previous_path)
 	Log.log_path = Log.DEFAULT_PATH
-	_delete_file(SCRATCH_PROFILE)
-	_delete_file(SCRATCH_LOG)
+	Support.delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_LOG)
 
 
 ## ---------------------------------------------------------------------------
@@ -326,7 +327,7 @@ func test_scan_channel_completes_and_is_one_shot_per_cycle() -> void:
 ## The data core pays 03's comp_elec plus `DATA_CORE_CREDITS` (11 §3.1), through the
 ## live profile; the cache pays a component pickup and no credits.
 func test_derelict_data_core_pays_comp_elec_and_credits() -> void:
-	var profile := _store()
+	var profile := Support.profile()
 	assert_true(profile != null, "the profile autoload is the fixture host")
 	if profile == null:
 		return
@@ -345,7 +346,7 @@ func test_derelict_data_core_pays_comp_elec_and_credits() -> void:
 
 
 func test_derelict_cache_pays_a_component_stack_and_no_credits() -> void:
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		return
 	var before := int(profile.call(&"credits"))
@@ -369,7 +370,7 @@ func test_derelict_cache_pays_a_component_stack_and_no_credits() -> void:
 
 
 func test_derelict_module_reward_mints_a_derelict_instance() -> void:
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		return
 	var before: Dictionary = profile.call(&"modules")
@@ -646,7 +647,7 @@ func test_kill_path_leaves_a_wreck_site_holding_its_payload() -> void:
 		return
 	var victim := StubHull.new()
 	victim.name = &"StubVictim"
-	_fixture_host().add_child(victim)
+	Support.fixture_host().add_child(victim)
 	_bare.append(victim)
 	var kill_point := Vector2(1234.0, -432.0)
 	scene.call(&"_on_npc_died", kill_point, &"pirate", victim)
@@ -952,7 +953,7 @@ func _bare_poi(poi_kind: StringName, row: Dictionary) -> Node2D:
 ## profile. The row's `sector_id` defaults to sector 1.
 func _live_poi(poi_kind: StringName, row: Dictionary) -> Node2D:
 	var poi: Node2D = PoiScript.new() as Node2D
-	_fixture_host().add_child(poi)
+	Support.fixture_host().add_child(poi)
 	var full := row.duplicate()
 	if not full.has(&"sector_id"):
 		full[&"sector_id"] = &"sector_1"
@@ -969,22 +970,6 @@ func _bare_sector() -> Node2D:
 
 func _row(sector_id: StringName) -> Dictionary:
 	return Registry.sector(sector_id)
-
-
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-func _store() -> Node:
-	return _tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
-
-
 func _open_game() -> Node2D:
 	var packed := load(GAME_SCENE) as PackedScene
 	if packed == null:
@@ -992,7 +977,7 @@ func _open_game() -> Node2D:
 	var scene := packed.instantiate() as Node2D
 	if scene == null:
 		return null
-	_fixture_host().add_child(scene)
+	Support.fixture_host().add_child(scene)
 	_scenes.append(scene)
 	return scene
 
@@ -1012,7 +997,7 @@ func _free_bare() -> void:
 
 
 func _stage_scratch_store() -> void:
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		return
 	_previous_path = String(profile.get(&"save_path"))
@@ -1020,9 +1005,3 @@ func _stage_scratch_store() -> void:
 	profile.call(&"reset_to_defaults")
 	profile.call(&"flush")
 	Log.log_path = SCRATCH_LOG
-
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())

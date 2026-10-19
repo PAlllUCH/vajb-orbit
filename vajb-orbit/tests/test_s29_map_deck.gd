@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s29_map_deck: wave S29's map deck and navigation pin (UI_SPEC.md section 9
 ## N1-N6, section 10 N7-N23), the flight half. Composition and every number read off
 ## the law: N1's 80 % pane and its three toggle routes, N2's pan/zoom/arrow steps,
@@ -54,7 +55,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_profile = profile
 	_previous_path = String(_profile.get(&"save_path"))
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 func suite_teardown() -> void:
@@ -62,7 +63,7 @@ func suite_teardown() -> void:
 		return
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile = null
 
 
@@ -707,10 +708,3 @@ func _key(code: Key) -> void:
 		event.pressed = pressed
 		Input.parse_input_event(event)
 		Input.flush_buffered_events()
-
-
-func _delete_file(path: String) -> void:
-	if FileAccess.file_exists(path):
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
-
-

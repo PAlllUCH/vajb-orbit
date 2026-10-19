@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s26_endgame: wave S26's endgame - the two physical arenas and their contract run
 ## (14_station_services.md section 5), the three released bosses and the Maw's 06 section
 ## 3.4 table, death persistence (18_engine_spec section 2 dec. 7 / section 7), insurance
@@ -80,7 +81,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 		&"fits": (_profile.get(&"_fits") as Dictionary).duplicate(true),
 	}
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	## The flight scene's wreck ledger is a static; hand it back untouched at the end.
 	_ledger = GameScript._wreck_drops.duplicate(true)
 	_wipe()
@@ -130,7 +131,7 @@ func suite_teardown() -> void:
 				_profile.set(&"_fits", value)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", String(_previous[&"save_path"]))
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_previous = {}
 	_profile = null
 
@@ -173,13 +174,6 @@ func _free_station() -> void:
 	if _station != null and is_instance_valid(_station):
 		_station.get_parent().free()
 		_station = null
-
-
-func _delete_file(path: String) -> void:
-	var absolute := ProjectSettings.globalize_path(path)
-	if FileAccess.file_exists(absolute):
-		DirAccess.remove_absolute(absolute)
-
 
 func _mount() -> Control:
 	var host := Control.new()
@@ -745,6 +739,8 @@ func test_a7_the_strip_still_holds_three_services() -> void:
 	var deck: Control = screen.call(&"pane_for", 7) as Control
 	var host := deck.get_node_or_null(NodePath("ServiceHost")) as Control
 	assert_true(host != null, "the deck carries its own service host")
+	for service: StringName in [&"contracts", &"insurance", &"vaults"]:
+		screen.call(&"service_panel", service)
 	assert_eq(host.get_child_count(), 3, "one pane per service in the strip")
 	for child: Node in host.get_children():
 		var pane := child as Control

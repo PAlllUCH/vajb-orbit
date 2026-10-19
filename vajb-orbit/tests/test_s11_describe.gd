@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s11_describe: wave S11's inspector body and its identity title (CONTRACTS
 ## section 23.1, amended 2026-09-24).
 ##
@@ -74,7 +75,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_credits = int(_profile.call(&"credits"))
 	_previous_ammo = (_profile.get(&"_ammo") as Dictionary).duplicate(true)
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_seed_account()
 	_station = StationScene.instantiate() as Control
 	if _station == null:
@@ -102,7 +103,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_credits", _previous_credits)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile = null
 
 
@@ -114,14 +115,8 @@ func _seed_account() -> void:
 	_profile.set(&"_modules", {})
 	_profile.set(&"_ammo", {})
 
-
-func _delete_file(path: String) -> void:
-	if FileAccess.file_exists(path):
-		DirAccess.remove_absolute(path)
-
-
 func _pane(index: int) -> CanvasItem:
-	var panels: Array = _station.get(&"_panels")
+	var panels: Array = _station.call(&"panes")
 	if index < 0 or index >= panels.size():
 		return null
 	return panels[index]

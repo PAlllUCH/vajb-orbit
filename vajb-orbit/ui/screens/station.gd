@@ -848,6 +848,10 @@ func _build_drawer_entries() -> void:
 			_drawer_buttons, _label_for(deck), _icon_for(deck), _tinted_for(deck)
 		)
 		entry.pressed.connect(_on_drawer_pressed.bind(deck))
+		## Lazy panes (CODE_AUDIT 2026-10-19): the first build is the only cost
+		## a player feels, so hover/focus warms the pane before the click lands.
+		entry.mouse_entered.connect(_prefetch_module.bind(deck))
+		entry.focus_entered.connect(_prefetch_module.bind(deck))
 		_module_entries.append(entry)
 	var logout := _make_drawer_entry(_session_buttons, "LOG OUT", ICON_LOGOUT, true)
 	logout.pressed.connect(_on_drawer_logout)
@@ -1240,13 +1244,12 @@ func _sync_backdrop() -> void:
 
 
 func _build_panels() -> void:
+	## CODE_AUDIT 2026-10-19, P0 item 3: the six module panes are built on first
+	## use. The array keeps the deck indices the shell's public readers use; a
+	## null slot means "not built yet", and `_panel_for` is the one door that
+	## materialises it. Reversal: restore the eager loop (the pre-audit shape).
 	_panels.clear()
-	for index in MODULE_FILES.size():
-		var pane := _load_panel(index)
-		pane.visible = false
-		_host_margin.add_child(pane)
-		_back_header(pane)
-		_panels.append(pane)
+	_panels.resize(MODULE_FILES.size())
 	_overview = OverviewScene.instantiate() as CanvasItem
 	if _overview != null:
 		_overview.name = "Overview"
@@ -1325,28 +1328,8 @@ func _build_services() -> CanvasItem:
 	_service_host.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_service_host.add_theme_constant_override(&"separation", 12)
 	pane.add_child(_service_host)
-	for row: Dictionary in SERVICES_STRIP:
-		var service := StringName(row[&"service"])
-		var file := String(row[&"panel"])
-		var path := PANEL_DIR + file + PANEL_SUFFIX
-		var content: CanvasItem = null
-		if ResourceLoader.exists(path):
-			var packed := load(path) as PackedScene
-			if packed != null:
-				content = packed.instantiate() as CanvasItem
-		if content == null:
-			content = _make_service_placeholder(String(row[&"label"]), path)
-		content.name = String(row[&"label"]).to_pascal_case()
-		content.visible = false
-		## The host's own law (A5.1): a pane inside a VBoxContainer is only as tall as
-		## its minimum unless it expands, and the host is what owns that flag - a panel
-		## scene does not size itself. Without this the pane answers its own minimum
-		## (the header, the note and the foot) and every scroll inside it collapses to
-		## its 2 px minimum: the contracts board drew no rows at all.
-		content.size_flags_vertical = Control.SIZE_EXPAND_FILL
-		_connect_panel(content)
-		_service_host.add_child(content)
-		_service_panes[service] = content
+	## CODE_AUDIT 2026-10-19, P0 item 3: the three service panes are built on
+	## first use by `_ensure_service_pane`, not here. The strip is chrome only.
 	var foot := HBoxContainer.new()
 	foot.name = "PaneFoot"
 	foot.custom_minimum_size = Vector2(0.0, 56.0)
@@ -1365,7 +1348,7 @@ func _build_services() -> CanvasItem:
 	actions.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	actions.add_theme_constant_override(&"separation", 16)
 	foot.add_child(actions)
-	_show_service(&"contracts")
+	_sync_service_state()
 	return pane
 
 
@@ -1380,10 +1363,41 @@ func _on_service_pressed(service: StringName) -> void:
 	_show_service(service)
 
 
+## Build one service pane on first use. The host's own law (A5.1): a pane inside
+## a VBoxContainer is only as tall as its minimum unless it expands, and the host
+## owns that flag - a panel scene does not size itself. Without it every scroll
+## inside the pane collapses to its 2 px minimum (the contracts board drew no
+## rows at all).
+func _ensure_service_pane(service: StringName) -> CanvasItem:
+	if _service_panes.has(service):
+		return _service_panes[service] as CanvasItem
+	var row: Dictionary = {}
+	for entry: Dictionary in SERVICES_STRIP:
+		if StringName(entry[&"service"]) == service:
+			row = entry
+			break
+	if row.is_empty():
+		return null
+	var path := PANEL_DIR + String(row[&"panel"]) + PANEL_SUFFIX
+	var content: CanvasItem = null
+	if ResourceLoader.exists(path):
+		var packed := load(path) as PackedScene
+		if packed != null:
+			content = packed.instantiate() as CanvasItem
+	if content == null:
+		content = _make_service_placeholder(String(row[&"label"]), path)
+	content.name = String(row[&"label"]).to_pascal_case()
+	content.visible = false
+	content.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	_connect_panel(content)
+	_service_host.add_child(content)
+	_service_panes[service] = content
+	return content
+
+
 func _show_service(service: StringName) -> void:
-	if _service_panes.is_empty():
-		return
-	if not _service_panes.has(service):
+	var target := _ensure_service_pane(service)
+	if target == null:
 		return
 	_active_service = service
 	for key: Variant in _service_panes:
@@ -1417,7 +1431,7 @@ func _sync_service_state() -> void:
 
 ## The panel the deck is showing (the one the shell's inspect/confirm wiring must own).
 func service_panel(service: StringName) -> CanvasItem:
-	return _service_panes.get(String(service)) as CanvasItem
+	return _ensure_service_pane(service)
 
 
 func active_service() -> StringName:
@@ -1703,6 +1717,8 @@ func _select_module(module: int, instant: bool = false) -> void:
 	_sync_entry_pressed()
 	_sync_backdrop()
 	_apply_inspect_mode()
+	if module == SERVICES:
+		_show_service(_active_service)
 	if not instant:
 		AudioManager.play_sfx(SFX_MODULE_SWITCH)
 		AudioManager.play_ambience(_bed_for(module), SWITCH_AMBIENCE_FADE)
@@ -1734,6 +1750,13 @@ func _bed_for(module: int) -> StringName:
 	return BED_ROOM
 
 
+## Warm the pane the player is about to open, without changing what is shown.
+func _prefetch_module(module: int) -> void:
+	if module < 0 or module >= MODULE_FILES.size():
+		return
+	_panel_for(module)
+
+
 func _panel_for(module: int) -> CanvasItem:
 	if module == OVERVIEW:
 		return _overview
@@ -1741,12 +1764,32 @@ func _panel_for(module: int) -> CanvasItem:
 		return _services
 	if module < 0 or module >= _panels.size():
 		return null
+	if _panels[module] == null:
+		var pane := _load_panel(module)
+		pane.visible = false
+		_host_margin.add_child(pane)
+		_back_header(pane)
+		_panels[module] = pane
 	return _panels[module]
+
+
+## Public reader for callers (and tests) that need the six module panes as a
+## list. It materialises them, so production code uses `pane_for` when it only
+## needs one; `panes()` is the compatibility door for a full sweep.
+func panes() -> Array[CanvasItem]:
+	var out: Array[CanvasItem] = []
+	for index in MODULE_FILES.size():
+		var pane := _panel_for(index)
+		if pane != null:
+			out.append(pane)
+	return out
 
 
 func _all_panes() -> Array[CanvasItem]:
 	var out: Array[CanvasItem] = []
-	out.append_array(_panels)
+	for pane: CanvasItem in _panels:
+		if pane != null:
+			out.append(pane)
 	if _overview != null:
 		out.append(_overview)
 	if _services != null:
@@ -1775,7 +1818,7 @@ func _focus_active_panel() -> void:
 		## S42 (P46): an OVERVIEW service tile's deep-link hint names its service, so the
 		## deck mounts showing that service's panel; the strip's CONTRACTS default stands
 		## when the hint is not a service the deck carries.
-		if not _focus_hint.is_empty() and _service_panes.has(_focus_hint):
+		if not _focus_hint.is_empty() and _ensure_service_pane(_focus_hint) != null:
 			var service_hint: StringName = _focus_hint
 			_focus_hint = &""
 			_show_service(service_hint)

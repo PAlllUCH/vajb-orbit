@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite p2a_launch_fit: W4's launch path (wave P2-A, CONTRACTS section 11).
 ##
 ## The launch resolves the **active hull's own fit** instead of the one global
@@ -57,7 +58,7 @@ func suite_name() -> String:
 
 
 func suite_setup(_ctx: Dictionary) -> void:
-	_profile = _tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
+	_profile = Support.tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
 	if _profile == null:
 		fail_setup("the PlayerProfile autoload is the launch's store")
 		return
@@ -68,7 +69,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_modules = _profile.call(&"modules")
 	_previous_ammo = (_profile.get(&"_ammo") as Dictionary).duplicate(true)
 	_profile.set(&"save_path", SCRATCH_PROFILE)
-	_delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 
 
 func suite_teardown() -> void:
@@ -84,7 +85,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_ammo", _previous_ammo)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 	_profile = null
 
 
@@ -464,7 +465,7 @@ func _launch(hull_id: StringName, fit: Dictionary) -> Node2D:
 		_profile.call(&"set_fit", hull_id, fit)
 	var packed := load(GAME_SCENE) as PackedScene
 	_scene = packed.instantiate() as Node2D
-	_fixture_host().add_child(_scene)
+	Support.fixture_host().add_child(_scene)
 	return _scene
 
 
@@ -473,29 +474,5 @@ func _free_scene() -> void:
 		_scene.free()
 	_scene = null
 
-
-## Where a fixture may enter the tree: the runner calls every test from inside its own
-## `_ready`, when the root viewport is still busy adding the runner scene, so
-## `root.add_child(...)` fails there. The profile autoload took children all through
-## the run, and `game.gd` resolves the profile from the tree root, so where the scene
-## hangs does not matter to it.
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-## The cells the flight scene built for the HUD, read off the scene's own builder (not
-## the HUD's copy), so the payload is asserted even while the HUD side is mid-wave.
 func _hud_cells(scene: Node2D) -> Array:
 	return scene.call(&"_hull_slot_cells")
-
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())

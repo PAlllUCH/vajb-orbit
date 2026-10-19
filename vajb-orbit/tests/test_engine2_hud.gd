@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite engine2_hud: slice 2 W5's HUD additions (ENGINE_SPEC section 10, UI_SPEC sections
 ## 3.1b / 3.3 / 3.5 / 3.6).
 ##
@@ -31,36 +32,13 @@ func setup() -> void:
 		fail_setup("hud.tscn did not instantiate")
 		return
 	_hud.theme = HudTheme
-	_fixture_host().add_child(_hud)
+	Support.fixture_host().add_child(_hud)
 
 
 func teardown() -> void:
 	if _hud != null and is_instance_valid(_hud):
 		_hud.free()
 	_hud = null
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-## Where a fixture may enter the tree. The runner calls every test from inside its own
-## `_ready`, and the root viewport is still busy adding the runner scene at that moment, so
-## `root.add_child(...)` fails with "Parent node is busy setting up children" (measured on
-## the first run of this suite). The profile autoload entered the tree before the main scene
-## and takes children all through the run, and the HUD carries its own theme, so nothing in
-## this suite depends on where the fixture hangs.
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root
-
-
-## ---------------------------------------------------------------------------
-## Section 3.1b: the pool feed (the cluster's FUEL/ENRG dials) and the emergency banner
-## ---------------------------------------------------------------------------
-
-
 func test_pool_bars_hold_the_values_they_were_pushed() -> void:
 	_hud.call(&"set_pool", ENERGY, 40.0, 100.0)
 	_hud.call(&"set_pool", FUEL, 12.0, 200.0)

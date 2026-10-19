@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite p2a_profile_fits: the per-hull fit store of save v4 on `PlayerProfile`
 ## (CONTRACTS section 11, 09 sections 4.5 and 9) - the normalised cell shape and
 ## its capacity padding, the v1-v3 single-string migration read, the layout
@@ -40,7 +41,7 @@ func suite_name() -> String:
 
 
 func setup() -> void:
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_signals.clear()
 
 
@@ -53,7 +54,7 @@ func teardown() -> void:
 
 
 func suite_teardown() -> void:
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 ## ---------------------------------------------------------------------------
@@ -152,7 +153,7 @@ func test_set_fit_normalises_to_the_hulls_shape_and_the_array_shape_persists() -
 	first.save()
 	var second = _fresh()
 	second.reload()
-	assert_true(_deep_eq(second.fit_for(TWO_ENGINE_HULL), fit), "the fit round trips")
+	assert_true(Support.deep_eq(second.fit_for(TWO_ENGINE_HULL), fit), "the fit round trips")
 
 	## The persisted shape is the array shape, one entry per cell.
 	var on_disk := ConfigFile.new()
@@ -491,37 +492,3 @@ func _watch(profile: Node) -> void:
 
 func _on_profile_changed(key: StringName) -> void:
 	_signals.append(key)
-
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
-## Structural equality: `==` on nested dictionaries is not dependable across a
-## ConfigFile round trip, where key order is not preserved.
-func _deep_eq(a: Variant, b: Variant) -> bool:
-	if a is Dictionary and b is Dictionary:
-		var left: Dictionary = a
-		var right: Dictionary = b
-		if left.size() != right.size():
-			return false
-		for key: Variant in left.keys():
-			if not right.has(key):
-				return false
-			if not _deep_eq(left[key], right[key]):
-				return false
-		return true
-	if a is Array and b is Array:
-		var left_array: Array = a
-		var right_array: Array = b
-		if left_array.size() != right_array.size():
-			return false
-		for index: int in range(left_array.size()):
-			if not _deep_eq(left_array[index], right_array[index]):
-				return false
-		return true
-	if (a is float) or (b is float):
-		return is_equal_approx(float(a), float(b))
-	return a == b

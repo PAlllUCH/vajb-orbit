@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite engine2_dock: the dock's ammo settle, engine slice 2 (fight), closing pass W9.
 ##
 ## Finding **R1** of `.agents/gen/slice2_w8_report.md` section 2: `game.gd:_file_ammo_report`
@@ -80,7 +81,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	if _scene == null:
 		fail_setup("game.tscn did not instantiate")
 		return
-	_fixture_host().add_child(_scene)
+	Support.fixture_host().add_child(_scene)
 	_state = _scene.get(&"_state")
 	if _state == null:
 		fail_setup("game.tscn did not build its state")
@@ -95,16 +96,16 @@ func suite_teardown() -> void:
 		_scene.free()
 	_scene = null
 	_state = null
-	_delete_file(SCRATCH_PROFILE)
-	_delete_file(SCRATCH_LOG)
+	Support.delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_LOG)
 	Log.log_path = Log.DEFAULT_PATH
 	_restore_fixture()
 
 
 ## Every test hands the store back itself, so this only clears what a failed run left behind.
 func teardown() -> void:
-	_delete_file(SCRATCH_PROFILE)
-	_delete_file(SCRATCH_LOG)
+	Support.delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_LOG)
 
 
 ## ---------------------------------------------------------------------------
@@ -120,7 +121,7 @@ func test_the_dock_report_is_idempotent_within_one_launch() -> void:
 	if _scene == null or _state == null:
 		assert_true(false, "the live game scene is the dock fixture")
 		return
-	var profile: Node = _store()
+	var profile: Node = Support.profile()
 	assert_true(profile != null, "the PlayerProfile autoload is the dock's store")
 	if profile == null:
 		return
@@ -183,7 +184,7 @@ func test_a_settle_charges_the_rounds_fired_since_the_last_one() -> void:
 	if _scene == null or _state == null:
 		assert_true(false, "the live game scene is the dock fixture")
 		return
-	var profile: Node = _store()
+	var profile: Node = Support.profile()
 	assert_true(profile != null, "the PlayerProfile autoload is the dock's store")
 	if profile == null:
 		return
@@ -226,31 +227,6 @@ func test_a_settle_charges_the_rounds_fired_since_the_last_one() -> void:
 ## ---------------------------------------------------------------------------
 ## Fixtures (the same shapes `test_engine2_fixes.gd` uses for this seam)
 ## ---------------------------------------------------------------------------
-
-
-## Where a fixture may enter the tree. The runner calls every test from inside its own
-## `_ready`, when the root viewport is still busy adding the runner scene, so
-## `root.add_child(...)` fails there; the profile autoload took children all through the run.
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-## The dock's store, at the only path that resolves an autoload (`game.gd:_profile`).
-func _store() -> Node:
-	return _tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
-
-
-## The fired pack's slot as this launch sized it: the index of the fired family in the live
-## `PlayerState.weapons` array, so the test charges the pack it names whatever order the fit
-## holds its W cells in (LOW-6). It answers -1 when the launch mounts no such pack, and
-## GDScript's negative indexing would then silently read the **last** pack rather than
-## failing, so every caller guards the value before it indexes `ammo` (F11).
 func _slot() -> int:
 	return int((_state.get(&"weapons") as Array).find(FIRED_WEAPON))
 
@@ -266,7 +242,7 @@ func _slot() -> int:
 ## Every captured field is handed back in `_restore_fixture`, all flushes landing on the
 ## harness's own scratch `save_path`.
 func _stage_fixture() -> void:
-	var profile: Node = _store()
+	var profile: Node = Support.profile()
 	if profile == null:
 		return
 	_previous_fits = profile.call(&"fits")
@@ -292,7 +268,7 @@ func _stage_fixture() -> void:
 
 
 func _restore_fixture() -> void:
-	var profile: Node = _store()
+	var profile: Node = Support.profile()
 	if profile == null:
 		return
 	profile.call(&"set_fits", _previous_fits)
@@ -312,8 +288,8 @@ func _repoint(profile: Node) -> String:
 	var previous: String = profile.get(&"save_path")
 	profile.set(&"save_path", SCRATCH_PROFILE)
 	Log.log_path = SCRATCH_LOG
-	_delete_file(SCRATCH_PROFILE)
-	_delete_file(SCRATCH_LOG)
+	Support.delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_LOG)
 	return previous
 
 
@@ -324,11 +300,5 @@ func _hand_back(profile: Node, previous_path: String, weapon: StringName, rounds
 	profile.call(&"flush")
 	profile.set(&"save_path", previous_path)
 	Log.log_path = Log.DEFAULT_PATH
-	_delete_file(SCRATCH_PROFILE)
-	_delete_file(SCRATCH_LOG)
-
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
+	Support.delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_LOG)

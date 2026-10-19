@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s3_instances: the save v6 module instance on `PlayerProfile` (15 sections 1-9,
 ## CONTRACTS section 15) - the six-key record, the creation-time roll with its seeded
 ## outcomes, the bag/fitted `count` round trip, and the base-id translation every fit
@@ -71,7 +72,7 @@ func suite_name() -> String:
 
 
 func setup() -> void:
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 func teardown() -> void:
@@ -82,7 +83,7 @@ func teardown() -> void:
 
 
 func suite_teardown() -> void:
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 ## ---------------------------------------------------------------------------
@@ -106,10 +107,10 @@ func test_add_instance_mints_the_pinned_six_key_record() -> void:
 	)
 	assert_eq(String(record[Profile.KEY_RARITY]), "magic", "the rarity it was minted at")
 	assert_true(
-		_deep_eq(record[Profile.KEY_PREFIXES], [{"id": "sturdy", "value": 0.15}]),
+		Support.deep_eq(record[Profile.KEY_PREFIXES], [{"id": "sturdy", "value": 0.15}]),
 		"prefixes keep the {id, value} rows: %s" % [record[Profile.KEY_PREFIXES]]
 	)
-	assert_true(_deep_eq(record[Profile.KEY_SUFFIXES], ["whale"]), "suffixes keep one id each")
+	assert_true(Support.deep_eq(record[Profile.KEY_SUFFIXES], ["whale"]), "suffixes keep one id each")
 	assert_eq(int(record[Profile.KEY_COUNT]), 1, "count 1 = in the bag")
 	assert_eq(profile.instances_of(LIGHT_SHIELD), [id], "and it is the bag's one instance of it")
 
@@ -123,7 +124,7 @@ func test_add_instance_mints_the_pinned_six_key_record() -> void:
 	var plain: StringName = profile.add_instance(TARGETING, &"rare", ["wideband"], ["leeches"])
 	assert_eq(plain, StringName(Profile.INSTANCE_ID_FORMAT % 2), "a refusal spends no number")
 	assert_true(
-		_deep_eq(
+		Support.deep_eq(
 			profile.instance(plain)[Profile.KEY_PREFIXES], [{"id": "wideband", "value": 0.0}]
 		),
 		"a bare prefix id is stored as a row with 0.0"
@@ -236,11 +237,11 @@ func test_the_seeded_outcomes_are_pinned() -> void:
 		var where := "%s from %s" % [entry[&"base"], entry[&"source"]]
 		assert_eq(String(record[Profile.KEY_RARITY]), entry[&"rarity"], "%s: rarity" % where)
 		assert_true(
-			_deep_eq(record[Profile.KEY_PREFIXES], entry[&"prefixes"]),
+			Support.deep_eq(record[Profile.KEY_PREFIXES], entry[&"prefixes"]),
 			"%s: prefixes, expected %s, got %s" % [where, entry[&"prefixes"], record[Profile.KEY_PREFIXES]]
 		)
 		assert_true(
-			_deep_eq(record[Profile.KEY_SUFFIXES], entry[&"suffixes"]),
+			Support.deep_eq(record[Profile.KEY_SUFFIXES], entry[&"suffixes"]),
 			"%s: suffixes, expected %s, got %s" % [where, entry[&"suffixes"], record[Profile.KEY_SUFFIXES]]
 		)
 
@@ -259,14 +260,14 @@ func test_a_roll_is_seeded_and_never_re_rolled() -> void:
 	var second: Dictionary = profile.instance(second_id)
 	for key: String in [Profile.KEY_RARITY, Profile.KEY_PREFIXES, Profile.KEY_SUFFIXES]:
 		assert_true(
-			_deep_eq(first[key], second[key]),
+			Support.deep_eq(first[key], second[key]),
 			"the same seed rolls the same %s: %s vs %s" % [key, first[key], second[key]]
 		)
-	assert_true(_deep_eq(profile.instance(first_id), first), "a second read is the same record")
+	assert_true(Support.deep_eq(profile.instance(first_id), first), "a second read is the same record")
 	profile.save()
 	var reloaded = _fresh()
 	reloaded.reload()
-	assert_true(_deep_eq(reloaded.instance(first_id), first), "and the file holds it verbatim")
+	assert_true(Support.deep_eq(reloaded.instance(first_id), first), "and the file holds it verbatim")
 	assert_eq(
 		reloaded.instances_of(TARGETING),
 		[first_id, second_id],
@@ -290,7 +291,7 @@ func test_the_bag_and_fitted_count_round_trip() -> void:
 	var fitted: Dictionary = profile.instance(id)
 	assert_eq(String(fitted[Profile.KEY_RARITY]), "magic", "but the record survives with its affixes")
 	assert_true(
-		_deep_eq(fitted[Profile.KEY_PREFIXES], [{"id": "sturdy", "value": 0.15}]),
+		Support.deep_eq(fitted[Profile.KEY_PREFIXES], [{"id": "sturdy", "value": 0.15}]),
 		"prefix rows and all"
 	)
 	assert_false(profile.take_instance(id), "an instance already out of the bag cannot be taken again")
@@ -311,7 +312,7 @@ func test_the_bag_and_fitted_count_round_trip() -> void:
 	reloaded.reload()
 	assert_eq(reloaded.module_count(id), 1, "the count round trips")
 	assert_true(
-		_deep_eq(reloaded.instance(id)[Profile.KEY_PREFIXES], [{"id": "sturdy", "value": 0.15}]),
+		Support.deep_eq(reloaded.instance(id)[Profile.KEY_PREFIXES], [{"id": "sturdy", "value": 0.15}]),
 		"and so do the affixes"
 	)
 
@@ -344,9 +345,9 @@ func test_remove_and_swap_hand_back_the_same_instance() -> void:
 	var back: Dictionary = profile.instance(mining)
 	assert_eq(String(back[Profile.KEY_RARITY]), "magic", "with its own rarity")
 	assert_true(
-		_deep_eq(back[Profile.KEY_PREFIXES], [{"id": "keen", "value": 0.08}]), "and its own prefix"
+		Support.deep_eq(back[Profile.KEY_PREFIXES], [{"id": "keen", "value": 0.08}]), "and its own prefix"
 	)
-	assert_true(_deep_eq(back[Profile.KEY_SUFFIXES], ["ledger"]), "and its own suffix")
+	assert_true(Support.deep_eq(back[Profile.KEY_SUFFIXES], ["ledger"]), "and its own suffix")
 	assert_eq(profile.instances_of(MINING), [mining], "one instance of the base: the original")
 
 	## REMOVE: the same instance again, and the cell empties.
@@ -382,11 +383,11 @@ func test_two_instances_of_one_base_stay_distinguishable() -> void:
 		"and the two differ, which is what the fitting panel must show"
 	)
 	assert_true(
-		_deep_eq(profile.instance(magic)[Profile.KEY_PREFIXES], [{"id": "sturdy", "value": 0.10}]),
+		Support.deep_eq(profile.instance(magic)[Profile.KEY_PREFIXES], [{"id": "sturdy", "value": 0.10}]),
 		"the Magic carries one prefix"
 	)
 	assert_true(
-		_deep_eq(
+		Support.deep_eq(
 			profile.instance(rare)[Profile.KEY_PREFIXES],
 			[{"id": "sturdy", "value": 0.20}, {"id": "vigilant", "value": 0.35}]
 		),
@@ -404,14 +405,14 @@ func test_two_instances_of_one_base_stay_distinguishable() -> void:
 	assert_eq(reloaded.module_count(rare), 0, "and so does the fitted count")
 	assert_eq(String(reloaded.instance(rare)[Profile.KEY_RARITY]), "rare", "each keeps its own rarity")
 	assert_true(
-		_deep_eq(
+		Support.deep_eq(
 			reloaded.instance(rare)[Profile.KEY_PREFIXES],
 			[{"id": "sturdy", "value": 0.20}, {"id": "vigilant", "value": 0.35}]
 		),
 		"and the Rare's own two prefixes"
 	)
 	assert_true(
-		_deep_eq(reloaded.instance(magic)[Profile.KEY_PREFIXES], [{"id": "sturdy", "value": 0.10}]),
+		Support.deep_eq(reloaded.instance(magic)[Profile.KEY_PREFIXES], [{"id": "sturdy", "value": 0.10}]),
 		"and the Magic's one"
 	)
 
@@ -440,11 +441,11 @@ func test_a_fit_is_judged_on_base_ids_not_instance_ids() -> void:
 	## `_deep_eq` and not `==`: the translation builds plain arrays while the literals
 	## below are typed ones, and two Arrays of different typing never compare equal.
 	assert_true(
-		_deep_eq(translated[&"weapons"], [PLASMA, PLASMA]),
+		Support.deep_eq(translated[&"weapons"], [PLASMA, PLASMA]),
 		"an instance id translates to its base id: %s" % [translated[&"weapons"]]
 	)
 	assert_true(
-		_deep_eq(translated[&"shields"], [LIGHT_SHIELD]), "in every cell of every list type"
+		Support.deep_eq(translated[&"shields"], [LIGHT_SHIELD]), "in every cell of every list type"
 	)
 	assert_eq(
 		String(translated[&"power"]), String(STANDARD_REACTOR), "and a base id passes through"
@@ -578,15 +579,6 @@ func _fresh():
 	_profiles.append(profile)
 	return profile
 
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
-## The rarities a source's row allows, in 15 section 1's order: the columns the table
-## gives a non-zero weight, which is the set an outcome may fall in.
 func _legal_rarities(source: StringName) -> Array[String]:
 	var legal: Array[String] = []
 	var table: Dictionary = ModuleData.SOURCE_ROLLS.get(source, {})
@@ -635,31 +627,3 @@ func _assert_affixes_are_legal(record: Dictionary, base: StringName, where: Stri
 		assert_true(suffixes.has(suffix), "%s: %s is in the suffix pool" % [where, suffix])
 		assert_false(seen_suffixes.has(suffix), "%s: %s rolls once" % [where, suffix])
 		seen_suffixes.append(suffix)
-
-
-## Structural equality: `==` on nested dictionaries is not dependable across a
-## ConfigFile round trip, where key order is not preserved.
-func _deep_eq(a: Variant, b: Variant) -> bool:
-	if a is Dictionary and b is Dictionary:
-		var left: Dictionary = a
-		var right: Dictionary = b
-		if left.size() != right.size():
-			return false
-		for key: Variant in left.keys():
-			if not right.has(key):
-				return false
-			if not _deep_eq(left[key], right[key]):
-				return false
-		return true
-	if a is Array and b is Array:
-		var left_array: Array = a
-		var right_array: Array = b
-		if left_array.size() != right_array.size():
-			return false
-		for index: int in range(left_array.size()):
-			if not _deep_eq(left_array[index], right_array[index]):
-				return false
-		return true
-	if (a is float) or (b is float):
-		return is_equal_approx(float(a), float(b))
-	return a == b

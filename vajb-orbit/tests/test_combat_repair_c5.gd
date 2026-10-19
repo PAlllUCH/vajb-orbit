@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite combat_repair_c5: the four defects the C1-C3 measurements proved, plus the
 ## owner's drag retune (brief `.agents/gen/combat_repair_wave_task.md`; owner rulings
 ## 2026-09-21, second round). One test per fix, each pinned at the seam the fix lives at:
@@ -167,7 +168,7 @@ func test_the_rock_takes_its_half_of_a_ram_through_the_shipped_gun_chip_rate() -
 	rock.call(&"apply_collision_damage", RAM_OFFER)
 	control.call(&"apply_work", offer_work)
 	assert_true(
-		_near(rock.work, control.work),
+		Support.near(rock.work, control.work),
 		"the ram's conversion is the shipped gun chip rate over the rock's own divisor (%.9f vs %.9f)"
 		% [rock.work, control.work]
 	)
@@ -175,7 +176,7 @@ func test_the_rock_takes_its_half_of_a_ram_through_the_shipped_gun_chip_rate() -
 	## units that left plus the fraction still in the accumulator (C2's `work_credited`).
 	var credited := float(ROCK_UNITS - int(rock.yield_units)) + float(rock.work)
 	assert_true(
-		_near(credited, offer_work),
+		Support.near(credited, offer_work),
 		"a 186.179 offer credits 10 %% of it over the x2.5 class divisor, %.9f work: %.9f"
 		% [offer_work, credited]
 	)
@@ -222,11 +223,11 @@ func test_plasma_bonus_stays_off_a_live_npc_shield() -> void:
 	var shield_delta := shield_before - float(live.call(&"shield"))
 	var hull_delta := hull_before - float(live.call(&"hull"))
 	assert_true(
-		_near(shield_delta, PLASMA_DPS),
+		Support.near(shield_delta, PLASMA_DPS),
 		"a 1 s plasma hold removes the row's 70.000 through a live shield, not 87.500: %.3f"
 		% shield_delta
 	)
-	assert_true(_near(hull_delta, 0.0), "no carry-over: the hull is untouched (%.3f)" % hull_delta)
+	assert_true(Support.near(hull_delta, 0.0), "no carry-over: the hull is untouched (%.3f)" % hull_delta)
 
 
 func test_plasma_bonus_lands_once_the_npc_shield_pool_is_down() -> void:
@@ -241,10 +242,10 @@ func test_plasma_bonus_lands_once_the_npc_shield_pool_is_down() -> void:
 	var hull_delta := hull_before - float(inert.call(&"hull"))
 	var shield_delta := float(inert.call(&"shield"))
 	assert_true(
-		_near(hull_delta, PLASMA_DPS * PLASMA_BONUS),
+		Support.near(hull_delta, PLASMA_DPS * PLASMA_BONUS),
 		"the row's own +25 %% lands on the hull: 70 x 1.25 = 87.500, measured %.3f" % hull_delta
 	)
-	assert_true(_near(shield_delta, 0.0), "the inert pool stays at zero (%.3f)" % shield_delta)
+	assert_true(Support.near(shield_delta, 0.0), "the inert pool stays at zero (%.3f)" % shield_delta)
 
 
 ## ---------------------------------------------------------------------------
@@ -301,7 +302,7 @@ func test_the_coast_column_is_the_retuned_half_of_the_section_13_rows() -> void:
 		var before := float(SECTION_13_COAST[hull_id])
 		var after := float(row.get(&"coast_time", -1.0))
 		assert_true(
-			_near(after, before * RETUNE_SCALE),
+			Support.near(after, before * RETUNE_SCALE),
 			"%s: coast_time %.3f -> %.3f (the owner's x 0.50)" % [hull_id, before, after]
 		)
 	## The rest of the shipped hull's row is the section 13 column untouched: a retune of
@@ -311,14 +312,14 @@ func test_the_coast_column_is_the_retuned_half_of_the_section_13_rows() -> void:
 	## x 0.50, so the Vanguard's 3.0 rad/s is 1.5 -- and it is asserted at its retuned
 	## value here so this file keeps proving the coast retune's own blast radius.
 	var vanguard: Dictionary = ShipFitScript.HANDLING[&"ship_vanguard"]
-	assert_true(_near(float(vanguard[&"max_speed"]), 428.0), "max_speed is still 428")
-	assert_true(_near(float(vanguard[&"accel_time"]), 2.4), "accel_time is still 2.4")
+	assert_true(Support.near(float(vanguard[&"max_speed"]), 428.0), "max_speed is still 428")
+	assert_true(Support.near(float(vanguard[&"accel_time"]), 2.4), "accel_time is still 2.4")
 	assert_true(
-		_near(float(vanguard[&"turn_rate"]), 1.5),
+		Support.near(float(vanguard[&"turn_rate"]), 1.5),
 		"turn_rate is the flight-feel x 0.50 (3.0 -> 1.5)"
 	)
-	assert_true(_near(float(vanguard[&"turn_spinup"]), 0.5), "turn_spinup is still 0.5")
-	assert_true(_near(float(vanguard[&"hull_mass"]), 110.0), "hull_mass is still 110")
+	assert_true(Support.near(float(vanguard[&"turn_spinup"]), 0.5), "turn_spinup is still 0.5")
+	assert_true(Support.near(float(vanguard[&"hull_mass"]), 110.0), "hull_mass is still 110")
 	## The retuned row is what the launch reads through the 2026-09-22 flight-feel
 	## ruling's `COAST_TIME_MULT` (x 2.0, the documented revert of this suite's
 	## x 0.50 -- CONTRACTS section 14): the fight wave's x 0.50 made 2.0 s resolve
@@ -330,7 +331,7 @@ func test_the_coast_column_is_the_retuned_half_of_the_section_13_rows() -> void:
 	assert_true(stats != null, "the shipped hull resolves")
 	if stats != null:
 		assert_true(
-			_near(
+			Support.near(
 				float(stats.coast_time),
 				1.0 * ShipFitScript.COAST_TIME_MULT,
 				1e-6
@@ -341,7 +342,7 @@ func test_the_coast_column_is_the_retuned_half_of_the_section_13_rows() -> void:
 			)
 		)
 		assert_true(
-			_near(
+			Support.near(
 				float(stats.hull_mass),
 				110.0 * (1.0 + penalty),
 				1e-6
@@ -403,7 +404,3 @@ func _beam_plasma(target: Node2D) -> void:
 		target.global_position,
 		ONE_SECOND
 	)
-
-
-func _near(measured: float, expected: float, tolerance: float = TOLERANCE) -> bool:
-	return absf(measured - expected) <= tolerance

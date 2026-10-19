@@ -1,4 +1,5 @@
 extends SceneTree
+const Support := preload("res://tests/support.gd")
 ## P2-B1 W1 evidence probe: drive `PlayerProfile.buy_module` (CONTRACTS section
 ## 12) end to end and print the round-trip numbers, so every figure in
 ## `.agents/gen/p2b1_w1_report.md` can be re-measured by hand.
@@ -21,8 +22,8 @@ var _failures: Array[String] = []
 
 
 func _init() -> void:
-	_remove(PROBE_PATH)
-	_remove(LOG_PATH)
+	Support.delete_file(PROBE_PATH)
+	Support.delete_file(LOG_PATH)
 	Log.log_path = LOG_PATH
 
 	var cannon_price := int(ModuleData.module(&"w_cannon")[&"cost"])
@@ -80,8 +81,8 @@ func _init() -> void:
 	])
 
 	profile.free()
-	_remove(PROBE_PATH)
-	_remove(LOG_PATH)
+	Support.delete_file(PROBE_PATH)
+	Support.delete_file(LOG_PATH)
 	quit()
 
 
@@ -110,9 +111,3 @@ func _log_lines() -> PackedStringArray:
 		if not line.strip_edges().is_empty():
 			lines.append(line)
 	return lines
-
-
-func _remove(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())

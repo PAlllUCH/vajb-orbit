@@ -49,6 +49,7 @@ extends Control
 ## "retire, do not delete" precedent the D7 cluster used for the old HUD column. Every D6
 ## behaviour row (toggle, dock guard, no-write proof, the read-only fits) is untouched.
 
+const ShipSlotsScript := preload("res://ui/components/ship_slots.gd")
 const CockpitStyleScript := preload("res://ui/hud/cockpit_style.gd")
 
 const PROFILE_SERVICE: StringName = &"PlayerProfile"
@@ -76,18 +77,6 @@ const RENDER_MISSING_SIZE := Vector2(320.0, 320.0)
 const PLATE_VARIATION: StringName = &"SlotButtonWeapon"
 
 ## 09 section 1's slot glyph per slot-type key (the panes' own table, third copy of the pin).
-const SLOT_GLYPHS: Dictionary = {
-	&"engines": "engine",
-	&"power": "power",
-	&"weapons": "w",
-	&"shields": "s",
-	&"armour": "h",
-	&"computers": "c",
-	&"boosters": "b",
-	&"utility": "u",
-}
-const SLOT_GLYPH_DIR := "res://assets/icons/slot/"
-const SLOT_GLYPH_TEMPLATE := "icon_slot_%s.svg"
 
 ## The modal's engine Labels (section 3.9 rule 3: words are Labels, never baked into art). The
 ## theme type variations carry the sizes; the style carries the point sizes.
@@ -970,10 +959,7 @@ func _cell_icon_path(slot_key: StringName, index: int, base: StringName) -> Stri
 		var path := ModuleCatalog.icon_path(base)
 		if not path.is_empty():
 			return path
-	var stem := String(SLOT_GLYPHS.get(slot_key, ""))
-	if stem.is_empty():
-		return ""
-	return SLOT_GLYPH_DIR + SLOT_GLYPH_TEMPLATE % stem
+	return ShipSlotsScript.glyph_path(slot_key)
 
 
 ## One row per fitted cell, in the grid's order: the layout cell ref (`<TOKEN><n>`, the fitting

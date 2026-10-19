@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite flight_feel_g1: the construction half of the owner's third-round flight rulings
 ## (2026-09-21, brief `.agents/gen/flight_beam_wave_task.md`), carried forward through the
 ## 2026-09-22 steering ruling (CONTRACTS section 14: `STEER_WITHOUT_THROTTLE` and the
@@ -231,7 +232,7 @@ func test_the_turn_column_is_the_retuned_half_of_the_wave_start_rows() -> void:
 		var turn_before := float(before[&"turn_rate"])
 		var turn_after := float(row.get(&"turn_rate", -1.0))
 		assert_true(
-			_near(turn_after, turn_before * RETUNE_SCALE),
+			Support.near(turn_after, turn_before * RETUNE_SCALE),
 			"%s: turn_rate %.3f -> %.3f (the owner's x 0.50)" % [hull_id, turn_before, turn_after]
 		)
 		assert_true(turn_after < turn_before, "%s: the turn is slower, not faster" % hull_id)
@@ -256,7 +257,7 @@ func test_no_other_handling_number_moved() -> void:
 		var before: Dictionary = WAVE_START_HANDLING[hull_id]
 		for key: StringName in untouched:
 			assert_true(
-				_near(float(row[key]), float(before[key])),
+				Support.near(float(row[key]), float(before[key])),
 				(
 					"%s.%s is untouched at %.3f (the turn retune moved turn_rate only)"
 					% [hull_id, key, float(before[key])]
@@ -282,18 +283,18 @@ func test_the_retuned_turn_rate_reaches_the_hull_through_the_snapshot() -> void:
 			float(ShipFitScript.MODULES[&"h_plate_light"][&"effects"][&"speed_penalty"])
 		)
 		assert_true(
-			_near(float(stats.turn_rate), float(row[&"turn_rate"]), 1e-6),
+			Support.near(float(stats.turn_rate), float(row[&"turn_rate"]), 1e-6),
 			(
 				"%s: the snapshot's turn rate is the retuned row (%.3f), not a scaled copy"
 				% [hull_id, float(row[&"turn_rate"])]
 			)
 		)
 		assert_true(
-			_near(float(stats.turn_spinup), float(row[&"turn_spinup"]), 1e-6),
+			Support.near(float(stats.turn_spinup), float(row[&"turn_spinup"]), 1e-6),
 			"%s: the spin-up stays the class row (plating pays in mass since S22.7)" % hull_id
 		)
 		assert_true(
-			_near(float(stats.hull_mass), float(row[&"hull_mass"]) * (1.0 + penalty), 1e-6),
+			Support.near(float(stats.hull_mass), float(row[&"hull_mass"]) * (1.0 + penalty), 1e-6),
 			"%s: and the plate's ponderous half rides the mass (x%.2f)" % [hull_id, 1.0 + penalty]
 		)
 
@@ -322,7 +323,7 @@ func test_the_bearing_law_is_proportional_then_saturated_at_the_class_rate() -> 
 		var command := float(ship.call(&"_turn_toward", point))
 		var expected := angle if absf(angle) < 1.0 else signf(angle)
 		assert_true(
-			_near(command, expected * rate, 1e-5),
+			Support.near(command, expected * rate, 1e-5),
 			(
 				"error %.3f rad -> %.4f rad/s (one radian of error is full deflection)"
 				% [angle, command]
@@ -350,7 +351,7 @@ func test_the_fly_to_order_still_uses_the_same_bearing_law() -> void:
 	var point: Vector2 = ship.global_position + Vector2(900.0, 400.0)
 	ship.call(&"set_move_target", point)
 	assert_true(
-		_near(
+		Support.near(
 			float(ship.call(&"_order_turn")),
 			float(ship.call(&"_turn_toward", point)),
 			TOLERANCE
@@ -394,7 +395,7 @@ func test_the_aim_deadzone_is_the_hull_radius_and_no_new_number() -> void:
 	var outside: Vector2 = ship.global_position + Vector2(radius * 2.0, 0.0).rotated(heading + 1.0)
 	ship.call(&"set_aim_point", outside)
 	assert_true(
-		_near(float(ship.call(&"_aim_turn")), float(ship.call(&"_turn_toward", outside)), TOLERANCE),
+		Support.near(float(ship.call(&"_aim_turn")), float(ship.call(&"_turn_toward", outside)), TOLERANCE),
 		"outside the radius the aim turn is the plain bearing law"
 	)
 	assert_true(
@@ -436,26 +437,26 @@ func test_the_manual_turn_is_the_cursor_with_or_without_the_throttle() -> void:
 	## Full deflection from the aim, so the cursor path is unmistakably commanding a turn.
 	var aim := float(ship.call(&"_aim_turn"))
 	assert_true(
-		_near(aim, rate, 1e-5),
+		Support.near(aim, rate, 1e-5),
 		"a cursor 90 degrees off the bow commands the full class rate (%.4f)" % aim
 	)
 	assert_true(
-		_near(float(ship.call(&"_manual_desired_turn", 1.0, 0.0)), aim, TOLERANCE),
+		Support.near(float(ship.call(&"_manual_desired_turn", 1.0, 0.0)), aim, TOLERANCE),
 		"holding thrust_forward turns the nose towards the cursor"
 	)
 	assert_true(
-		_near(float(ship.call(&"_manual_desired_turn", 0.0, 0.0)), aim, TOLERANCE),
+		Support.near(float(ship.call(&"_manual_desired_turn", 0.0, 0.0)), aim, TOLERANCE),
 		(
 			"and with the throttle released the same cursor commands the same turn: a turn is "
 			+ "torque, so a parked hull comes about where it stands"
 		)
 	)
 	assert_true(
-		_near(float(ship.call(&"_manual_desired_turn", 0.0, FULL_DEFLECTION)), rate, 1e-5),
+		Support.near(float(ship.call(&"_manual_desired_turn", 0.0, FULL_DEFLECTION)), rate, 1e-5),
 		"a deflected turn action still turns without thrust (a pad or a re-bind)"
 	)
 	assert_true(
-		_near(float(ship.call(&"_manual_desired_turn", 1.0, -FULL_DEFLECTION)), -rate, 1e-5),
+		Support.near(float(ship.call(&"_manual_desired_turn", 1.0, -FULL_DEFLECTION)), -rate, 1e-5),
 		"and a bound turn action takes priority over the cursor"
 	)
 	## The deadzone is what holds a heading the pilot is not steering -- a cursor resting on
@@ -486,25 +487,25 @@ func test_the_shipped_map_strafes_on_a_and_d_and_keeps_the_turn_actions() -> voi
 	assert_true(is_zero_approx(float(ship.call(&"_manual_throttle"))), "no throttle while nothing is held")
 	_press(STRAFE_RIGHT)
 	assert_true(
-		_near(float(ship.call(&"_manual_strafe")), 1.0),
+		Support.near(float(ship.call(&"_manual_strafe")), 1.0),
 		"D strafes towards the hull's right"
 	)
 	assert_true(is_zero_approx(float(ship.call(&"_manual_throttle"))), "a strafe is not a throttle")
 	_press(STRAFE_LEFT)
 	assert_true(
-		_near(float(ship.call(&"_manual_strafe")), 0.0, 1e-6),
+		Support.near(float(ship.call(&"_manual_strafe")), 0.0, 1e-6),
 		"A and D together cancel, the way W and S do"
 	)
 	_release_all()
 	_press(THRUST_FORWARD)
-	assert_true(_near(float(ship.call(&"_manual_throttle")), 1.0), "W is still the throttle")
+	assert_true(Support.near(float(ship.call(&"_manual_throttle")), 1.0), "W is still the throttle")
 	assert_true(
 		is_zero_approx(float(ship.call(&"_manual_turn"))),
 		"the shipped map binds no key to turn_left / turn_right"
 	)
 	_press(TURN_RIGHT)
 	assert_true(
-		_near(float(ship.call(&"_manual_turn")), 1.0),
+		Support.near(float(ship.call(&"_manual_turn")), 1.0),
 		"but the turn reader still answers the action"
 	)
 	_press(TURN_LEFT)
@@ -515,7 +516,7 @@ func test_the_shipped_map_strafes_on_a_and_d_and_keeps_the_turn_actions() -> voi
 	_release_all()
 	_press(THRUST_BACKWARD)
 	assert_true(
-		_near(float(ship.call(&"_manual_throttle")), -1.0),
+		Support.near(float(ship.call(&"_manual_throttle")), -1.0),
 		"S is still reverse thrust (the active brake)"
 	)
 
@@ -547,33 +548,33 @@ func test_the_command_is_lateral_and_ceiling_clamped_with_no_invented_fraction()
 		var reverse_only: Vector2 = ship.call(&"_command_velocity", -1.0, 0.0)
 		var diagonal: Vector2 = ship.call(&"_command_velocity", 1.0, 1.0)
 		assert_true(
-			_near(forward_only.x, ceiling, STICK_TOLERANCE)
+			Support.near(forward_only.x, ceiling, STICK_TOLERANCE)
 			and is_zero_approx(forward_only.y),
 			"%s: W alone is the old command to the digit (%.3f u/s)" % [hull_id, forward_only.x]
 		)
 		assert_true(
-			_near(reverse_only.x, -ceiling, STICK_TOLERANCE) and is_zero_approx(reverse_only.y),
+			Support.near(reverse_only.x, -ceiling, STICK_TOLERANCE) and is_zero_approx(reverse_only.y),
 			"%s: S alone is the old brake command to the digit" % hull_id
 		)
 		assert_true(
 			is_zero_approx(lateral_only.x)
-			and _near(lateral_only.y, ceiling, STICK_TOLERANCE),
+			and Support.near(lateral_only.y, ceiling, STICK_TOLERANCE),
 			"%s: D alone commands the class's own max_speed sideways (%.3f u/s)"
 			% [hull_id, lateral_only.y]
 		)
 		assert_true(
-			_near(lateral_only.y, ceiling, STICK_TOLERANCE),
+			Support.near(lateral_only.y, ceiling, STICK_TOLERANCE),
 			"%s: the lateral ceiling is max_speed itself -- no fraction invented" % hull_id
 		)
 		assert_true(
-			_near(diagonal.length(), ceiling, STICK_TOLERANCE),
+			Support.near(diagonal.length(), ceiling, STICK_TOLERANCE),
 			(
 				"%s: W+D is clamped to the class ceiling %.3f, not sqrt(2) x it (%.3f)"
 				% [hull_id, ceiling, ceiling * sqrt(2.0)]
 			)
 		)
 		assert_true(
-			_near(diagonal.x, diagonal.y, STICK_TOLERANCE),
+			Support.near(diagonal.x, diagonal.y, STICK_TOLERANCE),
 			"%s: and it is a 45 degree diagonal, so each axis gives way equally" % hull_id
 		)
 		assert_true(
@@ -581,7 +582,7 @@ func test_the_command_is_lateral_and_ceiling_clamped_with_no_invented_fraction()
 			"%s: each axis gives up part of the class ceiling on the diagonal" % hull_id
 		)
 		assert_true(
-			_near(float(ship.call(&"_accel_rate")), ceiling / float(stats.accel_time), 1e-6),
+			Support.near(float(ship.call(&"_accel_rate")), ceiling / float(stats.accel_time), 1e-6),
 			(
 				"%s: the strafe's rate is the class's own max_speed / accel_time (%.3f u/s^2)"
 				% [hull_id, ceiling / float(stats.accel_time)]
@@ -592,7 +593,7 @@ func test_the_command_is_lateral_and_ceiling_clamped_with_no_invented_fraction()
 		var nose := Vector2.RIGHT.rotated(heading)
 		var side: Vector2 = ship.call(&"_strafe_axis")
 		assert_true(
-			_near(side.dot(nose), 0.0, 1e-5) and _near(side.length(), 1.0, 1e-5),
+			Support.near(side.dot(nose), 0.0, 1e-5) and Support.near(side.length(), 1.0, 1e-5),
 			"%s: the strafe axis is square to the nose, so D moves the hull sideways" % hull_id
 		)
 		assert_true(
@@ -614,7 +615,7 @@ func test_the_strafe_reader_needs_no_launch_snapshot() -> void:
 	assert_true(is_zero_approx(float(ship.call(&"_manual_strafe"))), "an idle hull reads no strafe")
 	_press(STRAFE_RIGHT)
 	assert_true(
-		_near(float(ship.call(&"_manual_strafe")), 1.0),
+		Support.near(float(ship.call(&"_manual_strafe")), 1.0),
 		"the strafe reader answers the action without a snapshot"
 	)
 	assert_true(
@@ -794,28 +795,16 @@ func _launch(hull_id: StringName) -> Array:
 ## takes children all through the run, whereas the root viewport is busy adding the runner
 ## scene during `_ready` (see `test_engine2_fixes.gd`).
 func _host() -> Node:
-	var root := _tree().root
+	var root := Support.tree().root
 	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
 	return host if host != null else root
 
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
 func _settings_manager() -> Node:
-	return _tree().root.get_node_or_null(NodePath(&"SettingsManager"))
+	return Support.tree().root.get_node_or_null(NodePath(&"SettingsManager"))
 
 
 func suite_teardown() -> void:
-	_delete_file(SCRATCH_INPUTS)
-
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
+	Support.delete_file(SCRATCH_INPUTS)
 
 func _press(action: StringName) -> void:
 	Input.action_press(action)
@@ -838,7 +827,3 @@ func _key_event(keycode: Key) -> InputEventKey:
 	event.keycode = keycode
 	event.physical_keycode = keycode
 	return event
-
-
-func _near(measured: float, expected: float, tolerance: float = TOLERANCE) -> bool:
-	return absf(measured - expected) <= tolerance

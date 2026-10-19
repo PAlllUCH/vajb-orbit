@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite flight_beam_g2: the beam polish of the flight-feel & beam wave (brief
 ## `.agents/gen/flight_beam_wave_task.md`, worker G2) - the shaft stopping on the point
 ## its ray resolved, the cue and the chip-sparks burst a gun chipping a rock gets, and
@@ -93,7 +94,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_snapshot_pools()
 	_root = Node2D.new()
 	_root.name = &"G2Fixture"
-	_fixture_host().add_child(_root)
+	Support.fixture_host().add_child(_root)
 
 
 func suite_teardown() -> void:
@@ -114,7 +115,7 @@ func teardown() -> void:
 
 ## The shared pool cursors, as found.
 func _snapshot_pools() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		return
 	var cursors: Variant = audio.get(&"_pool_next")
@@ -128,7 +129,7 @@ func _snapshot_pools() -> void:
 func _restore_pools() -> void:
 	if not _had_pool_state:
 		return
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		return
 	var cursors: Variant = audio.get(&"_pool_next")
@@ -157,7 +158,7 @@ func test_a_shot_that_hits_nothing_still_draws_the_weapons_own_reach() -> void:
 		return
 	assert_eq(halo.points.size(), 2, "the shaft runs from the muzzle to its reach")
 	assert_true(
-		_near(halo.points[1].length(), AIM_DISTANCE),
+		Support.near(halo.points[1].length(), AIM_DISTANCE),
 		"the shaft ends at the aim point inside the weapon's range (%.1f)"
 		% halo.points[1].length()
 	)
@@ -179,7 +180,7 @@ func test_the_shaft_stops_on_the_point_its_ray_resolved() -> void:
 		return
 	assert_true(rocket != null, "the fixture put a destructible shot on the segment")
 	assert_true(
-		_near(halo.points[1].x, ROCKET_DISTANCE),
+		Support.near(halo.points[1].x, ROCKET_DISTANCE),
 		"the shaft ends on the target's own point (%.1f)" % halo.points[1].x
 	)
 	assert_true(
@@ -194,7 +195,7 @@ func test_the_shaft_stops_on_the_point_its_ray_resolved() -> void:
 
 
 func test_a_laser_chipping_a_rock_plays_the_chip_cue_and_the_burst() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -228,7 +229,7 @@ func test_a_laser_chipping_a_rock_plays_the_chip_cue_and_the_burst() -> void:
 		"a laser chipping a rock plays the chip cue (it played nothing before)"
 	)
 	assert_true(
-		_near(rock.work, 30.0 * BEAM_FRAME * WeaponScript.GUN_CHIP_RATE),
+		Support.near(rock.work, 30.0 * BEAM_FRAME * WeaponScript.GUN_CHIP_RATE),
 		"the chip work is the row's dps x delta x the 10 %% rate, unchanged (%.4f)" % rock.work
 	)
 	var bursts := _fx_nodes_from(MINING_SHEET)
@@ -247,7 +248,7 @@ func test_a_laser_chipping_a_rock_plays_the_chip_cue_and_the_burst() -> void:
 			"section 1.6's four-frame mini sheet"
 		)
 		assert_true(
-			_near(frames.get_animation_speed(FxScript.ANIMATION), CHIP_FPS),
+			Support.near(frames.get_animation_speed(FxScript.ANIMATION), CHIP_FPS),
 			"at the spec's own 20 FPS"
 		)
 		assert_false(
@@ -262,7 +263,7 @@ func test_a_laser_chipping_a_rock_plays_the_chip_cue_and_the_burst() -> void:
 
 
 func test_a_held_beams_rock_chip_reads_on_hulls_own_contact_guard() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -312,7 +313,7 @@ func test_a_held_beams_feedback_repeats_for_as_long_as_the_trigger_is_held() -> 
 	var holds := [0]
 	guns.connect(&"shot_fired", func(_weapon: StringName) -> void: holds[0] += 1)
 	assert_true(
-		_near(
+		Support.near(
 			WeaponScript.FLASH_SECONDS,
 			float(WeaponScript.FLASH_FRAMES.size()) / WeaponScript.FLASH_FPS
 		),
@@ -491,30 +492,9 @@ func _clear() -> void:
 	for child: Node in _root.get_children():
 		if is_instance_valid(child):
 			child.free()
-	var tree := _tree()
+	var tree := Support.tree()
 	if tree == null:
 		return
 	for shot: Node in tree.get_nodes_in_group(ProjectileScript.PROJECTILE_GROUP):
 		if is_instance_valid(shot):
 			shot.free()
-
-
-func _audio() -> Node:
-	var tree := _tree()
-	if tree == null:
-		return null
-	return tree.root.get_node_or_null(NodePath(AUDIO_SERVICE))
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root
-
-
-func _near(measured: float, expected: float, tolerance: float = 0.001) -> bool:
-	return absf(measured - expected) <= tolerance

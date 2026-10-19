@@ -1,4 +1,4 @@
-extends VBoxContainer
+extends "res://ui/station/station_panel.gd"
 ## REPAIRS module panel: the damage report, the fee line and the single-press repair
 ## control. Contract: docs/design/STATION_HUB.md sections 3.1, 5.6, 5.9, 12.3 and 12.4,
 ## docs/gameplay/01_economy_core.md sections 6 and 7.
@@ -101,7 +101,6 @@ var _values: Dictionary = {}
 var _fee_danger := false
 var _strip_danger := false
 var _native_preview := Vector2.ZERO
-var _tweens: Array[Tween] = []
 
 
 func _ready() -> void:
@@ -123,13 +122,6 @@ func _notification(what: int) -> void:
 		## report instead of trusting what the last rebuild left behind.
 		_refresh_all()
 
-
-func _exit_tree() -> void:
-	for tween: Tween in _tweens:
-		if tween.is_valid():
-			tween.kill()
-
-
 func refresh_profile(key: StringName) -> void:
 	## STATION_HUB section 12.4: &"credits" moves the fee colour, &"ships" moves the
 	## active hull with its maxima and the whole damage report.
@@ -148,13 +140,6 @@ func focus_primary() -> void:
 func _apply_tokens() -> void:
 	_apply_fee_colour()
 	_apply_strip_colour()
-
-
-func _token(token: StringName) -> Color:
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return Color.WHITE
-
 
 func _build_report_rows() -> void:
 	_rows.add_theme_constant_override(&"separation", ROW_SEPARATION)
@@ -366,21 +351,6 @@ func _active_id(profile: ProfileScript) -> StringName:
 		return &""
 	return StringName(profile.call(&"active_ship"))
 
-
-func _vitals(profile: ProfileScript, ship_id: StringName) -> Dictionary:
-	if profile == null or ship_id == &"":
-		return {}
-	var raw: Variant = profile.call(&"vitals_of", ship_id)
-	return raw if raw is Dictionary else {}
-
-
-## The two denominators the HULL and SHIELD rows print (CONTRACTS section 21, M4): the
-## active hull's `ShipFit.resolve` figures for the fit the launch would fly, plates and
-## affixes included - the same pair `game.gd:_apply_ship_maxima` seeds the pools with and
-## the status footer prints, so a plated hull reads `1250 / 1250` instead of `1250 / 1000`.
-## The catalogue row (built by the station shell, not by this pane) is the fallback for a
-## hull the resolver does not know, which also keeps `resolve` from pushing its unknown-hull
-## error for a stray vitals record.
 func _pool_maxima(profile: ProfileScript, ship_id: StringName) -> Dictionary:
 	var ship := Catalog.ship(ship_id)
 	var fallback := {
@@ -400,35 +370,3 @@ func _pool_maxima(profile: ProfileScript, ship_id: StringName) -> Dictionary:
 	if stats == null:
 		return fallback
 	return {&"hull": int(round(stats.hull_max)), &"shield": int(round(stats.shield_max))}
-
-
-func _profile() -> ProfileScript:
-	## Autoloads are children of /root; STATION_HUB section 12.4 names a bare
-	## ^"PlayerProfile" path, which would resolve against this node instead, so the
-	## lookup is anchored at the tree root the way router.gd anchors its services.
-	if not is_inside_tree():
-		return null
-	var service := get_tree().root.get_node_or_null(NodePath(PROFILE_SERVICE))
-	if service == null:
-		return null
-	var profile: ProfileScript = service
-	return profile
-
-
-func _pulse(node: CanvasItem) -> void:
-	if node == null:
-		return
-	var tween := _make_tween()
-	tween.tween_property(node, "modulate:a", PULSE_MIN_ALPHA, PULSE_DOWN_SECONDS).set_trans(Tween.TRANS_SINE)
-	tween.tween_property(node, "modulate:a", 1.0, PULSE_UP_SECONDS).set_trans(Tween.TRANS_SINE)
-	tween.tween_property(node, "modulate:a", PULSE_MIN_ALPHA, PULSE_DOWN_SECONDS).set_trans(Tween.TRANS_SINE)
-	tween.tween_property(node, "modulate:a", 1.0, PULSE_UP_SECONDS).set_trans(Tween.TRANS_SINE)
-
-
-func _make_tween() -> Tween:
-	for index in range(_tweens.size() - 1, -1, -1):
-		if not _tweens[index].is_valid():
-			_tweens.remove_at(index)
-	var tween := create_tween()
-	_tweens.append(tween)
-	return tween

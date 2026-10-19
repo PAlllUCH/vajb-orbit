@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s5_commerce: wave S5's commerce pair (CONTRACTS section 17, STATION_HUB section
 ## 5.11) -- the AUCTION's family tabs are **display grouping over S3's own draw**, and the
 ## SHIPYARD is the **hangar**: owned hulls only, a selection that previews and writes
@@ -113,7 +114,7 @@ func teardown() -> void:
 
 
 func suite_teardown() -> void:
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 ## ---------------------------------------------------------------------------
@@ -143,7 +144,7 @@ func _borrow_autoload() -> Node:
 	_previous_counter = int(profile.get(&"_instance_counter"))
 	_previous_ammo = profile.get(&"_ammo")
 	profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_changes.clear()
 	if not profile.is_connected(&"profile_changed", _on_profile_changed):
 		profile.connect(&"profile_changed", _on_profile_changed)
@@ -187,7 +188,7 @@ func _mount(scene: PackedScene) -> Control:
 	host.name = "CommerceHost"
 	host.theme = ThemeRes
 	host.size = Vector2(1920.0, 1080.0)
-	_fixture_host().add_child(host)
+	Support.profile().add_child(host)
 	_host = host
 	_panel = scene.instantiate() as Control
 	_host.add_child(_panel)
@@ -207,23 +208,6 @@ func _on_status(message: String, danger: bool) -> void:
 func _on_ask(payload: Dictionary) -> void:
 	_asks.append(payload)
 
-
-## The runner calls every test from inside its own `_ready`, so the root viewport is still
-## busy adding the runner scene and `root.add_child(...)` fails. The profile autoload
-## entered the tree before the main scene, so it hosts the fixtures.
-func _fixture_host() -> Node:
-	var tree := Engine.get_main_loop() as SceneTree
-	if tree == null:
-		return null
-	return tree.root.get_node_or_null(NodePath(PROFILE_SERVICE))
-
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
 func _read_source(path: String) -> String:
 	return FileAccess.get_file_as_string(path)
 
@@ -239,15 +223,6 @@ func _rows_of(panel: Control, box: String) -> Array[Button]:
 		if row != null:
 			rows.append(row)
 	return rows
-
-
-func _cell_text(row: Button, cell_name: String) -> String:
-	var cell := row.find_child(cell_name, true, false) as Control
-	if cell == null:
-		return ""
-	var value := cell.get_node_or_null(^"Value") as Label
-	return value.text if value != null else ""
-
 
 func _cell_caption(row: Button, cell_name: String) -> String:
 	var cell := row.find_child(cell_name, true, false) as Control
@@ -490,7 +465,7 @@ func _assert_s3_rendering(panel: Control, profile: Node, tab_id: StringName) -> 
 			"%s: hull row %d is the shelf's own id" % [String(tab_id), index]
 		)
 		assert_eq(
-			_digits_only(_cell_text(row, "Price")),
+			_digits_only(Support.cell_text(row, "Price")),
 			str(int(entry[&"price"])),
 			"%s: hull row %d charges the shelf's price" % [String(tab_id), index]
 		)
@@ -502,7 +477,7 @@ func _assert_s3_rendering(panel: Control, profile: Node, tab_id: StringName) -> 
 			"%s: hull row %d carries the shelf's own caption" % [String(tab_id), index]
 		)
 		assert_eq(
-			_cell_text(row, "Action"),
+			Support.cell_text(row, "Action"),
 			PanelScript.ACTION_OWNED if bool(entry[&"owned"]) else PanelScript.ACTION_BUY,
 			"%s: hull row %d keeps the auction's own door (R-S21-3: OWNED on an owned hull)"
 			% [String(tab_id), index]
@@ -516,7 +491,7 @@ func _assert_s3_rendering(panel: Control, profile: Node, tab_id: StringName) -> 
 			"%s: listing row %d is the shelf's own id" % [String(tab_id), index]
 		)
 		assert_eq(
-			_digits_only(_cell_text(row, "Price")),
+			_digits_only(Support.cell_text(row, "Price")),
 			str(int(entry[&"price"])),
 			"%s: listing row %d charges the shelf's price" % [String(tab_id), index]
 		)
@@ -532,12 +507,12 @@ func _assert_s3_rendering(panel: Control, profile: Node, tab_id: StringName) -> 
 			meta.text, String(entry[&"meta"]), "%s: listing row %d's meta" % [String(tab_id), index]
 		)
 		assert_eq(
-			_cell_text(row, "Status"),
+			Support.cell_text(row, "Status"),
 			AuctionScript.FACTION_LOT_TAG if bool(entry[&"faction_lot"]) else "",
 			"%s: listing row %d's tag" % [String(tab_id), index]
 		)
 		assert_eq(
-			_cell_text(row, "Action"),
+			Support.cell_text(row, "Action"),
 			PanelScript.ACTION_BUY,
 			"%s: listing row %d keeps the auction's buy door" % [String(tab_id), index]
 		)

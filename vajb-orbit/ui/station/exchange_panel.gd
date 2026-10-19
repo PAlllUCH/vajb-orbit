@@ -1,4 +1,4 @@
-extends VBoxContainer
+extends "res://ui/station/station_panel.gd"
 ## EXCHANGE module panel: the hold list (what the station buys), the market board (both
 ## books) and the sale column (stepper, quote strip, actions). Every number on the panel is
 ## an Exchange read: the panel never recomputes a price from a baseline (05 section 8) and
@@ -214,7 +214,6 @@ var _quoted: Dictionary = {}
 ## shown-figure law, CONTRACTS section 21 M3, applied per stack).
 var _marked: Dictionary = {}
 var _marked_quotes: Dictionary = {}
-var _tweens: Array[Tween] = []
 
 
 func _ready() -> void:
@@ -236,13 +235,6 @@ func _ready() -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_THEME_CHANGED and is_node_ready():
 		_apply_tokens()
-
-
-func _exit_tree() -> void:
-	for tween: Tween in _tweens:
-		if tween.is_valid():
-			tween.kill()
-
 
 func refresh_profile(key: StringName) -> void:
 	## Section 12.4: &"cargo" rebuilds the hold, &"credits" moves the quote and the board
@@ -297,13 +289,6 @@ func _apply_icon_tokens(payload: Dictionary) -> void:
 	var tint: Color = payload[&"tint"]
 	tint.a = ROW_ICON_IDLE_ALPHA
 	icon.modulate = tint
-
-
-func _token(token: StringName) -> Color:
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return Color.WHITE
-
 
 func _evaluate() -> void:
 	var profile := _profile()
@@ -1522,54 +1507,6 @@ func _bucket(market: Dictionary, key: StringName) -> Variant:
 	if market.has(key):
 		return market[key]
 	return market.get(String(key), null)
-
-
-func _profile() -> ProfileScript:
-	## Autoloads are children of /root; STATION_HUB section 12.4 names a bare
-	## ^"PlayerProfile" path, which would resolve against this node instead, so the lookup is
-	## anchored at the tree root the way router.gd anchors its services.
-	if not is_inside_tree():
-		return null
-	var service := get_tree().root.get_node_or_null(NodePath(PROFILE_SERVICE))
-	if service == null:
-		return null
-	var profile: ProfileScript = service
-	return profile
-
-
-func _pulse(node: CanvasItem) -> void:
-	var tween := _make_tween()
-	tween.tween_property(node, "modulate:a", PULSE_MIN_ALPHA, PULSE_DOWN_SECONDS).set_trans(Tween.TRANS_SINE)
-	tween.tween_property(node, "modulate:a", 1.0, PULSE_UP_SECONDS).set_trans(Tween.TRANS_SINE)
-	tween.tween_property(node, "modulate:a", PULSE_MIN_ALPHA, PULSE_DOWN_SECONDS).set_trans(Tween.TRANS_SINE)
-	tween.tween_property(node, "modulate:a", 1.0, PULSE_UP_SECONDS).set_trans(Tween.TRANS_SINE)
-
-
-func _make_tween() -> Tween:
-	for index in range(_tweens.size() - 1, -1, -1):
-		if not _tweens[index].is_valid():
-			_tweens.remove_at(index)
-	var tween := create_tween()
-	_tweens.append(tween)
-	return tween
-
-
-func _format_int(value: int) -> String:
-	var digits := str(absi(value))
-	var grouped := ""
-	var count := 0
-	for index in range(digits.length() - 1, -1, -1):
-		grouped = digits[index] + grouped
-		count += 1
-		if count % 3 == 0 and index > 0:
-			grouped = " " + grouped
-	return ("-" if value < 0 else "") + grouped
-
-
-## The CheckChip's check mark (P53, T-190's cure): a code-drawn polyline inside its own
-## child rect (A5.2(iii), the Chevron idiom), drawn only while the chip is checked - the
-## state signal the frame's step carries with it. The ink is `text_primary`, the section 1
-## success law's ink; never a font glyph (section 5.8's tofu finding).
 class CheckMark extends Control:
 	var checked := false
 	var colour: Color = Color.WHITE

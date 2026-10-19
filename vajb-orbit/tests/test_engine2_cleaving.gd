@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite engine2_cleaving: engine slice 0's rock body (ruling 8), ruling 17's tiered
 ## cleaving (ENGINE_SPEC 6/13, 02 5) and the **owner's 2026-09-21 asteroid ruling** --
 ## "asteroids breaking effects (they should somehow explode, random fragments from 2 to
@@ -108,7 +109,7 @@ func suite_name() -> String:
 func suite_setup(_ctx: Dictionary) -> void:
 	_root = Node2D.new()
 	_root.name = &"CleavingFixture"
-	_fixture_host().add_child(_root)
+	Support.fixture_host().add_child(_root)
 
 
 func suite_teardown() -> void:
@@ -127,27 +128,6 @@ func teardown() -> void:
 	if _field != null and is_instance_valid(_field):
 		_field.free()
 	_field = null
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root
-
-
-func _audio() -> Node:
-	var tree := _tree()
-	if tree == null:
-		return null
-	return tree.root.get_node_or_null(NodePath(AUDIO_SERVICE))
-
-
-## A detached field: no scene, no clock dependency (a crack only stamps
-## `last_depleted_time` when the field empties).
 func _field_with(count: int = ROCK_COUNT) -> Node2D:
 	_field = FieldScript.new() as Node2D
 	_field.call(&"setup", {
@@ -223,7 +203,7 @@ func _crack_reference(rock: Node2D) -> void:
 func _explosions() -> Array[Node]:
 	var out: Array[Node] = []
 	var roots: Array[Node] = []
-	var tree := _tree()
+	var tree := Support.tree()
 	if tree != null:
 		roots.append(tree.root)
 	if _root != null and is_instance_valid(_root):
@@ -667,7 +647,7 @@ func test_the_rock_break_explosion_is_floored_and_capped() -> void:
 ## that had been on disk with no row are a round-robin now, so consecutive breaks do not
 ## repeat a take.
 func test_the_break_plays_the_rock_cue_from_its_four_take_pool() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -692,7 +672,7 @@ func test_the_break_plays_the_rock_cue_from_its_four_take_pool() -> void:
 
 
 func test_yield_zero_cracks_bare_and_still_draws_the_break() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return

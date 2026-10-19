@@ -1,4 +1,5 @@
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s15_battery_cap: wave S15's battery hardcap (09 section 12) at the profile
 ## level -- **five batteries of at most four cells** (AC1-AC3), with no pane mounted.
 ##
@@ -73,7 +74,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_ammo = (_profile.get(&"_ammo") as Dictionary).duplicate(true)
 	_previous_batteries = (_profile.get(&"_batteries") as Dictionary).duplicate(true)
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 func suite_teardown() -> void:
@@ -88,7 +89,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_batteries", _previous_batteries)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile = null
 
 
@@ -139,17 +140,6 @@ func _snapshot() -> Dictionary:
 		&"bag": _profile.call(&"modules"),
 	}
 
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
-## ------------------------------------------------------------- AC1: the ceilings
-
-## AC1: the hardcap's two numbers are `game/weapons.gd`'s, and the pane draws exactly the
-## batteries the input map addresses.
 func test_the_hardcap_is_five_batteries_of_four_cells() -> void:
 	assert_eq(WeaponData.GROUPS_MAX, 5, "GROUPS_MAX 7 -> 5 (09 section 12)")
 	assert_eq(WeaponData.BATTERY_CELLS_MAX, 4, "and the new per-battery ceiling is four")

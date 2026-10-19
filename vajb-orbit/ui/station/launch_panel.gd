@@ -1,4 +1,4 @@
-extends VBoxContainer
+extends "res://ui/station/station_panel.gd"
 ## LAUNCH module panel: the flight briefing, the cargo plate strip, the manifest read from
 ## PlayerProfile.cargo_items(), DECK CONTROL's two station services, and the two-press arming
 ## beat that ends in the undock intent. Contract: docs/design/STATION_HUB.md sections 2, 5.4
@@ -187,7 +187,6 @@ var _arm_timer: Timer
 var _armed := false
 var _arm_tween: Tween = null
 var _native_preview := Vector2.ZERO
-var _tweens: Array[Tween] = []
 func _ready() -> void:
 	_build_brief_rows()
 	_build_arm_timer()
@@ -214,13 +213,6 @@ func _notification(what: int) -> void:
 		## (S30-F1, F5: the tooltip opens on a real hover only).
 		_refresh_all()
 		inspect_requested.emit("", "", false)
-
-
-func _exit_tree() -> void:
-	for tween: Tween in _tweens:
-		if tween.is_valid():
-			tween.kill()
-
 
 func refresh_profile(key: StringName) -> void:
 	## STATION_HUB section 12.4: &"cargo" rebuilds the manifest and the plate strip,
@@ -298,13 +290,6 @@ func _roof_briefing_column() -> void:
 	box.set_border_width_all(1)
 	box.set_corner_radius_all(0)
 	_brief_roof.add_theme_stylebox_override(&"panel", box)
-
-
-func _token(token: StringName) -> Color:
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return Color.WHITE
-
 
 func _build_brief_rows() -> void:
 	for row: Dictionary in BRIEF_ROWS:
@@ -793,37 +778,3 @@ func _clear_arm() -> void:
 		_arm_tween.kill()
 	_launch_button.modulate.a = 1.0
 	_launch_button.remove_theme_color_override(&"font_color")
-
-
-func _profile() -> ProfileScript:
-	## Autoloads are children of /root; STATION_HUB section 12.4 names a bare
-	## ^"PlayerProfile" path, which would resolve against this node instead, so the
-	## lookup is anchored at the tree root the way router.gd anchors its services.
-	if not is_inside_tree():
-		return null
-	var service := get_tree().root.get_node_or_null(NodePath(PROFILE_SERVICE))
-	if service == null:
-		return null
-	var profile: ProfileScript = service
-	return profile
-
-
-func _make_tween() -> Tween:
-	for index in range(_tweens.size() - 1, -1, -1):
-		if not _tweens[index].is_valid():
-			_tweens.remove_at(index)
-	var tween := create_tween()
-	_tweens.append(tween)
-	return tween
-
-
-func _format_int(value: int) -> String:
-	var digits := str(absi(value))
-	var grouped := ""
-	var count := 0
-	for index in range(digits.length() - 1, -1, -1):
-		grouped = digits[index] + grouped
-		count += 1
-		if count % 3 == 0 and index > 0:
-			grouped = " " + grouped
-	return ("-" if value < 0 else "") + grouped

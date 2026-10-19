@@ -1,4 +1,4 @@
-extends VBoxContainer
+extends "res://ui/station/station_panel.gd"
 ## AUCTION module panel: the rotating shelf -- six hulls, ten rolled module instances
 ## and the `SELL MODULES` sub-list -- grouped under the family tabs, plus the pane's own
 ## rotation footer.
@@ -225,7 +225,6 @@ var _pending_rebuild := false
 var _selected_row: Button = null
 ## S30: the payload `station_inspect` (N34) inspects - the focused shelf row.
 var _focused_payload: Dictionary = {}
-var _tweens: Array[Tween] = []
 
 ## The family tab the pane is showing, `&"all"` at entry; `_tab_entries` is one
 ## `{id, label, button}` per pin tab, in the pin's order.
@@ -255,18 +254,6 @@ func _notification(what: int) -> void:
 		_apply_tokens()
 		_queue_header_fit()
 
-
-func _exit_tree() -> void:
-	for tween: Tween in _tweens:
-		if tween.is_valid():
-			tween.kill()
-
-
-## Pane entry: the shelf is advanced to the clock's reading (10 section 2.1's lazy bands,
-## the exchange's own shape) and the whole pane is drawn from it. The shell calls this
-## through `focus_primary` when the module is switched to - the **only** place the shelf
-## rolls, so merely booting the station does not touch the account (L122/A4a). `_ready`
-## draws the pane read-only through `_draw_pane`.
 func enter_pane() -> void:
 	var profile := _profile()
 	if profile != null:
@@ -1508,46 +1495,3 @@ func _rarity_of(token: StringName) -> StringName:
 		if AuctionScript.RARITY_TOKENS[rarity] == token:
 			return StringName(str(rarity))
 	return &"common"
-
-
-func _token(token: StringName) -> Color:
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return Color.WHITE
-
-
-## ------------------------------------------------------------------ the services
-
-
-func _profile() -> ProfileScript:
-	## Autoloads are children of /root; STATION_HUB section 12.4 names a bare
-	## ^"PlayerProfile" path, which would resolve against this node instead, so the
-	## lookup is anchored at the tree root the way router.gd anchors its services.
-	if not is_inside_tree():
-		return null
-	var service := get_tree().root.get_node_or_null(NodePath(PROFILE_SERVICE))
-	if service == null:
-		return null
-	var profile: ProfileScript = service
-	return profile
-
-
-func _make_tween() -> Tween:
-	for index in range(_tweens.size() - 1, -1, -1):
-		if not _tweens[index].is_valid():
-			_tweens.remove_at(index)
-	var tween := create_tween()
-	_tweens.append(tween)
-	return tween
-
-
-func _format_int(value: int) -> String:
-	var digits := str(absi(value))
-	var grouped := ""
-	var count := 0
-	for index in range(digits.length() - 1, -1, -1):
-		grouped = digits[index] + grouped
-		count += 1
-		if count % 3 == 0 and index > 0:
-			grouped = " " + grouped
-	return ("-" if value < 0 else "") + grouped

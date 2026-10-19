@@ -1,4 +1,5 @@
 extends Node
+const Support := preload("res://tests/support.gd")
 ## P2-A W4 evidence probe: launch every player hull off the shipped `PlayerProfile`
 ## autoload and print the numbers the wave's report quotes - the resolved fit, the live
 ## weapon slots, the seeded packs, the engine set's arithmetic, the HUD's cell payload
@@ -321,7 +322,7 @@ func _borrow() -> void:
 	_previous_modules = _profile.call(&"modules")
 	_previous_ammo = (_profile.get(&"_ammo") as Dictionary).duplicate(true)
 	_profile.set(&"save_path", SCRATCH_PROFILE)
-	_remove(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 
 
 func _hand_back() -> void:
@@ -331,11 +332,5 @@ func _hand_back() -> void:
 	_profile.set(&"_ammo", _previous_ammo)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_remove(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 	print("%s scratch removed=%s" % [TAG, str(not FileAccess.file_exists(SCRATCH_PROFILE))])
-
-
-func _remove(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())

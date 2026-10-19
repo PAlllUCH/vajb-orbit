@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s30_shell: wave S30's station shell v2 (STATION_HUB section 18 P15-P21 + section
 ## 19, UI_SPEC section 11/12). One row per pinned acceptance: the shell re-lay (header
 ## TERMINAL + identity plate + credits, one body pane, footer strip), the TERMINAL drawer
@@ -49,7 +50,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_modules = (_profile.get(&"_modules") as Dictionary).duplicate(true)
 	_previous_credits = int(_profile.call(&"credits"))
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile.set(&"_active_ship", SHIP)
 	_profile.set(&"_owned_ships", [SHIP] as Array[StringName])
 	_profile.set(&"_fits", {})
@@ -70,7 +71,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_credits", _previous_credits)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile = null
 
 
@@ -79,15 +80,6 @@ func setup() -> void:
 		_station.get_parent().free()
 	_station = null
 
-
-func _delete_file(path: String) -> void:
-	var absolute := ProjectSettings.globalize_path(path)
-	if FileAccess.file_exists(absolute):
-		DirAccess.remove_absolute(absolute)
-
-
-## A fresh shell per row under a themed host, added to the profile autoload (the runner
-## calls every test from inside its own `_ready`, when `/root` is still busy).
 func _mount() -> Control:
 	var host := Control.new()
 	host.name = "S30Host"
@@ -110,7 +102,7 @@ func test_the_shell_lands_on_overview() -> void:
 	)
 	var overview := screen.call(&"overview_pane") as CanvasItem
 	assert_true(overview != null and overview.visible, "the OVERVIEW pane shows on dock")
-	for pane: CanvasItem in (screen.get(&"_panels") as Array):
+	for pane: CanvasItem in (screen.call(&"panes") as Array):
 		assert_false(pane.visible, "and the six service panes stay hidden (%s)" % pane.name)
 
 
@@ -302,7 +294,7 @@ func test_the_repair_chip_deep_links_to_the_shipyard() -> void:
 	assert_eq(
 		int(screen.get(&"_module")), StationScript.Module.SHIPYARD, "P24: REPAIR lands on SHIPYARD"
 	)
-	var shipyard := (screen.get(&"_panels") as Array)[StationScript.Module.SHIPYARD] as Node
+	var shipyard := screen.call(&"pane_for", StationScript.Module.SHIPYARD) as Node
 	assert_true(
 		shipyard.has_method(&"focus_repair"), "with the repair block focusable (P24)"
 	)
@@ -346,7 +338,7 @@ func test_a_cycle_from_overview_enters_the_six() -> void:
 ## re-measurement; this row pins the cure itself.)
 func test_the_shipyard_stats_column_scrolls_and_cannot_reflow_the_shell() -> void:
 	var screen := _mount()
-	var shipyard := (screen.get(&"_panels") as Array)[StationScript.Module.SHIPYARD] as Control
+	var shipyard := screen.call(&"pane_for", StationScript.Module.SHIPYARD) as Control
 	var stats := shipyard.get_node_or_null(^"ShipyardBody/StatsBox")
 	assert_true(stats is ScrollContainer, "the shipyard's stats column scrolls (F1)")
 	if stats == null:
@@ -403,4 +395,3 @@ func test_the_popup_layers_resolve_the_theme() -> void:
 		"so the drawer plate resolves PanelRaised, not a default StyleBoxFlat (got %s)"
 			% sb.get_class()
 	)
-

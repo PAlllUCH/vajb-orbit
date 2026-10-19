@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s24_world: wave S24's world identity, builder 1's half - 14_station_services.md's
 ## 2026-10-08 block (the nine places, the service matrix, the docked-station seam, the plate
 ## landing) and 12_factions.md's 2026-10-08 V1/V2/V6 block (the price law).
@@ -84,7 +85,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 		&"vitals": (_profile.get(&"_vitals") as Dictionary).duplicate(true),
 	}
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile.set(&"_active_ship", SHIP)
 	_profile.set(&"_owned_ships", [SHIP] as Array[StringName])
 	_profile.set(&"_fits", {})
@@ -143,7 +144,7 @@ func suite_teardown() -> void:
 				_profile.set(&"_vitals", value)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", String(_previous[&"save_path"]))
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_previous = {}
 	_profile = null
 
@@ -157,15 +158,6 @@ func _free_station() -> void:
 		_station.get_parent().free()
 	_station = null
 
-
-func _delete_file(path: String) -> void:
-	var absolute := ProjectSettings.globalize_path(path)
-	if FileAccess.file_exists(absolute):
-		DirAccess.remove_absolute(absolute)
-
-
-## A themed host inside the profile autoload (the runner calls every test from inside its
-## own `_ready`, when `/root` is still busy), carrying the shipped station scene.
 func _mount() -> Control:
 	var host := Control.new()
 	host.name = "S24Host"

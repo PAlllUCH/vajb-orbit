@@ -1,4 +1,5 @@
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s22_8_cadence: the weapons-cadence split (owner 2026-10-01, 18 §4.1's
 ## amendment block). The spam tier - laser, plasma, cannon - holds fire exactly as
 ## shipped; the heavy tier - railgun 15 s, rocket 12 s, mine 10 s - fires one shot,
@@ -205,7 +206,7 @@ func test_rapid_divides_the_cooldown() -> void:
 ## battery's cells dim; when the barrel is ready the readout is plain again and the
 ## cell is back to full alpha.
 func test_the_hud_counts_the_cooldown_down_and_dims_the_battery() -> void:
-	var host := _fixture_host()
+	var host := Support.profile()
 	if host == null:
 		skip("no PlayerProfile autoload to host the HUD")
 		return
@@ -272,7 +273,7 @@ func test_the_hud_counts_the_cooldown_down_and_dims_the_battery() -> void:
 
 ## A spam-tier selection changes nothing: no cooling rack, no suffix, full cells.
 func test_the_hud_stays_plain_on_the_spam_tier() -> void:
-	var host := _fixture_host()
+	var host := Support.profile()
 	if host == null:
 		skip("no PlayerProfile autoload to host the HUD")
 		return
@@ -324,7 +325,7 @@ func test_the_hud_stays_plain_on_the_spam_tier() -> void:
 
 
 func _rig(ids: Array, racks: Array = []) -> Node2D:
-	var host := _fixture_host()
+	var host := Support.profile()
 	if host == null:
 		skip("no PlayerProfile autoload to host the rig")
 		return null
@@ -349,14 +350,6 @@ func _set_affixes(cells: Array) -> void:
 	for cell: Variant in cells:
 		per.append((cell as Dictionary) if cell is Dictionary else {})
 	_state.set_weapon_affixes(per)
-
-
-func _fixture_host() -> Node:
-	var tree := Engine.get_main_loop() as SceneTree
-	if tree == null:
-		return null
-	return tree.root.get_node_or_null(NodePath(PROFILE_SERVICE))
-
 
 func _shots() -> Array[Node]:
 	var tree := Engine.get_main_loop() as SceneTree

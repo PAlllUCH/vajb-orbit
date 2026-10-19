@@ -1,4 +1,4 @@
-extends VBoxContainer
+extends "res://ui/station/station_panel.gd"
 ## REFINERY module panel: the queue pane (STATION_HUB section 21.3 P42/P43, the
 ## model is 04 section 7). Three blocks: LEFT the hold ore stacks plus the input
 ## inventory (rows tagged LOADED, under one `IN INPUT` sub-header - D23 F5);
@@ -243,7 +243,6 @@ var _job_signature := PackedStringArray()
 var _transaction := false
 var _rebuild_pending := false
 var _tick_timer: Timer = null
-var _tweens: Array[Tween] = []
 var _mode: StringName = MODE_REFINE
 
 
@@ -310,13 +309,6 @@ func _apply_mode() -> void:
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_THEME_CHANGED and is_node_ready():
 		_apply_tokens()
-
-
-func _exit_tree() -> void:
-	for tween: Tween in _tweens:
-		if tween.is_valid():
-			tween.kill()
-
 
 func refresh_profile(key: StringName) -> void:
 	## STATION_HUB section 12.4 / 04 section 7: &"cargo" and &"refinery" rebuild the
@@ -554,20 +546,6 @@ func _make_strip_chip(job: Dictionary, slot: int) -> Dictionary:
 	label.text = text
 	_slot_strip.add_child(chip)
 	return {&"id": int(job.get(&"id", -1)), &"chip": chip, &"label": label, &"state": state}
-
-
-func _strip_chip_box() -> StyleBoxFlat:
-	var box := StyleBoxFlat.new()
-	box.bg_color = _token(&"armory_chip_bg")
-	box.border_color = _token(&"metal_mid")
-	box.set_border_width_all(1)
-	box.set_corner_radius_all(0)
-	box.content_margin_left = 8.0
-	box.content_margin_top = 3.0
-	box.content_margin_right = 8.0
-	box.content_margin_bottom = 3.0
-	return box
-
 
 func _refresh_strip_countdowns() -> void:
 	var jobs := RefineryModule.jobs(_profile())
@@ -1824,61 +1802,18 @@ func _load_units() -> int:
 	var space := RefineryModule.INPUT_CAP - RefineryModule.input_total(profile)
 	return clampi(mini(held, space), 0, RefineryModule.INPUT_CAP)
 
-
-func _profile() -> ProfileScript:
-	if not is_inside_tree():
-		return null
-	var service := get_tree().root.get_node_or_null(NodePath(PROFILE_SERVICE))
-	if service == null:
-		return null
-	var profile: ProfileScript = service
-	return profile
-
-
 func _apply_tokens() -> void:
 	_pane_icon.modulate = _token(&"text_primary")
 	for payload: Dictionary in _payloads:
 		var icon: TextureRect = payload[&"icon"]
 		if icon != null:
 			icon.modulate = payload[&"tint"]
-
-
-func _token(token: StringName) -> Color:
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return Color.WHITE
-
-
-func _make_tween() -> Tween:
-	for index in range(_tweens.size() - 1, -1, -1):
-		if not _tweens[index].is_valid():
-			_tweens.remove_at(index)
-	var tween := create_tween()
-	_tweens.append(tween)
-	return tween
-
-
 func _mmss(seconds: int) -> String:
 	var clamped := maxi(seconds, 0)
 	@warning_ignore("integer_division")
 	var minutes := clamped / 60
 	return "%02d:%02d" % [minutes, clamped % 60]
 
-
-func _format_int(value: int) -> String:
-	var digits := str(absi(value))
-	var grouped := ""
-	var count := 0
-	for index in range(digits.length() - 1, -1, -1):
-		grouped = digits[index] + grouped
-		count += 1
-		if count % 3 == 0 and index > 0:
-			grouped = " " + grouped
-	return ("-" if value < 0 else "") + grouped
-
-
-## The header's slot price reads the §21.3 wording `3,000 CR` (comma-grouped, not
-## the house `_format_int`'s spaces), so the label matches the pinned copy.
 func _format_cost(value: int) -> String:
 	var digits := str(absi(value))
 	var grouped := ""

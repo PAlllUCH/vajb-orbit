@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite d7_status: wave D7's ship status modal restyle (UI_SPEC section 3.8's **Mockup C
 ## amendment 2026-09-24** on section 3.9's instrument language).
 ##
@@ -91,7 +92,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	## before the real one is restored, so a test's account never lands in the owner's file.
 	_previous_path = String(_profile.get(&"save_path"))
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 func suite_teardown() -> void:
@@ -99,7 +100,7 @@ func suite_teardown() -> void:
 		return
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile = null
 
 
@@ -110,7 +111,7 @@ func setup() -> void:
 		fail_setup("hud.tscn did not instantiate")
 		return
 	_hud.theme = HudTheme
-	_fixture_host().add_child(_hud)
+	Support.fixture_host().add_child(_hud)
 
 
 func teardown() -> void:
@@ -119,23 +120,6 @@ func teardown() -> void:
 	_hud = null
 	if FileAccess.file_exists(STYLE_PROBE_PATH):
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(STYLE_PROBE_PATH))
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-## Where a fixture may enter the tree; see `test_engine2_hud.gd` for why the profile autoload
-## is the host rather than the busy root viewport.
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(PROFILE_SERVICE))
-	return host if host != null else root
-
-
-## The fixture account: the hull owned and active, an empty inventory and no stored fit - so
-## `resolved_fit` answers 09 section 9's `ShipFit.standard_fit`, exactly as the launch would
-## fly it (the D6 suite's own fixture).
 func _seed_account(hull: StringName) -> void:
 	var owned: Array[StringName] = [hull]
 	_profile.set(&"_credits", 10000)
@@ -144,17 +128,6 @@ func _seed_account(hull: StringName) -> void:
 	_profile.set(&"_fits", {})
 	_profile.set(&"_modules", {})
 
-
-func _delete_file(path: String) -> void:
-	if not FileAccess.file_exists(path):
-		return
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
-## Every read enters through here, and a fixture that did not build the screen is a red
-## assertion rather than a null dereference the runner would still score as a pass.
 func _screen() -> Control:
 	var screen: Control = null
 	if _hud != null:

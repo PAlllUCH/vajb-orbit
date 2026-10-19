@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite p1_market: the exchange's band-driven demand model and its two books
 ## (docs/gameplay/05_exchange.md sections 2 and 4, docs/gameplay/17_coder_handoff.md
 ## sections 4 and 5).
@@ -37,7 +38,7 @@ func suite_name() -> String:
 
 
 func setup() -> void:
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_reset_log()
 	Clock.set_override(NOW)
 
@@ -53,8 +54,8 @@ func teardown() -> void:
 
 
 func suite_teardown() -> void:
-	_delete_file(PROFILE_PATH)
-	_delete_file(LOG_PATH)
+	Support.delete_file(PROFILE_PATH)
+	Support.delete_file(LOG_PATH)
 	Log.log_path = Log.DEFAULT_PATH
 	Clock.clear_override()
 
@@ -384,9 +385,9 @@ func test_refusals_leave_state_untouched() -> void:
 	var short: Dictionary = Exch.sell(profile, &"mineral_iron", 5, NOW)
 	assert_eq(short["reason"], Exch.REASON_INSUFFICIENT_CARGO)
 
-	assert_true(_deep_eq(profile.cargo_items(), cargo_before), "cargo untouched")
+	assert_true(Support.deep_eq(profile.cargo_items(), cargo_before), "cargo untouched")
 	assert_eq(profile.credits(), credits_before, "credits untouched")
-	assert_true(_deep_eq(profile.market(), market_before), "market untouched")
+	assert_true(Support.deep_eq(profile.market(), market_before), "market untouched")
 	assert_eq(_log_lines().size(), 0, "a refused sale logs nothing")
 
 
@@ -438,13 +439,6 @@ func _seed_with_first_step(magnitude: float, positive: bool) -> int:
 			return candidate
 	return 1
 
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
 func _reset_log() -> void:
 	Log.log_path = LOG_PATH
 	var file := FileAccess.open(LOG_PATH, FileAccess.WRITE)
@@ -463,31 +457,3 @@ func _log_lines() -> PackedStringArray:
 		if not line.strip_edges().is_empty():
 			lines.append(line)
 	return lines
-
-
-## Structural equality used for before/after comparisons: `==` on nested
-## dictionaries is not dependable across a ConfigFile round trip's key order.
-func _deep_eq(a: Variant, b: Variant) -> bool:
-	if a is Dictionary and b is Dictionary:
-		var left: Dictionary = a
-		var right: Dictionary = b
-		if left.size() != right.size():
-			return false
-		for key: Variant in left.keys():
-			if not right.has(key):
-				return false
-			if not _deep_eq(left[key], right[key]):
-				return false
-		return true
-	if a is Array and b is Array:
-		var left_array: Array = a
-		var right_array: Array = b
-		if left_array.size() != right_array.size():
-			return false
-		for index: int in range(left_array.size()):
-			if not _deep_eq(left_array[index], right_array[index]):
-				return false
-		return true
-	if (a is float) or (b is float):
-		return is_equal_approx(float(a), float(b))
-	return a == b

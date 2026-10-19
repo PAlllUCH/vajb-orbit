@@ -1,4 +1,5 @@
 extends Node
+const Support := preload("res://tests/support.gd")
 ## P2-B1 R1 review probe: do the panel's own writes survive a save / reload round trip?
 ##
 ## W1's probe measured `buy_module`'s persistence and W2's probe measured the panel's
@@ -67,9 +68,9 @@ func _borrow() -> void:
 	}
 	_log_path_before = String(Log.log_path)
 	Log.log_path = LOG_SCRATCH
-	_remove(LOG_SCRATCH)
+	Support.delete_file(LOG_SCRATCH)
 	_profile.set(&"save_path", SCRATCH)
-	_remove(SCRATCH)
+	Support.delete_file(SCRATCH)
 	_profile.connect(&"profile_changed", _on_changed)
 
 
@@ -104,8 +105,8 @@ func _restore() -> void:
 	_profile.set(&"_modules", _saved[&"modules"])
 	_profile.call(&"flush")
 	_profile.set(&"save_path", String(_saved[&"path"]))
-	_remove(SCRATCH)
-	_remove(LOG_SCRATCH)
+	Support.delete_file(SCRATCH)
+	Support.delete_file(LOG_SCRATCH)
 	Log.log_path = _log_path_before
 
 
@@ -115,16 +116,6 @@ func _on_changed(key: StringName) -> void:
 
 func _on_status(message: String, danger: bool) -> void:
 	_status.append("%s/danger=%s" % [message, str(danger)])
-
-
-func _remove(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
-## ------------------------------------------------------------------ read-backs
-
 
 func _row(module_id: StringName) -> Button:
 	for child: Node in _module_rows.get_children():

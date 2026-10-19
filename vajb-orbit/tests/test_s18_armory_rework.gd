@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s18_armory_rework: wave S18's ARMORY rework - the D13 design of record landed
 ## (UI_SPEC section 3.10 Amendment 3, owner ticks T1-T8 of 2026-09-25). The suite gates the
 ## wave's floors, not the chrome the moved suites already measure:
@@ -90,7 +91,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_cargo = (_profile.get(&"_cargo") as Dictionary).duplicate(true)
 	_previous_batteries = (_profile.get(&"_batteries") as Dictionary).duplicate(true)
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 func suite_teardown() -> void:
@@ -106,7 +107,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_batteries", _previous_batteries)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile = null
 
 
@@ -125,7 +126,7 @@ func setup() -> void:
 	_host.name = "ArmoryS18Host"
 	_host.theme = ThemeRes
 	_host.size = HOST
-	_fixture_host().add_child(_host)
+	Support.profile().add_child(_host)
 
 
 func teardown() -> void:
@@ -135,15 +136,6 @@ func teardown() -> void:
 	if _host != null and is_instance_valid(_host):
 		_host.free()
 	_host = null
-
-
-func _fixture_host() -> Node:
-	var tree := Engine.get_main_loop() as SceneTree
-	if tree == null:
-		return null
-	var profile := tree.root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return profile if profile != null else tree.root
-
 
 func _mount() -> Control:
 	_panel = PanelScene.instantiate() as Control
@@ -156,15 +148,6 @@ func _mount() -> Control:
 
 func _record_inspect(title: String, body: String, danger: bool) -> void:
 	_seen.append([title, body, danger])
-
-
-func _delete_file(path: String) -> void:
-	if not FileAccess.file_exists(path):
-		return
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
 
 func _style() -> Resource:
 	return _panel.call(&"style")

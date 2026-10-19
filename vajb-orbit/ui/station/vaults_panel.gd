@@ -1,4 +1,4 @@
-extends VBoxContainer
+extends "res://ui/station/station_panel.gd"
 ## VAULTS panel (S26): 14_station_services.md section 4 as the SERVICES deck's service.
 ## Contract: docs/design/STATION_HUB.md section 15.4 (the tier rows, the Meridian note,
 ## the hold/vault contents split, the not-cargo chip and captions, the capacity readout
@@ -300,30 +300,10 @@ func _on_withdraw_pressed() -> void:
 	_refresh()
 	status_requested.emit("WITHDREW · %s" % (STACK_FORMAT % [amount, String(item_id)]), false)
 
-
-func _profile() -> Node:
-	if not is_inside_tree():
-		return null
-	return get_tree().root.get_node_or_null(NodePath(PROFILE_SERVICE))
-
-
 func _station_row(profile: Node) -> Dictionary:
 	if profile == null or not profile.has_method(&"docked_station"):
 		return {}
 	return StationRegistryScript.docked_station(profile)
-
-
-func _format_int(value: int) -> String:
-	var digits := str(absi(value))
-	var grouped := ""
-	var count := 0
-	for index in range(digits.length() - 1, -1, -1):
-		grouped = digits[index] + grouped
-		count += 1
-		if count % 3 == 0 and index > 0:
-			grouped = " " + grouped
-	return ("-" if value < 0 else "") + grouped
-
 
 func _vault_tier(profile: Node, station_id: StringName) -> int:
 	if profile == null:
@@ -354,13 +334,6 @@ func _tier_cost(profile: Node, tier: int, row: Dictionary) -> int:
 		return 0
 	return int(profile.call(&"vault_tier_cost", tier, row))
 
-
-func _clear_list(list: VBoxContainer) -> void:
-	for child: Node in list.get_children():
-		list.remove_child(child)
-		child.queue_free()
-
-
 func _make_label(variation: StringName, text: String) -> Label:
 	var label := Label.new()
 	if variation != &"":
@@ -380,29 +353,12 @@ func _make_action(text: String) -> Button:
 	ChromeFamily.apply_chip(button)
 	return button
 
-
-func _load_texture(path: String) -> Texture2D:
-	if path.is_empty() or not ResourceLoader.exists(path):
-		return null
-	return load(path) as Texture2D
-
-
 func _apply_tokens() -> void:
 	if _pane_title != null:
 		_pane_title.add_theme_color_override(&"font_color", _token(&"text_primary"))
 	for label: Label in [_outpost_caption, _meridian_note, _not_cargo_caption, _free_caption, _persist_caption, _pane_hint]:
 		if label != null:
 			label.add_theme_color_override(&"font_color", _token(&"text_dim"))
-
-
-func _token(name: StringName) -> Color:
-	if has_theme_color(name, TOKENS_TYPE):
-		return get_theme_color(name, TOKENS_TYPE)
-	return Color.WHITE
-
-
-## --- the probes' reads --------------------------------------------------------------
-
 
 func tier_rows() -> Array[Dictionary]:
 	return _tiers

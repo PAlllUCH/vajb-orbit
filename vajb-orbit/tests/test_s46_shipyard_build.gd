@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s46_shipyard_build: the SHIPYARD build view rebuilt as the AUCTION house style
 ## (STATION_HUB section 23.8 P54; 10 section 3.5's view law). One row per acceptance item:
 ##   1. the build view is two category sections in section 5.10's shelf idiom: HULLS
@@ -69,7 +70,7 @@ func suite_name() -> String:
 
 
 func suite_setup(_ctx: Dictionary) -> void:
-	_profile = _fixture_host()
+	_profile = Support.profile()
 	if _profile == null:
 		fail_setup("the PlayerProfile autoload is the account the pane reads")
 		return
@@ -83,7 +84,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_job = _profile.call(&"shipyard_job")
 	_previous_session = int(_profile.call(&"shipyard_session"))
 	_profile.set(&"save_path", SCRATCH_PROFILE)
-	_delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 
 
 func suite_teardown() -> void:
@@ -100,7 +101,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_shipyard_session", _previous_session)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 	_profile = null
 
 
@@ -120,7 +121,7 @@ func teardown() -> void:
 	if _model != null and is_instance_valid(_model):
 		_model.free()
 	_model = null
-	_delete_file(MODEL_SAVE)
+	Support.delete_file(MODEL_SAVE)
 
 
 ## ------------------------------------- AC1: two category sections in the shelf idiom
@@ -555,7 +556,7 @@ func _mount_panel() -> void:
 		_host.name = "S46BuildHost"
 		_host.theme = ThemeRes
 		_host.size = Vector2(1920.0, 1080.0)
-		_fixture_host().add_child(_host)
+		Support.profile().add_child(_host)
 	_panel = PanelScene.instantiate() as Control
 	_host.add_child(_panel)
 	## `profile_changed` stays DISCONNECTED for this suite (the s45 idiom): the panel
@@ -589,18 +590,3 @@ func _on_confirm_requested(payload: Dictionary) -> void:
 
 func _on_sheet_requested(payload: Dictionary) -> void:
 	_sheets.append(payload)
-
-
-func _fixture_host() -> Node:
-	var tree := Engine.get_main_loop() as SceneTree
-	if tree == null:
-		return null
-	return tree.root.get_node_or_null(NodePath(PROFILE_SERVICE))
-
-
-func _delete_file(path: String) -> void:
-	if not FileAccess.file_exists(path):
-		return
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())

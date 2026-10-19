@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite engine2_pools: the reactor chain of engine slice 0 (ENGINE_SPEC 4.4,
 ## rulings 10-14) and the pool figures `ShipFit` resolves (section 9/13).
 ##
@@ -37,7 +38,7 @@ func suite_name() -> String:
 
 
 func setup() -> void:
-	_delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 	var stats: ShipStats = ShipFitScript.resolve(&"ship_vanguard", ShipFitScript.STANDARD_FIT)
 	_state = PlayerStateScript.new()
 	_state.energy_max = stats.energy_max
@@ -62,7 +63,7 @@ func teardown() -> void:
 		_profile.save_path = _previous_path
 	_profile = null
 	_state = null
-	_delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 
 
 ## ---------------------------------------------------------------------------
@@ -272,13 +273,6 @@ func test_damage_ctx_is_accepted_and_recorded() -> void:
 ## ---------------------------------------------------------------------------
 ## Helpers
 ## ---------------------------------------------------------------------------
-
-
-## The p1 suites carry this helper per file rather than on the base class.
-func _delete_file(path: String) -> void:
-	if FileAccess.file_exists(path):
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
-
 
 func _service() -> Node:
 	var loop := Engine.get_main_loop()

@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s5_batteries_v2: AC3 of the S5 wave -- the ARMORY pane's drag-and-drop battery
 ## composition, the slowest-member salvo gate in flight, and save v7's rack migration.
 ##
@@ -109,7 +110,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_modules = _profile.call(&"modules")
 	_previous_batteries = _profile.get(&"_batteries")
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 func suite_teardown() -> void:
@@ -123,7 +124,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_batteries", _previous_batteries)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile = null
 
 
@@ -143,7 +144,7 @@ func setup() -> void:
 	_profile.set(&"_modules", {})
 	_profile.set(&"_ammo", {})
 	_profile.set(&"_batteries", {})
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 func teardown() -> void:
@@ -155,18 +156,10 @@ func teardown() -> void:
 	_free_rig()
 	_restore_pools()
 
-
-func _audio() -> Node:
-	var tree := Engine.get_main_loop() as SceneTree
-	if tree == null:
-		return null
-	return tree.root.get_node_or_null(NodePath(AUDIO_SERVICE))
-
-
 func _save_pools() -> void:
 	_pool_state = {}
 	_had_pool_state = false
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		return
 	var cursors: Variant = audio.get(&"_pool_next")
@@ -180,7 +173,7 @@ func _save_pools() -> void:
 func _restore_pools() -> void:
 	if not _had_pool_state:
 		return
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		return
 	var cursors: Variant = audio.get(&"_pool_next")
@@ -209,14 +202,6 @@ func _free_rig() -> void:
 
 ## ------------------------------------------------------------------ fixtures and read-backs
 
-
-func _fixture_host() -> Node:
-	var tree := Engine.get_main_loop() as SceneTree
-	if tree == null:
-		return null
-	return tree.root.get_node_or_null(NodePath(&"PlayerProfile"))
-
-
 func _instance(base_id: StringName) -> StringName:
 	return StringName(_profile.call(&"add_instance", base_id, &"common", [], []))
 
@@ -234,7 +219,7 @@ func _mount() -> Control:
 	_host.name = "ArmoryHost"
 	_host.theme = ThemeRes
 	_host.size = Vector2(1280.0, 720.0)
-	_fixture_host().add_child(_host)
+	Support.profile().add_child(_host)
 	_panel = PanelScene.instantiate() as Control
 	_host.add_child(_panel)
 	_profile.connect(&"profile_changed", Callable(_panel, &"refresh_profile"))
@@ -295,21 +280,6 @@ func _move_barrel(panel: Control, from_rack: int, from_position: int, to_rack: i
 	var payload: Variant = panel.call(&"drag_barrel", from_rack, from_position)
 	return bool(panel.call(&"drop", to_rack, to_position, payload))
 
-
-func _delete_file(path: String) -> void:
-	if not FileAccess.file_exists(path):
-		return
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
-## ------------------------------------------------------------------------- the rename
-
-
-## The rail entry and the pane file move together (STATION_HUB section 5.11): the label is
-## `ARMORY`, it lives in `ui/screens/station.gd` (the theme carries no label-text constants,
-## J0's F3), `MODULE_FILES` loads the renamed scene, and the retired files are gone.
 func test_the_rail_says_armory_and_loads_the_renamed_pane() -> void:
 	assert_eq(StationScript.MODULE_LABELS[0], "ARMORY", "the rail's first entry is renamed")
 	assert_eq(StationScript.MODULE_FILES[0], "armory", "and loads the pane's new file name")
@@ -578,7 +548,7 @@ func test_the_close_returns_a_barrel_to_the_inventory() -> void:
 ## shot into), handed a composed mixed rack directly. `set_batteries` is the launch's own
 ## call, in the component's index space (barrel positions).
 func _rig(ids: Array, racks: Array) -> Node2D:
-	var host := _fixture_host()
+	var host := Support.profile()
 	if host == null:
 		skip("no PlayerProfile autoload to host the rig")
 		return null
@@ -839,7 +809,7 @@ func test_the_launch_hands_the_mounted_component_the_recorded_racks() -> void:
 	)
 	var packed := load("res://game/game.tscn") as PackedScene
 	_scene = packed.instantiate() as Node2D
-	_fixture_host().add_child(_scene)
+	Support.profile().add_child(_scene)
 	var ship := _scene.get_node_or_null(NodePath(&"PlayerShip")) as Node2D
 	var guns: Node2D = (
 		ship.get_node_or_null(NodePath(&"WeaponComponent")) as Node2D if ship != null else null
@@ -883,7 +853,7 @@ func test_the_readout_follows_the_selected_barrels_own_pack() -> void:
 	)
 	var packed := load("res://game/game.tscn") as PackedScene
 	_scene = packed.instantiate() as Node2D
-	_fixture_host().add_child(_scene)
+	Support.profile().add_child(_scene)
 	var state: PlayerState = _scene.get(&"_state") as PlayerState
 	assert_eq(
 		state.weapons,

@@ -1,4 +1,5 @@
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s22_6_inertia: wave S22.6's magnitude tick (owner-ticked 2026-09-30), one row
 ## per acceptance item. The wave moves exactly three constants -- `ShipFit.COAST_TIME_MULT`
 ## 2.5 -> 5.0 (18 §13's Hull release coast row; CONTRACTS §22 T1 / §23.5 T1) and the rock
@@ -175,11 +176,11 @@ func test_ac1_the_release_coast_is_five_seconds_and_lands_on_the_rows_envelope()
 		)
 		var stats: Variant = ShipFitScript.resolve(hull_id, ShipFitScript.STANDARD_FIT)
 		assert_true(
-			_near(float(stats.coast_time), resolved, 1e-6),
+			Support.near(float(stats.coast_time), resolved, 1e-6),
 			"%s: the resolved coast is the row x 5.0 (plating pays in mass since S22.7)" % hull_id
 		)
 		assert_true(
-			_near(float(stats.hull_mass), float(row[&"hull_mass"]) * plating, 1e-6),
+			Support.near(float(stats.hull_mass), float(row[&"hull_mass"]) * plating, 1e-6),
 			"%s: and the plate's ponderous half rides the mass (x%.2f)" % [hull_id, plating]
 		)
 		unplated.append("%s=%.2f" % [String(hull_id).trim_prefix("ship_"), resolved])
@@ -201,7 +202,7 @@ func test_ac1_the_release_coast_is_five_seconds_and_lands_on_the_rows_envelope()
 	var at_ceiling := _released_envelope(ship, Vector2(ceiling, 0.0))
 	var derived_t_10 := 0.9 * coast_ramp
 	assert_true(
-		_near(float(at_ceiling[&"t_10"]), derived_t_10, ENVELOPE_TOLERANCE * coast_ramp),
+		Support.near(float(at_ceiling[&"t_10"]), derived_t_10, ENVELOPE_TOLERANCE * coast_ramp),
 		(
 			"released at the ceiling %.1f u/s the tenth point is 0.9 x coast_time x fitted/base = %.3f s (measured %.3f)"
 			% [ceiling, derived_t_10, at_ceiling[&"t_10"]]
@@ -213,7 +214,7 @@ func test_ac1_the_release_coast_is_five_seconds_and_lands_on_the_rows_envelope()
 	)
 	var derived_carry := 0.5 * ceiling * coast_ramp
 	assert_true(
-		_near(float(at_ceiling[&"carry"]), derived_carry, ENVELOPE_TOLERANCE * derived_carry),
+		Support.near(float(at_ceiling[&"carry"]), derived_carry, ENVELOPE_TOLERANCE * derived_carry),
 		(
 			"the carried distance is 0.5 x v0 x coast_time x fitted/base = %.2f u (measured %.2f)"
 			% [derived_carry, at_ceiling[&"carry"]]
@@ -343,7 +344,7 @@ func test_ac2_the_released_forward_strafe_holds_its_bearing_to_the_tenth() -> vo
 		"the decay force is antiparallel to the velocity on every tick (%.9f)" % max_cross
 	)
 	assert_true(
-		_near(t_10, derived, ENVELOPE_TOLERANCE * derived),
+		Support.near(t_10, derived, ENVELOPE_TOLERANCE * derived),
 		"the two components decay as one line: t_10 %.4f against the derived %.4f" % [t_10, derived]
 	)
 
@@ -369,7 +370,7 @@ func test_ac3_the_two_rock_damps_reach_field_children_and_splinters() -> void:
 	var field := _solo_field()
 	var rock := _member(field, AsteroidScript.SIZE_MEDIUM, 2, "Original")
 	assert_true(
-		_near(float(rock.linear_damp), AsteroidScript.LINEAR_DAMP, 1e-6),
+		Support.near(float(rock.linear_damp), AsteroidScript.LINEAR_DAMP, 1e-6),
 		"a field spawn carries LINEAR_DAMP"
 	)
 	assert_eq(
@@ -387,7 +388,7 @@ func test_ac3_the_two_rock_damps_reach_field_children_and_splinters() -> void:
 	assert_true(children.size() >= 1, "the L parent cleaved into children")
 	for child: Node2D in children:
 		assert_true(
-			_near(float(child.linear_damp), AsteroidScript.FRAGMENT_LINEAR_DAMP, 1e-6),
+			Support.near(float(child.linear_damp), AsteroidScript.FRAGMENT_LINEAR_DAMP, 1e-6),
 			(
 				"the cleave child %s carries FRAGMENT_LINEAR_DAMP (got %.4f)"
 				% [child.name, child.linear_damp]
@@ -408,21 +409,21 @@ func test_ac3_the_two_rock_damps_reach_field_children_and_splinters() -> void:
 	assert_true(splinters.size() == 1, "the splinter path spawned one S body")
 	if splinters.size() == 1:
 		assert_true(
-			_near(float(splinters[0].linear_damp), AsteroidScript.FRAGMENT_LINEAR_DAMP, 1e-6),
+			Support.near(float(splinters[0].linear_damp), AsteroidScript.FRAGMENT_LINEAR_DAMP, 1e-6),
 			"the S22.5 splinter carries FRAGMENT_LINEAR_DAMP (got %.4f)" % splinters[0].linear_damp
 		)
 	var kick := _drift_model(KICK_SPEED, float(AsteroidScript.LINEAR_DAMP))
 	var child := _drift_model(KICK_SPEED, float(AsteroidScript.FRAGMENT_LINEAR_DAMP))
 	assert_true(
-		_near(float(kick[&"speed_1s"]), KICK_TARGET_SPEED_1S, 1.0),
+		Support.near(float(kick[&"speed_1s"]), KICK_TARGET_SPEED_1S, 1.0),
 		"a 150 u/s kick reads ~106 u/s after one second (measured %.3f)" % kick[&"speed_1s"]
 	)
 	assert_true(
-		_near(float(kick[&"carry_total"]), KICK_TARGET_CARRY, ENVELOPE_TOLERANCE * KICK_TARGET_CARRY),
+		Support.near(float(kick[&"carry_total"]), KICK_TARGET_CARRY, ENVELOPE_TOLERANCE * KICK_TARGET_CARRY),
 		"and carries ~429 u before settling (measured %.2f)" % kick[&"carry_total"]
 	)
 	assert_true(
-		_near(float(child[&"carry_total"]), CHILD_TARGET_CARRY, ENVELOPE_TOLERANCE * CHILD_TARGET_CARRY),
+		Support.near(float(child[&"carry_total"]), CHILD_TARGET_CARRY, ENVELOPE_TOLERANCE * CHILD_TARGET_CARRY),
 		"a cleave child on 0.25 carries ~600 u (measured %.2f)" % child[&"carry_total"]
 	)
 	print(
@@ -472,7 +473,7 @@ func test_ac4_a_rock_at_rest_stays_and_a_ram_carries_ten_times_further() -> void
 		)
 	)
 	assert_true(
-		_near(
+		Support.near(
 			float(shipped[&"t_10"]),
 			log(RAM_HANDOFF_SPEED / SETTLE_CEILING) / float(AsteroidScript.LINEAR_DAMP),
 			ENVELOPE_TOLERANCE * RAM_TARGET_SETTLE
@@ -575,7 +576,7 @@ func test_ac7_the_by_name_readers_see_the_same_law() -> void:
 	var field := _solo_field()
 	var rock := _member(field, AsteroidScript.SIZE_MEDIUM, 2, "ByName")
 	assert_true(
-		_near(float(rock.linear_damp), AsteroidScript.LINEAR_DAMP, 1e-6),
+		Support.near(float(rock.linear_damp), AsteroidScript.LINEAR_DAMP, 1e-6),
 		"test_engine2_cleaving.gd:267 compares a field rock's damp to Asteroid.LINEAR_DAMP -- same law"
 	)
 	var parent := _member(field, AsteroidScript.SIZE_LARGE, 4, "ProbeFix")
@@ -586,7 +587,7 @@ func test_ac7_the_by_name_readers_see_the_same_law() -> void:
 		if before.has(candidate):
 			continue
 		assert_true(
-			_near(float(candidate.linear_damp), AsteroidScript.FRAGMENT_LINEAR_DAMP, 1e-6),
+			Support.near(float(candidate.linear_damp), AsteroidScript.FRAGMENT_LINEAR_DAMP, 1e-6),
 			"every cleave child follows FRAGMENT_LINEAR_DAMP, not a copy of it (got %.4f)" % candidate.linear_damp
 		)
 		marked += 1
@@ -599,7 +600,7 @@ func test_ac7_the_by_name_readers_see_the_same_law() -> void:
 	)
 	var vanguard: Variant = ShipFitScript.resolve(&"ship_vanguard", ShipFitScript.STANDARD_FIT)
 	assert_true(
-		_near(
+		Support.near(
 			float(vanguard.coast_time),
 			float(ShipFitScript.HANDLING[&"ship_vanguard"][&"coast_time"])
 			* ShipFitScript.COAST_TIME_MULT,
@@ -769,7 +770,3 @@ func _release_all() -> void:
 	for action: StringName in _pressed:
 		Input.action_release(action)
 	_pressed.clear()
-
-
-func _near(measured: float, expected: float, tolerance: float = 1e-9) -> bool:
-	return absf(measured - expected) <= tolerance

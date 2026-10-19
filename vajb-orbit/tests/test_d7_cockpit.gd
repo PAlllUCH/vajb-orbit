@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite d7_cockpit: wave D7's cockpit cluster rework (UI_SPEC section 3.7 as amended
 ## 2026-09-24 - the Mockup v5/v7 blocks - and section 3.9 rule 5's `CockpitStyle`).
 ##
@@ -74,7 +75,7 @@ func setup() -> void:
 		fail_setup("hud.tscn did not instantiate")
 		return
 	_hud.theme = HudTheme
-	_fixture_host().add_child(_hud)
+	Support.fixture_host().add_child(_hud)
 
 
 func teardown() -> void:
@@ -84,18 +85,6 @@ func teardown() -> void:
 	_cargo_events.clear()
 	if FileAccess.file_exists(STYLE_PROBE_PATH):
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(STYLE_PROBE_PATH))
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root
-
-
 func _cockpit() -> Control:
 	return _hud.call(&"cockpit")
 

@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite d7_armory: wave D7's ARMORY cockpit restyle (UI_SPEC section 3.10, on the
 ## section 3.9 instrument language), re-pinned by wave S18's D13 rework (section 3.10
 ## **Amendment 3**: the landscape console, the five-across band, the P3 2x2 rack and the
@@ -140,7 +141,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_cargo = (_profile.get(&"_cargo") as Dictionary).duplicate(true)
 	_previous_batteries = (_profile.get(&"_batteries") as Dictionary).duplicate(true)
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 func suite_teardown() -> void:
@@ -156,7 +157,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_batteries", _previous_batteries)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	if FileAccess.file_exists(STYLE_PROBE_PATH):
 		DirAccess.remove_absolute(ProjectSettings.globalize_path(STYLE_PROBE_PATH))
 	_profile = null
@@ -170,7 +171,7 @@ func setup() -> void:
 	_host.name = "ArmoryHost"
 	_host.theme = ThemeRes
 	_host.size = HOST
-	_fixture_host().add_child(_host)
+	Support.profile().add_child(_host)
 
 
 func teardown() -> void:
@@ -196,17 +197,6 @@ func _seed_account() -> void:
 	_profile.set(&"_cargo", AMMO_FIXTURE.duplicate())
 	_profile.set(&"_batteries", {})
 
-
-func _fixture_host() -> Node:
-	var tree := Engine.get_main_loop() as SceneTree
-	if tree == null:
-		return null
-	var profile := tree.root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return profile if profile != null else tree.root
-
-
-## Mount the shipped pane the way the shell does: into a sized host, with the shell's two
-## wirings (the panel's status strip up, the profile's keys down).
 func _mount() -> Control:
 	_panel = PanelScene.instantiate() as Control
 	_host.add_child(_panel)
@@ -303,25 +293,6 @@ func _assert_cargo(before: Dictionary, what: String) -> void:
 		(_profile.get(&"_cargo") as Dictionary), before[&"cargo"],
 		"%s: and the hold" % what
 	)
-
-func _delete_file(path: String) -> void:
-	if not FileAccess.file_exists(path):
-		return
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
-## ------------------------------------------------------- 1. the console and the wells
-
-
-## The pane's geometry rides the host everywhere it goes (P6): the console is the host
-## less its insets, the master is exactly 2x it and still on disk - but **S20's A4.1
-## retires it from the pane** (the plate's texture is cleared at build). **A5.1
-## (2026-09-26) amends where the chrome comes from:** the pane's one frame is the **module
-## host's own `PanelRaised`** (its outer edge) and every surface inside the console is the
-## flat Tokens box - the `ui_panel_frame` asset is a pane-scale nine-patch and is no longer
-## drawn over 260x192 bays (the band ate the cells' room).
 func test_the_pane_mounts_on_the_painted_console_plate() -> void:
 	var panel := _mount()
 	var style := _style()

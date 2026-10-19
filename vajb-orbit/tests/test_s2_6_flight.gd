@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s2_6_flight: the construction half of the flight rulings (CONTRACTS section 14,
 ## owner 2026-09-22, amended by section 23.5, owner 2026-09-24). The *timed* halves -- the
 ## accelerate leg, the release envelope, the revolution of a neutral turn, the sideways
@@ -159,11 +160,11 @@ func test_the_accelerate_leg_doubles_per_class_and_the_ceiling_never_moves() -> 
 			continue
 		var handling: Dictionary = ShipFitScript.HANDLING[hull_id]
 		assert_true(
-			_near(float(handling[&"accel_time"]), float(row[&"accel_time"])),
+			Support.near(float(handling[&"accel_time"]), float(row[&"accel_time"])),
 			"%s: the row itself is still today's accelerate leg (the multiplier is the seam)" % hull_id
 		)
 		assert_true(
-			_near(
+			Support.near(
 				float(stats.accel_time),
 				float(row[&"accel_time"]) * ShipFitScript.ACCEL_TIME_MULT,
 				TOLERANCE
@@ -174,14 +175,14 @@ func test_the_accelerate_leg_doubles_per_class_and_the_ceiling_never_moves() -> 
 			)
 		)
 		assert_true(
-			_near(float(stats.hull_mass), float(handling[&"hull_mass"]) * plating, TOLERANCE),
+			Support.near(float(stats.hull_mass), float(handling[&"hull_mass"]) * plating, TOLERANCE),
 			(
 				"%s: the fitted mass is the class column x the plating multiplier (got %.3f)"
 				% [hull_id, float(stats.hull_mass)]
 			)
 		)
 		assert_true(
-			_near(float(stats.max_speed), float(row[&"max_speed"]) * (1.0 + speed_penalty), TOLERANCE),
+			Support.near(float(stats.max_speed), float(row[&"max_speed"]) * (1.0 + speed_penalty), TOLERANCE),
 			(
 				"%s: max_speed never moves -- the ceiling is the row x the plating penalty (got %.3f)"
 				% [hull_id, float(stats.max_speed)]
@@ -200,7 +201,7 @@ func test_the_accelerate_leg_doubles_per_class_and_the_ceiling_never_moves() -> 
 			"%s: t_90 grows x %.4f, at or above the %.1f floor" % [hull_id, growth, RAMP_GROWTH_FLOOR]
 		)
 		assert_true(
-			_near(growth, ShipFitScript.ACCEL_TIME_MULT, 1e-9),
+			Support.near(growth, ShipFitScript.ACCEL_TIME_MULT, 1e-9),
 			"%s: and the growth is the multiplier itself, not a second number" % hull_id
 		)
 		checked += 1
@@ -233,7 +234,7 @@ func test_one_decay_owns_both_axes_and_the_carry_reverts() -> void:
 			assert_true(false, "%s: the hull fixture did not build" % hull_id)
 			continue
 		assert_true(
-			_near(
+			Support.near(
 				float(stats.coast_time),
 				float(row[&"coast_time"]) * ShipFitScript.COAST_TIME_MULT,
 				TOLERANCE
@@ -244,7 +245,7 @@ func test_one_decay_owns_both_axes_and_the_carry_reverts() -> void:
 			)
 		)
 		assert_true(
-			_near(
+			Support.near(
 				float(stats.hull_mass),
 				float(ShipFitScript.HANDLING[hull_id][&"hull_mass"]) * plating,
 				TOLERANCE
@@ -258,11 +259,11 @@ func test_one_decay_owns_both_axes_and_the_carry_reverts() -> void:
 		var sideways := float(ship.call(&"_lateral_damp"))
 		var extra := float(ship.call(&"_lateral_extra_damp"))
 		assert_true(
-			_near(forward, 1.0 / float(stats.coast_time), TOLERANCE),
+			Support.near(forward, 1.0 / float(stats.coast_time), TOLERANCE),
 			"%s: the body's own damp is 1 / coast_time, the release's carry" % hull_id
 		)
 		assert_true(
-			_near(sideways, forward, TOLERANCE),
+			Support.near(sideways, forward, TOLERANCE),
 			(
 				"%s: the sideways damp is the forward one (%.6f both), one rate on both axes"
 				% [hull_id, forward]
@@ -281,19 +282,19 @@ func test_one_decay_owns_both_axes_and_the_carry_reverts() -> void:
 		## the released velocity rides besides the release chase.
 		var body: RigidBody2D = ship.impact_body()
 		assert_true(
-			_near(body.linear_damp, forward, TOLERANCE),
+			Support.near(body.linear_damp, forward, TOLERANCE),
 			"%s: the body damps at the one rate" % hull_id
 		)
 		var angular := float(ship.call(&"_angular_damp"))
 		assert_true(
-			_near(angular, ShipFitScript.ANGULAR_DAMP_MULT / float(stats.turn_spinup), TOLERANCE),
+			Support.near(angular, ShipFitScript.ANGULAR_DAMP_MULT / float(stats.turn_spinup), TOLERANCE),
 			(
 				"%s: the angular damp is ANGULAR_DAMP_MULT / turn_spinup (got %.6f)"
 				% [hull_id, angular]
 			)
 		)
 		assert_true(
-			_near(body.angular_damp, angular, TOLERANCE),
+			Support.near(body.angular_damp, angular, TOLERANCE),
 			"%s: and the body carries that too" % hull_id
 		)
 		assert_eq(
@@ -329,22 +330,22 @@ func test_the_cursor_steers_at_zero_throttle() -> void:
 		ship.call(&"set_aim_point", point)
 		var aim := float(ship.call(&"_aim_turn"))
 		assert_true(
-			_near(absf(aim), float(stats.turn_rate), 1e-5),
+			Support.near(absf(aim), float(stats.turn_rate), 1e-5),
 			(
 				"a cursor 90 degrees off the bow commands the full class rate with no throttle (%.4f)"
 				% aim
 			)
 		)
 		assert_true(
-			_near(float(ship.call(&"_manual_desired_turn", 0.0, 0.0)), aim, TOLERANCE),
+			Support.near(float(ship.call(&"_manual_desired_turn", 0.0, 0.0)), aim, TOLERANCE),
 			"and the manual turn is that aim turn with the throttle at zero (the W-gate is gone)"
 		)
 		assert_true(
-			_near(float(ship.call(&"_manual_desired_turn", 1.0, 0.0)), aim, TOLERANCE),
+			Support.near(float(ship.call(&"_manual_desired_turn", 1.0, 0.0)), aim, TOLERANCE),
 			"holding the throttle commands the same turn, not a different one"
 		)
 		assert_true(
-			_near(float(ship.call(&"_manual_desired_turn", 0.0, side)), float(stats.turn_rate) * side, 1e-5),
+			Support.near(float(ship.call(&"_manual_desired_turn", 0.0, side)), float(stats.turn_rate) * side, 1e-5),
 			"a deflected turn action still answers first, without any throttle at all"
 		)
 	## The deadzone: a cursor on the hull commands nothing, which is what holds a heading the
@@ -523,7 +524,7 @@ func test_each_axis_compensates_its_own_damp() -> void:
 		"the strafe pushes towards the hull's right (%.3f N)" % strafe_force.dot(side)
 	)
 	assert_true(
-		_near(strafe_force.dot(side), expected_sum, FORCE_TOLERANCE),
+		Support.near(strafe_force.dot(side), expected_sum, FORCE_TOLERANCE),
 		(
 			"and the step's whole sideways force is the chase at the class mass plus the compensated damp at the body's (%.3f against a derived %.3f N)"
 			% [strafe_force.dot(side), expected_sum]
@@ -536,7 +537,7 @@ func test_each_axis_compensates_its_own_damp() -> void:
 	## `accel_time`. The released branch must not touch this: the strafe is commanded, so
 	## `_is_released` is false and the per-axis law runs (section 23.5's own row).
 	assert_true(
-		_near(
+		Support.near(
 			strafe_force.dot(side) / mass - forward_damp * sideways_velocity,
 			(base_mass / mass) * chase,
 			FORCE_TOLERANCE
@@ -561,14 +562,14 @@ func test_each_axis_compensates_its_own_damp() -> void:
 	var release_accel := clampf(-sideways_velocity / dt, -coast_rate, coast_rate)
 	var release_sum := base_mass * release_accel + mass * forward_damp * sideways_velocity
 	assert_true(
-		_near(drag.dot(side), release_sum, FORCE_TOLERANCE),
+		Support.near(drag.dot(side), release_sum, FORCE_TOLERANCE),
 		(
 			"a released velocity chases zero on its own line at the class rate (%.3f against a derived %.3f N)"
 			% [drag.dot(side), release_sum]
 		)
 	)
 	assert_true(
-		_near(
+		Support.near(
 			drag.dot(side) / mass - forward_damp * sideways_velocity,
 			(base_mass / mass) * release_accel,
 			FORCE_TOLERANCE
@@ -599,7 +600,7 @@ func test_each_axis_compensates_its_own_damp() -> void:
 	_drive(ship, dt)
 	var forward_force: Vector2 = ship.call(&"applied_force")
 	assert_true(
-		_near(
+		Support.near(
 			forward_force.dot(nose),
 			base_mass * clampf(-forward_velocity / dt, -coast_rate, coast_rate) + mass * forward_damp * forward_velocity,
 			FORCE_TOLERANCE
@@ -729,14 +730,9 @@ func _launch(hull_id: StringName) -> Array:
 ## takes children all through the run, whereas the root viewport is busy adding the runner
 ## scene during `_ready` (see `test_engine2_fixes.gd`).
 func _host() -> Node:
-	var root := _tree().root
+	var root := Support.tree().root
 	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
 	return host if host != null else root
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
 
 func _press(action: StringName) -> void:
 	Input.action_press(action)
@@ -749,14 +745,6 @@ func _release_all() -> void:
 		Input.action_release(action)
 	_pressed.clear()
 
-
-func _near(measured: float, expected: float, tolerance: float = TOLERANCE) -> bool:
-	return absf(measured - expected) <= tolerance
-
-
-## The difference between two readings relative to the larger of them, with two zeros
-## defined as mirrored exactly (a neutral turn really does displace nothing on both sides,
-## and dividing by zero is not the way to say so).
 func _relative(a: float, b: float) -> float:
 	var scale := maxf(absf(a), absf(b))
 	if is_zero_approx(scale):

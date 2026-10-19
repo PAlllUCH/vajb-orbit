@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s39_feel: wave S39 - the owner's second playtest (2026-10-10), seven findings.
 ## One row per pinned acceptance (A1-A7):
 ##   A1 (T-164) an armed hostile fires at its target, a neutral never does;
@@ -62,15 +63,8 @@ func teardown() -> void:
 	_staged.clear()
 	_release_pressed()
 
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-## The fixture host: the `PlayerProfile` autoload (never busy setting up children), else
-## the tree root - the same host the D7 and S2.5 suites stage their nodes into.
 func _host() -> Node:
-	var root := _tree().root
+	var root := Support.tree().root
 	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
 	return host if host != null else root
 
@@ -143,7 +137,7 @@ func test_a1_an_engaged_hostile_puts_shots_on_target() -> void:
 	brain._target = target
 	ship.set(&"_brain", brain)
 	ship.set(&"_intent", {NpcBrainScript.INTENT_FIRE: true})
-	var scene := _tree().root
+	var scene := Support.tree().root
 	var before := _count_shots(scene)
 	ship.call(&"_step_weapon", PHYSICS_STEP)
 	var after := _count_shots(scene)

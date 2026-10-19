@@ -1,4 +1,5 @@
 extends Node
+const Support := preload("res://tests/support.gd")
 ## S8-Q0 evidence probe (part 1): reproduce the QA's H1 / H2 / M4 on HEAD, in memory,
 ## with the shipped scenes and the borrowed `PlayerProfile` autoload.
 ##
@@ -448,7 +449,7 @@ func _borrow() -> void:
 	_previous_market = (_profile.get(&"_market") as Dictionary).duplicate(true)
 	_previous_batteries = (_profile.get(&"_batteries") as Dictionary).duplicate(true)
 	_profile.set(&"save_path", SCRATCH_PROFILE)
-	_remove(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 
 
 func _hand_back() -> void:
@@ -462,15 +463,8 @@ func _hand_back() -> void:
 	_profile.set(&"_batteries", _previous_batteries)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_remove(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 	print("%s scratch removed=%s" % [TAG, str(not FileAccess.file_exists(SCRATCH_PROFILE))])
-
-
-func _remove(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
 
 func _open() -> Node2D:
 	var scene := (load("res://game/game.tscn") as PackedScene).instantiate() as Node2D

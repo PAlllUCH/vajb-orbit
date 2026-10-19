@@ -1,4 +1,5 @@
 extends Node
+const Support := preload("res://tests/support.gd")
 ## S8-Q0 evidence probe (part 4): O1/O2 - does the ARMORY's drag actually commit a weapon
 ## group, driven through the panel's own three handlers (`_get_drag_data`'s payload builders
 ## `drag_inventory` / `drag_barrel`, `_can_drop_data`'s `can_drop`, `_drop_data`'s `drop`)?
@@ -115,7 +116,7 @@ func _borrow() -> void:
 	_previous_modules = _profile.call(&"modules")
 	_previous_batteries = (_profile.get(&"_batteries") as Dictionary).duplicate(true)
 	_profile.set(&"save_path", SCRATCH_PROFILE)
-	_remove(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 
 
 func _hand_back() -> void:
@@ -125,11 +126,5 @@ func _hand_back() -> void:
 	_profile.set(&"_batteries", _previous_batteries)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_remove(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 	print("%s scratch removed=%s" % [TAG, str(not FileAccess.file_exists(SCRATCH_PROFILE))])
-
-
-func _remove(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())

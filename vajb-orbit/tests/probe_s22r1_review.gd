@@ -1,4 +1,5 @@
 extends Node
+const Support := preload("res://tests/support.gd")
 ## S22-R1's independent re-measurement (the W8/S19-R1 method: the reviewer re-derives every
 ## number from the code and the ticked sheet, never from a builder's report or its suite).
 ## Bounded, self-quitting, scratch store only (L229/T-93):
@@ -53,7 +54,7 @@ func _ready() -> void:
 		print("%s FAIL scratch store missing - refusing to touch the live account (T-93)" % TAG)
 		_summary()
 		return
-	var profile := _tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
+	var profile := Support.tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
 	if profile != null:
 		profile.set(&"save_path", "user://probe_s22r1_profile.cfg")
 	_static_checks()
@@ -77,13 +78,8 @@ func _check(name: String, ok: bool, evidence: String) -> void:
 		_fails.append(name)
 	print("%s %s %s - %s" % [TAG, "PASS" if ok else "FAIL", name, evidence])
 
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
 func _host() -> Node:
-	var root := _tree().root
+	var root := Support.tree().root
 	var fixture := root.get_node_or_null(NodePath(&"PlayerProfile"))
 	return fixture if fixture != null else root
 
@@ -339,7 +335,7 @@ func _fuze_checks() -> void:
 
 
 func _audio() -> Node:
-	return _tree().root.get_node_or_null(NodePath(&"AudioManager"))
+	return Support.tree().root.get_node_or_null(NodePath(&"AudioManager"))
 
 
 func _clear_audio() -> Node:

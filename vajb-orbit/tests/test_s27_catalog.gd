@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s27_catalog: wave S27's catalog breadth and the shipyard. One row per pinned
 ## acceptance (A1-A7):
 ##   A1 the seven R-S27-2 affix rows (15 section 1/3/4, family bands, a 5k seeded roll)
@@ -149,13 +150,13 @@ func suite_teardown() -> void:
 	GameScript._transit_destination = &""
 	_free_scenes()
 	_free_bare()
-	var profile := _store()
+	var profile := Support.profile()
 	if profile != null:
 		profile.call(&"reset_to_defaults")
 		profile.call(&"flush")
 		profile.set(&"save_path", _previous_path)
-	_delete_file(PROFILE_PATH)
-	_delete_file(SCRATCH_PROFILE)
+	Support.delete_file(PROFILE_PATH)
+	Support.delete_file(SCRATCH_PROFILE)
 
 
 ## ---------------------------------------------------------------------------
@@ -619,7 +620,7 @@ func test_a2_pyre_ring_fires_on_a_kill_in_flight() -> void:
 ## session by exactly one, so a queued build is ready on return; a crossing is not a
 ## launch and advances nothing.
 func test_a5_a_launch_advances_the_shipyard_session() -> void:
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		return
 	profile.call(&"add_cargo", &"mineral_iron", 100)
@@ -651,13 +652,6 @@ func _fresh():
 	profile.save_path = PROFILE_PATH
 	_profiles.append(profile)
 	return profile
-
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
 
 func _item_value(item: StringName) -> float:
 	if item == LootScript.CREDIT_ITEM:
@@ -714,7 +708,7 @@ func _ammo_rig(state: PlayerState, flags: Array) -> Node2D:
 	state.set_weapon_affixes(per)
 	state.set_affix_flags(_flags(flags))
 	var guns := WeaponScript.new() as Node2D
-	_fixture_host().add_child(guns)
+	Support.fixture_host().add_child(guns)
 	_bare.append(guns)
 	guns.call(&"setup", null, state)
 	var fit: Array[StringName] = [&"w_cannon"]
@@ -726,7 +720,7 @@ func _ammo_rig(state: PlayerState, flags: Array) -> Node2D:
 ## reads its `global_position`; a bare Node2D is no LOS blocker).
 func _lock_target_at(pos: Vector2) -> Node2D:
 	var target := Node2D.new()
-	_fixture_host().add_child(target)
+	Support.fixture_host().add_child(target)
 	target.global_position = pos
 	_bare.append(target)
 	return target
@@ -738,7 +732,7 @@ func _victim(archetype: StringName, pre_hit := 0.0) -> Node2D:
 	var hull := StubHull.new()
 	hull.archetype_id = archetype
 	hull.pre_hit = pre_hit
-	_fixture_host().add_child(hull)
+	Support.fixture_host().add_child(hull)
 	_bare.append(hull)
 	return hull
 
@@ -747,28 +741,10 @@ func _victim(archetype: StringName, pre_hit := 0.0) -> Node2D:
 func _ring_sink(pos: Vector2) -> RingSink:
 	var sink := RingSink.new()
 	sink.add_to_group(&"npc_ship")
-	_fixture_host().add_child(sink)
+	Support.fixture_host().add_child(sink)
 	sink.global_position = pos
 	_bare.append(sink)
 	return sink
-
-
-## Where a fixture may enter the tree: the runner calls every test from inside its own
-## `_ready`, when the root viewport is still busy, so the profile autoload hosts them.
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-func _store() -> Node:
-	return _tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
-
-
 func _open_game() -> Node2D:
 	var packed := load(GAME_SCENE) as PackedScene
 	if packed == null:
@@ -776,7 +752,7 @@ func _open_game() -> Node2D:
 	var scene := packed.instantiate() as Node2D
 	if scene == null:
 		return null
-	_fixture_host().add_child(scene)
+	Support.fixture_host().add_child(scene)
 	_scenes.append(scene)
 	return scene
 
@@ -796,7 +772,7 @@ func _free_bare() -> void:
 
 
 func _reset_store() -> void:
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		return
 	profile.call(&"reset_to_defaults")
@@ -804,7 +780,7 @@ func _reset_store() -> void:
 
 
 func _stage_scratch_store() -> void:
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		return
 	_previous_path = String(profile.get(&"save_path"))

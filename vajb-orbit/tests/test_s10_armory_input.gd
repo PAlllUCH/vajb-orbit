@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s10_armory_input: wave S10's ARMORY interactivity, driven through the **real**
 ## input pipeline - `Input.parse_input_event` -> SceneTree -> `Viewport` GUI hit-test and
 ## drag routing - and never by calling the pane's own handlers (S8's L170: a suite that
@@ -95,7 +96,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_modules = (_profile.get(&"_modules") as Dictionary).duplicate(true)
 	_previous_batteries = (_profile.get(&"_batteries") as Dictionary).duplicate(true)
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 func suite_teardown() -> void:
@@ -108,7 +109,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_batteries", _previous_batteries)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile = null
 
 
@@ -369,21 +370,6 @@ func _key(digit: int) -> void:
 		Input.parse_input_event(event)
 		Input.flush_buffered_events()
 
-
-func _delete_file(path: String) -> void:
-	if not FileAccess.file_exists(path):
-		return
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
-## ------------------------------------------------- 1. the fitted cell's two hit targets
-
-
-## The owner's "cannot drag equipped weapons": after a layout pass, a real press on the fitted
-## cell's **name plate** opens a barrel drag and a real release on another barrel of the same
-## rack commits the swap (09 section 11's within/between-rack drag).
 func test_a_real_named_plate_drag_commits_the_swap() -> void:
 	_three_barrel_rack()
 	_settle_layout()

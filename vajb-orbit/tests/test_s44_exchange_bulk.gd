@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s44_exchange_bulk: the EXCHANGE bulk sell (STATION_HUB section 23.7, P53) and
 ## T-190's check-mark ink. One row per acceptance item:
 ##   1. every hold row leads a CheckChip: a 24x24 flat button, bare 1 px `metal_mid`
@@ -63,7 +64,7 @@ func suite_name() -> String:
 
 
 func suite_setup(_ctx: Dictionary) -> void:
-	_profile = _fixture_host()
+	_profile = Support.profile()
 	if _profile == null:
 		fail_setup("the PlayerProfile autoload is the hold this suite sells")
 		return
@@ -80,8 +81,8 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_log_path = Log.log_path
 	_profile.set(&"save_path", SCRATCH_PROFILE)
 	Log.log_path = SCRATCH_LOG
-	_delete_file(SCRATCH_PROFILE)
-	_delete_file(SCRATCH_LOG)
+	Support.delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_LOG)
 
 
 func suite_teardown() -> void:
@@ -100,8 +101,8 @@ func suite_teardown() -> void:
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
 	Log.log_path = _previous_log_path
-	_delete_file(SCRATCH_PROFILE)
-	_delete_file(SCRATCH_LOG)
+	Support.delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_LOG)
 	_profile = null
 
 
@@ -351,7 +352,7 @@ func test_p53_sell_marked_sells_every_marked_stack_through_the_shipped_sell() ->
 	for item_id: StringName in [ORE, INGOT, COMP]:
 		expected_paid += int(quotes.get(item_id, {}).get(&"paid", 0))
 	var before := int(_profile.call(&"credits"))
-	_delete_file(SCRATCH_LOG)
+	Support.delete_file(SCRATCH_LOG)
 	(panel.get_node(NodePath("%SellMarkedButton")) as Button).pressed.emit()
 	assert_eq(int(_profile.call(&"credits")), before + expected_paid,
 		"the press paid exactly the read's summed figures")
@@ -431,7 +432,7 @@ func _mount_panel() -> Control:
 		_host.name = "S44ExchangeHost"
 		_host.theme = ThemeRes
 		_host.size = Vector2(1920.0, 1080.0)
-		_fixture_host().add_child(_host)
+		Support.profile().add_child(_host)
 	_panel = PanelScene.instantiate() as Control
 	_host.add_child(_panel)
 	_profile.connect(&"profile_changed", Callable(_panel, &"refresh_profile"))
@@ -504,16 +505,3 @@ func _group(value: int) -> String:
 		if count % 3 == 0 and index > 0:
 			grouped = " " + grouped
 	return grouped
-
-
-func _fixture_host() -> Node:
-	var tree := Engine.get_main_loop() as SceneTree
-	if tree == null:
-		return null
-	return tree.root.get_node_or_null(NodePath(PROFILE_SERVICE))
-
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())

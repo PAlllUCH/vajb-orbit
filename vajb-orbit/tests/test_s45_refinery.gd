@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s45_refinery: the refinery LOAD ALL, the machine strip and the REFINE/CRAFT
 ## mode switch (04 section 9 R9-R12, STATION_HUB section 23.5 P50/P51 and section 23.6
 ## P52). One row per acceptance item:
@@ -81,7 +82,7 @@ func suite_name() -> String:
 
 
 func suite_setup(_ctx: Dictionary) -> void:
-	_profile = _fixture_host()
+	_profile = Support.profile()
 	if _profile == null:
 		fail_setup("the PlayerProfile autoload is the account the pane reads")
 		return
@@ -102,8 +103,8 @@ func suite_setup(_ctx: Dictionary) -> void:
 	}
 	_profile.set(&"save_path", SCRATCH_PROFILE)
 	Log.log_path = SCRATCH_LOG
-	_delete_file(SCRATCH_PROFILE)
-	_delete_file(SCRATCH_LOG)
+	Support.delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_LOG)
 
 
 func suite_teardown() -> void:
@@ -124,8 +125,8 @@ func suite_teardown() -> void:
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
 	Log.log_path = _previous_log_path
-	_delete_file(SCRATCH_PROFILE)
-	_delete_file(SCRATCH_LOG)
+	Support.delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_LOG)
 	_profile = null
 
 
@@ -144,8 +145,8 @@ func teardown() -> void:
 	if _model != null and is_instance_valid(_model):
 		_model.free()
 	_model = null
-	_delete_file(MODEL_SAVE)
-	_delete_file(MODEL_LOG)
+	Support.delete_file(MODEL_SAVE)
+	Support.delete_file(MODEL_LOG)
 
 
 ## --------------------------------------------- AC5: the UPGRADE confirm door
@@ -521,7 +522,7 @@ func test_r9_load_all_moves_no_credits_and_logs_none() -> void:
 	var result: Dictionary = Ref.load_all(_model)
 	assert_true(bool(result[&"ok"]), "the load ran")
 	assert_eq(int(_model.call(&"credits")), before, "the LOAD law: no credits move")
-	_delete_file(MODEL_LOG)
+	Support.delete_file(MODEL_LOG)
 	assert_false(FileAccess.file_exists(MODEL_LOG),
 		"no economy-log line - a transfer is not a transaction")
 
@@ -530,7 +531,7 @@ func test_r9_load_all_moves_no_credits_and_logs_none() -> void:
 
 
 func _make_model() -> Node:
-	_delete_file(MODEL_LOG)
+	Support.delete_file(MODEL_LOG)
 	var model: Node = load("res://autoload/player_profile.gd").new()
 	model.save_path = MODEL_SAVE
 	Log.log_path = MODEL_LOG
@@ -561,7 +562,7 @@ func _mount_panel() -> void:
 		_host.name = "S45RefineryHost"
 		_host.theme = ThemeRes
 		_host.size = Vector2(1920.0, 1080.0)
-		_fixture_host().add_child(_host)
+		Support.profile().add_child(_host)
 	_panel = PanelScene.instantiate() as Control
 	_host.add_child(_panel)
 	## `profile_changed` stays DISCONNECTED for this suite: every transaction this
@@ -602,18 +603,3 @@ func _on_status_requested(message: String, danger: bool) -> void:
 
 func _on_confirm_requested(payload: Dictionary) -> void:
 	_confirms.append(payload)
-
-
-func _fixture_host() -> Node:
-	var tree := Engine.get_main_loop() as SceneTree
-	if tree == null:
-		return null
-	return tree.root.get_node_or_null(NodePath(PROFILE_SERVICE))
-
-
-func _delete_file(path: String) -> void:
-	if not FileAccess.file_exists(path):
-		return
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())

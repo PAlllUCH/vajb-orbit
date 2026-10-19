@@ -324,8 +324,8 @@ func test_p46_the_shell_consumes_the_service_hint() -> void:
 		StringName(_station.get(&"_focus_hint")), &"",
 		"the hint seam is consumed, not left set"
 	)
-	var vaults_pane: Control = (_station.get(&"_service_panes") as Dictionary)[&"vaults"]
-	var contracts_pane: Control = (_station.get(&"_service_panes") as Dictionary)[&"contracts"]
+	var vaults_pane: Control = _station.call(&"service_panel", &"vaults")
+	var contracts_pane: Control = _station.call(&"service_panel", &"contracts")
 	assert_true(vaults_pane.visible, "the VAULTS panel is the one showing")
 	assert_false(contracts_pane.visible, "the CONTRACTS panel is not showing")
 

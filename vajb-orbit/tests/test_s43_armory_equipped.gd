@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s43_armory_equipped: wave S43's ARMORY equipped list (STATION_HUB section 23.4
 ## P49) and its two buy doors (UI_SPEC section 17 A4-A6). One row per acceptance item:
 ##   1. the third block under CELL INFO carries the `EQUIPPED — <n>/<slot count>` caption
@@ -84,7 +85,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_modules = _profile.call(&"modules")
 	_previous_batteries = _profile.get(&"_batteries")
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 func suite_teardown() -> void:
@@ -102,7 +103,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_batteries", _previous_batteries)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile = null
 
 
@@ -134,13 +135,6 @@ func _seed_account() -> void:
 	_profile.set(&"_batteries", {})
 	_profile.set(&"_fits", {})
 	_profile.call(&"set_fit", VANGUARD, SEED_FIT)
-
-
-func _delete_file(path: String) -> void:
-	var absolute := ProjectSettings.globalize_path(path)
-	if FileAccess.file_exists(absolute):
-		DirAccess.remove_absolute(absolute)
-
 
 func _settle() -> void:
 	_panel.call(&"_lay")

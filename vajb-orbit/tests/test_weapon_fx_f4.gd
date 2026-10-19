@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite weapon_fx_f4: the fixes the review wave's findings asked for (worker F4,
 ## `.agents/gen/weapon_fx_f3_report.md`) - the beam's own hit read and its held bed (H1),
 ## the one-shot pool's same-take voice rule (M1), the loop beds' own voices (M2) and the
@@ -83,7 +84,7 @@ func suite_name() -> String:
 func suite_setup(_ctx: Dictionary) -> void:
 	_root = Node2D.new()
 	_root.name = &"F4Fixture"
-	_fixture_host().add_child(_root)
+	Support.fixture_host().add_child(_root)
 
 
 func suite_teardown() -> void:
@@ -108,7 +109,7 @@ func teardown() -> void:
 
 
 func test_a_beam_that_lands_on_a_hull_plays_the_impact_cue_and_the_ring() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -121,7 +122,7 @@ func test_a_beam_that_lands_on_a_hull_plays_the_impact_cue_and_the_ring() -> voi
 		String(audio.call(&"last_sfx")).begins_with(String(HULL_POOL)),
 		"a beam that lands on a bare hull plays the hull pool (it played nothing before)"
 	)
-	assert_true(_near(hull.hull_taken, 1.5), "30 dps over a 0.05 s frame, unchanged")
+	assert_true(Support.near(hull.hull_taken, 1.5), "30 dps over a 0.05 s frame, unchanged")
 	assert_eq(_fx_nodes_from(RIPPLE_SHEET).size(), 0, "a bare hull draws no ring")
 	## Shields up: S5's shield pool, FX_SPEC section 1.5's ring, and S6's bed.
 	var guarded := _stub_hull(100.0)
@@ -142,7 +143,7 @@ func test_a_beam_that_lands_on_a_hull_plays_the_impact_cue_and_the_ring() -> voi
 		"the ring sits inside the pinned disc of the point the beam reached"
 	)
 	assert_true(
-		_near((ring as Node2D).scale.x, 0.0),
+		Support.near((ring as Node2D).scale.x, 0.0),
 		"and starts collapsed, growing to 1.5x (%.3f)" % (ring as Node2D).scale.x
 	)
 	assert_eq(
@@ -150,12 +151,12 @@ func test_a_beam_that_lands_on_a_hull_plays_the_impact_cue_and_the_ring() -> voi
 		ProjectileScript.SHIELD_LOOP_CUE,
 		"a shield that holds keeps S6's bed up, like a landed shot"
 	)
-	assert_true(_near(guarded.shield, 98.5), "the shield took the frame's damage")
-	assert_true(_near(guarded.hull_taken, 0.0), "and the hull took none of it")
+	assert_true(Support.near(guarded.shield, 98.5), "the shield took the frame's damage")
+	assert_true(Support.near(guarded.hull_taken, 0.0), "and the hull took none of it")
 
 
 func test_a_held_beam_reads_one_hit_per_contact_interval() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -184,7 +185,7 @@ func test_a_held_beam_reads_one_hit_per_contact_interval() -> void:
 
 
 func test_a_held_beam_plays_a_bed_and_puts_it_out_with_the_beam() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -239,7 +240,7 @@ func test_a_held_beam_plays_a_bed_and_puts_it_out_with_the_beam() -> void:
 
 
 func test_a_repeated_take_re_uses_its_own_voice() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -265,7 +266,7 @@ func test_a_repeated_take_re_uses_its_own_voice() -> void:
 
 
 func test_the_two_world_beds_sound_at_once() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -309,7 +310,7 @@ func test_the_two_world_beds_sound_at_once() -> void:
 
 
 func test_a_rocket_shot_down_by_a_beam_takes_the_blast() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -471,7 +472,7 @@ func _assert_alpha(node: CanvasItem) -> void:
 ## A clean fixture: no leftover effect nodes and no leftover shots (a shot of another
 ## test's would be a target on the beam's segment).
 func _clear() -> void:
-	var tree := _tree()
+	var tree := Support.tree()
 	if tree != null:
 		for shot: Node in tree.get_nodes_in_group(ProjectileScript.PROJECTILE_GROUP):
 			if is_instance_valid(shot):
@@ -486,29 +487,8 @@ func _clear() -> void:
 ## Put every bed out, by name: a bed left sounding would make the next test's
 ## `sounding_loops()` a reading of this one's leftovers.
 func _clear_loops() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null or not audio.has_method(&"sounding_loops"):
 		return
 	for cue: Variant in _sounding(audio).duplicate():
 		audio.call(&"stop_loop", 0.0, StringName(cue))
-
-
-func _audio() -> Node:
-	var tree := _tree()
-	if tree == null:
-		return null
-	return tree.root.get_node_or_null(NodePath(AUDIO_SERVICE))
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root
-
-
-func _near(measured: float, expected: float, tolerance: float = 0.001) -> bool:
-	return absf(measured - expected) <= tolerance

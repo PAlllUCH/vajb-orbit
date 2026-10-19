@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite engine2_wiring: slice 2 W5's wiring — the sector's NPC population (ENGINE_SPEC
 ## section 8), the target window and the hit marker (section 10 / section 4.2 item 4), the
 ## launch snapshot's pool seeding (sections 4.2 item 2 and 4.3) and the warp gate
@@ -77,7 +78,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	if _scene == null:
 		fail_setup("game.tscn did not instantiate")
 		return
-	_fixture_host().add_child(_scene)
+	Support.fixture_host().add_child(_scene)
 	_ship = _scene.get_node_or_null(NodePath("PlayerShip")) as Node2D
 	_hud = _scene.get_node_or_null(NodePath("Hud")) as Control
 	_state = _scene.get(&"_state")
@@ -146,20 +147,7 @@ func _restore_fixture() -> void:
 
 ## The profile autoload, the store the fixture writes and the launch reads.
 func _profile() -> Node:
-	return _tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
-
-
-## Where the scene may enter the tree. The runner calls every test from inside its own
-## `_ready`, and the root viewport is still busy adding the runner scene at that moment, so
-## `root.add_child(...)` fails with "Parent node is busy setting up children" (measured).
-## The profile autoload entered the tree before the main scene and takes children all
-## through the run; `game.gd` resolves the profile from the tree root, not from its parent,
-## so nothing in the scene depends on where it hangs.
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root
-
+	return Support.tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
 
 func setup() -> void:
 	if _scene != null:
@@ -172,12 +160,6 @@ func teardown() -> void:
 			hull.free()
 	_staged.clear()
 
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-## One row of the sector registry, resolved by id.
 func _row(sector_id: StringName) -> Dictionary:
 	for row: Dictionary in Registry.SECTORS:
 		if StringName(row.get(&"id", &"")) == sector_id:
@@ -383,7 +365,7 @@ func test_the_launch_snapshot_seeds_the_pools_and_the_shield_rate() -> void:
 
 
 func test_the_ammo_packs_are_seeded_from_the_profile() -> void:
-	var profile := _tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
+	var profile := Support.tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
 	assert_true(profile != null, "the profile autoload is there")
 	## P2-A (CONTRACTS section 11): the live slots are the launched fit's own W cells,
 	## not the five fixed families, so the loop reads `weapons` - and `ammo` is exactly

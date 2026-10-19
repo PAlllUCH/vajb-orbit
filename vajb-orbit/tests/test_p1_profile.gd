@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite p1_profile: save v2 (docs/gameplay/17_coder_handoff.md sections 3 and 6).
 ##
 ## Covers the fresh-instance defaults, the v1 -> v2 migration read, a full
@@ -44,7 +45,7 @@ func suite_name() -> String:
 
 
 func setup() -> void:
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_reset_log()
 	_signals.clear()
 	_failures.clear()
@@ -60,8 +61,8 @@ func teardown() -> void:
 
 
 func suite_teardown() -> void:
-	_delete_file(PROFILE_PATH)
-	_delete_file(LOG_PATH)
+	Support.delete_file(PROFILE_PATH)
+	Support.delete_file(LOG_PATH)
 	Log.log_path = Log.DEFAULT_PATH
 	Clock.clear_override()
 
@@ -72,7 +73,7 @@ func suite_teardown() -> void:
 
 
 func test_fresh_defaults_without_a_file() -> void:
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	var profile = _fresh()
 	## The compile-time field defaults of an uninitialised instance are not the contract:
 	## the first-run branch of `_load_profile()` (`ERR_FILE_NOT_FOUND` -> `_apply_defaults`)
@@ -205,21 +206,21 @@ func test_v2_round_trip_for_every_key() -> void:
 	var second = _fresh()
 	second.reload()
 
-	assert_true(_deep_eq(second.modules(), first.modules()), "modules round trip")
-	assert_true(_deep_eq(second.fits(), first.fits()), "fits round trip")
-	assert_true(_deep_eq(second.market(), first.market()), "market round trip")
-	assert_true(_deep_eq(second.heat(), first.heat()), "heat round trip")
-	assert_true(_deep_eq(second.standing(), first.standing()), "standing round trip")
-	assert_true(_deep_eq(second.contracts(), first.contracts()), "contracts round trip")
-	assert_true(_deep_eq(second.vaults(), first.vaults()), "vaults round trip")
+	assert_true(Support.deep_eq(second.modules(), first.modules()), "modules round trip")
+	assert_true(Support.deep_eq(second.fits(), first.fits()), "fits round trip")
+	assert_true(Support.deep_eq(second.market(), first.market()), "market round trip")
+	assert_true(Support.deep_eq(second.heat(), first.heat()), "heat round trip")
+	assert_true(Support.deep_eq(second.standing(), first.standing()), "standing round trip")
+	assert_true(Support.deep_eq(second.contracts(), first.contracts()), "contracts round trip")
+	assert_true(Support.deep_eq(second.vaults(), first.vaults()), "vaults round trip")
 	assert_eq(second.insured(), true)
 	assert_eq(second.mercy_used(), true)
 	assert_true(
-		_deep_eq(second.vitals_of(&"ship_vanguard"), {"hull": 812, "shield": 455}),
+		Support.deep_eq(second.vitals_of(&"ship_vanguard"), {"hull": 812, "shield": 455}),
 		"vitals round trip"
 	)
 	assert_true(
-		_deep_eq(second.vitals_of(&"ship_fighter"), {"hull": 700, "shield": 400}),
+		Support.deep_eq(second.vitals_of(&"ship_fighter"), {"hull": 700, "shield": 400}),
 		"vitals round trip, second hull"
 	)
 	assert_eq(second.credits(), 10000, "untouched credits survive the round trip")
@@ -504,43 +505,8 @@ func _log_lines() -> PackedStringArray:
 			lines.append(line)
 	return lines
 
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
 func _reset_log() -> void:
 	Log.log_path = LOG_PATH
 	var file := FileAccess.open(LOG_PATH, FileAccess.WRITE)
 	if file != null:
 		file.close()
-
-
-## Structural equality: `==` on nested dictionaries is not dependable across a
-## ConfigFile round trip, where key order is not preserved.
-func _deep_eq(a: Variant, b: Variant) -> bool:
-	if a is Dictionary and b is Dictionary:
-		var left: Dictionary = a
-		var right: Dictionary = b
-		if left.size() != right.size():
-			return false
-		for key: Variant in left.keys():
-			if not right.has(key):
-				return false
-			if not _deep_eq(left[key], right[key]):
-				return false
-		return true
-	if a is Array and b is Array:
-		var left_array: Array = a
-		var right_array: Array = b
-		if left_array.size() != right_array.size():
-			return false
-		for index: int in range(left_array.size()):
-			if not _deep_eq(left_array[index], right_array[index]):
-				return false
-		return true
-	if (a is float) or (b is float):
-		return is_equal_approx(float(a), float(b))
-	return a == b

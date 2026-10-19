@@ -1,4 +1,5 @@
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s41_panels_b: wave S41's composition pass on the services-side panels, the
 ## builder S41-B4 half. One row per finding, each load-bearing (the row fails if its
 ## fix is reverted), read off the shipped scenes and the shipped autoload.
@@ -80,7 +81,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 		&"refinery_slots": int(_profile.call(&"refinery_slots")),
 	}
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 func suite_teardown() -> void:
@@ -113,7 +114,7 @@ func suite_teardown() -> void:
 				_profile.call(&"set_refinery_slots", int(value))
 	_profile.call(&"flush")
 	_profile.set(&"save_path", String(_previous[&"save_path"]))
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_previous = {}
 	_profile = null
 
@@ -125,7 +126,7 @@ func setup() -> void:
 	_host.name = "S41Host"
 	_host.theme = ThemeRes
 	_host.size = _viewport_size()
-	_fixture_host().add_child(_host)
+	Support.profile().add_child(_host)
 	_refinery = _mount(RefineryScene)
 	_launch = _mount(LaunchScene)
 	_contracts = _mount(ContractsScene)
@@ -163,23 +164,6 @@ func _free_panes() -> void:
 	_launch = null
 	_contracts = null
 	_shipyard = null
-
-
-func _delete_file(path: String) -> void:
-	var absolute := ProjectSettings.globalize_path(path)
-	if FileAccess.file_exists(absolute):
-		DirAccess.remove_absolute(absolute)
-
-
-## The runner calls every test from inside its own `_ready`, so the root viewport is
-## still busy: the profile autoload entered the tree first and hosts the fixture.
-func _fixture_host() -> Node:
-	var tree := Engine.get_main_loop() as SceneTree
-	if tree == null:
-		return null
-	return tree.root.get_node_or_null(NodePath(&"PlayerProfile"))
-
-
 func _viewport_size() -> Vector2:
 	return Vector2(
 		float(ProjectSettings.get_setting("display/window/size/viewport_width", 1920)),

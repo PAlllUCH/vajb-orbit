@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite engine2_fixes: the W7 fixer pass of engine slice 2 (fight).
 ##
 ## One section per finding of `.agents/gen/slice2_review_report.md` that this pass fixes:
@@ -93,7 +94,7 @@ func suite_name() -> String:
 
 func suite_setup(_ctx: Dictionary) -> void:
 	_stage_fixture()
-	var host := _fixture_host()
+	var host := Support.fixture_host()
 	var pair := _build_ship(host, Vector2(-400.0, 0.0))
 	_shooter = pair[0]
 	_shooter_state = pair[1]
@@ -149,8 +150,8 @@ func suite_teardown() -> void:
 	_shooter = null
 	_victim = null
 	_guns = null
-	_delete_file(SCRATCH_PROFILE)
-	_delete_file(SCRATCH_LOG)
+	Support.delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_LOG)
 	Log.log_path = Log.DEFAULT_PATH
 	_restore_fixture()
 
@@ -161,7 +162,7 @@ func suite_teardown() -> void:
 ## draws each fitted family's pack from the hold, so the packs and the hold (R-S21-2's
 ## opened-unit remainder included) are staged too.
 func _stage_fixture() -> void:
-	var profile: Node = _tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
+	var profile: Node = Support.tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
 	if profile == null:
 		return
 	_previous_fits = profile.call(&"fits")
@@ -186,7 +187,7 @@ func _stage_fixture() -> void:
 
 
 func _restore_fixture() -> void:
-	var profile: Node = _tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
+	var profile: Node = Support.tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
 	if profile == null:
 		return
 	profile.call(&"set_fits", _previous_fits)
@@ -222,24 +223,6 @@ func teardown() -> void:
 ## Shared fixtures
 ## ---------------------------------------------------------------------------
 
-
-## Where a fixture may enter the tree. The runner calls every test from inside its own
-## `_ready`, and the root viewport is still busy adding the runner scene at that moment,
-## so `root.add_child(...)` fails with "Parent node is busy setting up children"
-## (measured, `test_engine2_hud.gd`). The profile autoload entered the tree before the
-## main scene and takes children all through the run.
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-## One launched hull: the same fixture the W6 probe builds (the resolved standard fit, a
-## throwaway `PlayerState` seeded from it, then the shipped `PlayerShip.setup`).
 func _build_ship(host: Node, at: Vector2) -> Array:
 	var stats := ShipFitScript.resolve(HULL, ShipFitScript.STANDARD_FIT)
 	var state := PlayerStateScript.new()
@@ -269,7 +252,7 @@ func _hull_body(ship: Node) -> Node:
 ## to land in.
 func _build_shot(config: Dictionary) -> Node2D:
 	var shot: Node2D = ProjectileScript.new()
-	_fixture_host().add_child(shot)
+	Support.fixture_host().add_child(shot)
 	shot.call(&"configure", config)
 	_staged.append(shot)
 	return shot
@@ -283,16 +266,9 @@ func _clear_staged() -> void:
 			node.free()
 	_staged.clear()
 
-
-func _near(measured: float, expected: float, tolerance: float) -> bool:
-	return absf(measured - expected) <= tolerance
-
-
-## Every pickup in the tree, whatever a spawner parented it to. Counted by script path so
-## the suite needs no global class registration (the probe's own reader).
 func _pickup_count() -> int:
 	var count := 0
-	for node: Node in _tree().root.find_children("*", "Node2D", true, false):
+	for node: Node in Support.tree().root.find_children("*", "Node2D", true, false):
 		var script := node.get_script() as Script
 		if script != null and script.resource_path.ends_with("pickup.gd"):
 			count += 1
@@ -341,12 +317,12 @@ func test_a_beam_hit_on_a_hull_body_charges_the_ships_shield() -> void:
 		&"_deliver", body, 120.0, false, _victim.global_position, &"energy", Vector2.ZERO
 	)
 	assert_true(
-		_near(shield_before - _victim_state.shield, 120.0, 0.01),
+		Support.near(shield_before - _victim_state.shield, 120.0, 0.01),
 		"the shield took the whole 120 (before: %s, after: %s)"
 		% [shield_before, _victim_state.shield]
 	)
 	assert_true(
-		_near(_victim_state.hull, hull_before, 0.001),
+		Support.near(_victim_state.hull, hull_before, 0.001),
 		"and the hull is untouched while the shield holds"
 	)
 
@@ -359,7 +335,7 @@ func test_a_beam_hit_with_the_shields_down_charges_the_ships_hull() -> void:
 		&"_deliver", body, 120.0, false, _victim.global_position, &"energy", Vector2.ZERO
 	)
 	assert_true(
-		_near(hull_before - _victim_state.hull, 120.0, 0.01),
+		Support.near(hull_before - _victim_state.hull, 120.0, 0.01),
 		"the hit carried through to the hull (before: %s, after: %s)"
 		% [hull_before, _victim_state.hull]
 	)
@@ -378,16 +354,16 @@ func test_the_plasma_bonus_reads_the_ships_shields_not_the_bodys_silence() -> vo
 	var hull_before: float = _victim_state.hull
 	_guns.call(&"_apply_beam", &"plasma", row, body, _victim.global_position, 1.0)
 	assert_true(
-		_near(shield_before - _victim_state.shield, dps, 0.01),
+		Support.near(shield_before - _victim_state.shield, dps, 0.01),
 		"with the shields up the beam deals its plain dps, no bonus (measured %s, expected %s)"
 		% [shield_before - _victim_state.shield, dps]
 	)
-	assert_true(_near(_victim_state.hull, hull_before, 0.001), "and the hull is untouched")
+	assert_true(Support.near(_victim_state.hull, hull_before, 0.001), "and the hull is untouched")
 	_victim_state.set_shield(0.0)
 	var bare_hull: float = _victim_state.hull
 	_guns.call(&"_apply_beam", &"plasma", row, body, _victim.global_position, 1.0)
 	assert_true(
-		_near(bare_hull - _victim_state.hull, dps * bonus, 0.01),
+		Support.near(bare_hull - _victim_state.hull, dps * bonus, 0.01),
 		"and once they are down the same second lands dps x 1.25 (measured %s, expected %s)"
 		% [bare_hull - _victim_state.hull, dps * bonus]
 	)
@@ -408,12 +384,12 @@ func test_a_projectile_hit_on_a_hull_body_charges_the_ship() -> void:
 	var shield_before: float = _victim_state.shield
 	shot.call(&"_hit_body", body, _victim.global_position)
 	assert_true(
-		_near(hull_before - _victim_state.hull, 27.0, 0.01),
+		Support.near(hull_before - _victim_state.hull, 27.0, 0.01),
 		"the bolt's 27 came off the ship's hull (before: %s, after: %s)"
 		% [hull_before, _victim_state.hull]
 	)
 	assert_true(
-		_near(_victim_state.shield, shield_before, 0.001),
+		Support.near(_victim_state.shield, shield_before, 0.001),
 		"a bypassing shot leaves the shield alone"
 	)
 
@@ -434,18 +410,18 @@ func test_a_mine_blast_still_lands_on_the_ship_it_triggers() -> void:
 	var shield_before: float = _victim_state.shield
 	mine.call(&"_detonate", mine.global_position, _victim)
 	assert_true(
-		_near(hull_before - _victim_state.hull, 180.0, 0.01),
+		Support.near(hull_before - _victim_state.hull, 180.0, 0.01),
 		"the blast alpha landed (measured %s)" % [hull_before - _victim_state.hull]
 	)
 	assert_true(
-		_near(_victim_state.shield, shield_before, 0.001), "and its bypass rule held"
+		Support.near(_victim_state.shield, shield_before, 0.001), "and its bypass rule held"
 	)
 
 
 ## The NPC half of the walk: an alien or pirate hull is in `npc_ship`, not `player_ship`.
 func test_an_npc_hull_is_reached_through_its_body_too() -> void:
 	var npc: Node2D = NpcShipScript.new()
-	_fixture_host().add_child(npc)
+	Support.fixture_host().add_child(npc)
 	npc.call(
 		&"setup",
 		&"pirate",
@@ -470,7 +446,7 @@ func test_an_npc_hull_is_reached_through_its_body_too() -> void:
 	var hull_before: float = float(npc.call(&"hull"))
 	_guns.call(&"_deliver", body, 50.0, true, npc.global_position, &"kinetic", Vector2.ZERO)
 	assert_true(
-		_near(hull_before - float(npc.call(&"hull")), 50.0, 0.01),
+		Support.near(hull_before - float(npc.call(&"hull")), 50.0, 0.01),
 		"the hit landed on the NPC's own hull pool (before: %s, after: %s)"
 		% [hull_before, npc.call(&"hull")]
 	)
@@ -487,7 +463,7 @@ const CHIP_TOUGHNESS := 1.0
 func test_a_gun_still_chips_a_rock_and_extracts_nothing() -> void:
 	var rock: Node2D = AsteroidScript.new() as Node2D
 	rock.call(&"setup", &"ore_iron", 1, 20, AsteroidScript.SIZE_LARGE, false, -1.0, CHIP_TOUGHNESS)
-	_fixture_host().add_child(rock)
+	Support.fixture_host().add_child(rock)
 	_staged.append(rock)
 	assert_eq(
 		_guns.call(&"_sink_for", rock),
@@ -516,7 +492,7 @@ func test_a_gun_still_chips_a_rock_and_extracts_nothing() -> void:
 
 
 func test_set_ammo_writes_the_pack_and_survives_the_file() -> void:
-	_delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 	var profile = _fresh_profile()
 	profile.reload()
 	assert_eq(
@@ -538,7 +514,7 @@ func test_set_ammo_writes_the_pack_and_survives_the_file() -> void:
 
 
 func test_set_ammo_ignores_an_unknown_pack_and_a_write_that_changes_nothing() -> void:
-	_delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 	var profile = _fresh_profile()
 	profile.reload()
 	profile.profile_changed.connect(_on_profile_changed)
@@ -570,7 +546,7 @@ func test_the_dock_report_settles_a_fired_pack() -> void:
 	if _scene == null or _state == null:
 		assert_true(false, "the game scene is the dock fixture")
 		return
-	var profile: Node = _tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
+	var profile: Node = Support.tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
 	assert_true(profile != null, "the profile autoload is the dock's store")
 	if profile == null:
 		return
@@ -588,8 +564,8 @@ func test_the_dock_report_settles_a_fired_pack() -> void:
 	var previous_log: String = Log.log_path
 	profile.set(&"save_path", SCRATCH_PROFILE)
 	Log.log_path = SCRATCH_LOG
-	_delete_file(SCRATCH_PROFILE)
-	_delete_file(SCRATCH_LOG)
+	Support.delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_LOG)
 	_scene.call(&"_seed_ammo")
 	var live: int = int((_state.get(&"ammo") as Array)[slot])
 	var ceiling: int = int((_state.get(&"ammo_max") as Array)[slot])
@@ -603,8 +579,8 @@ func test_the_dock_report_settles_a_fired_pack() -> void:
 	profile.call(&"flush")
 	profile.set(&"save_path", previous_path)
 	Log.log_path = previous_log
-	_delete_file(SCRATCH_PROFILE)
-	_delete_file(SCRATCH_LOG)
+	Support.delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_LOG)
 	assert_eq(
 		live,
 		mini(stored_before, ceiling),
@@ -628,18 +604,6 @@ func _fresh_profile():
 
 func _on_profile_changed(key: StringName) -> void:
 	_signals.append(key)
-
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
-## ---------------------------------------------------------------------------
-## F4. The minimap's two new blip kinds (ENGINE_SPEC section 10, UI_SPEC section 3.3)
-## ---------------------------------------------------------------------------
-
 
 func _token(name: StringName) -> Color:
 	if HudTheme.has_color(name, &"Tokens"):
@@ -665,10 +629,10 @@ func test_a_swarmer_blip_is_drawn_as_a_hostile_blip() -> void:
 func test_a_ghost_blip_flickers_between_the_spec_alphas() -> void:
 	var peak: float = _minimap.call(&"ghost_alpha", FLICKER_PEAK_AT)
 	var trough: float = _minimap.call(&"ghost_alpha", FLICKER_TROUGH_AT)
-	assert_true(_near(peak, 0.7, 0.0001), "the curve reaches section 3.3's 0.7 (got %s)" % peak)
-	assert_true(_near(trough, 0.3, 0.0001), "and its 0.3 (got %s)" % trough)
+	assert_true(Support.near(peak, 0.7, 0.0001), "the curve reaches section 3.3's 0.7 (got %s)" % peak)
+	assert_true(Support.near(trough, 0.3, 0.0001), "and its 0.3 (got %s)" % trough)
 	assert_true(
-		_near(
+		Support.near(
 			_minimap.call(&"ghost_alpha", 0.07),
 			_minimap.call(&"ghost_alpha", 0.07 + FLICKER_PERIOD),
 			0.0001
@@ -688,7 +652,7 @@ func test_a_ghost_is_the_neutral_colour_with_only_its_alpha_moving() -> void:
 	var ghost: Color = _minimap.call(&"_color_for", &"ghost")
 	var neutral := _token(&"text_dim")
 	assert_true(
-		_near(ghost.a, 0.3, 0.0001),
+		Support.near(ghost.a, 0.3, 0.0001),
 		"the dot is drawn at the flicker's own reading (got %s)" % ghost.a
 	)
 	assert_eq(
@@ -712,13 +676,13 @@ func test_the_flicker_driver_runs_only_while_a_ghost_is_on_the_feed() -> void:
 	assert_true(_minimap.is_processing(), "a chaff ghost turns the flicker on")
 	_minimap.call(&"_process", 1.0 / 12.0)
 	assert_true(
-		_near(float(_minimap.call(&"ghost_clock")), 1.0 / 12.0, 0.0001),
+		Support.near(float(_minimap.call(&"ghost_clock")), 1.0 / 12.0, 0.0001),
 		"the clock is the integral of the deltas it is handed"
 	)
 	_minimap.call(&"set_blips", plain)
 	assert_false(_minimap.is_processing(), "and it stops when the last ghost leaves")
 	assert_true(
-		_near(float(_minimap.call(&"ghost_clock")), 0.0, 0.0001),
+		Support.near(float(_minimap.call(&"ghost_clock")), 0.0, 0.0001),
 		"a fresh drop opens at the same phase"
 	)
 

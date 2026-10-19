@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s2_6_blur: the player hull's exclusion from the motion blur (S2.6-R5, AC7).
 ##
 ## The owner's request, verbatim: "when motion blur happens the ship shouldn't be blurred,
@@ -219,15 +220,15 @@ func test_at_full_blur_strength_the_hull_region_pixels_match_the_unblurred_rende
 	var push := _pushed()
 	assert_true(bool(push[&"exclude"]), "at full strength the flag is pushed on")
 	assert_true(
-		_near(float(_fantasy.call(&"hull_radius_units")), HULL_RADIUS_UNITS),
+		Support.near(float(_fantasy.call(&"hull_radius_units")), HULL_RADIUS_UNITS),
 		"the region's radius object is the hull's own `CollisionShape2D` radius (30 u)"
 	)
 	var size := _size()
 	var radius_uv := push[&"radius"] as Vector2
 	var zoom := float(_fantasy.call(&"applied_zoom"))
 	assert_true(
-		_near(radius_uv.x * size.x, HULL_RADIUS_UNITS * zoom, 1e-3)
-		and _near(radius_uv.y * size.y, HULL_RADIUS_UNITS * zoom, 1e-3),
+		Support.near(radius_uv.x * size.x, HULL_RADIUS_UNITS * zoom, 1e-3)
+		and Support.near(radius_uv.y * size.y, HULL_RADIUS_UNITS * zoom, 1e-3),
 		"which reaches the shader as the same radius on both axes, scaled by the applied zoom"
 	)
 	assert_true(
@@ -242,7 +243,7 @@ func test_at_full_blur_strength_the_hull_region_pixels_match_the_unblurred_rende
 	_full_strength()
 	var moved := (_pushed()[&"uv"] as Vector2) - before
 	assert_true(
-		_near(moved.x, 120.0 * zoom / size.x, 1e-4) and _near(moved.y, 0.0, 1e-4),
+		Support.near(moved.x, 120.0 * zoom / size.x, 1e-4) and Support.near(moved.y, 0.0, 1e-4),
 		"moving the hull 120 u moves the pushed region by 120 u of screen (measured %s)" % str(moved)
 	)
 	_ship.global_position = origin
@@ -271,7 +272,7 @@ func test_at_full_blur_strength_the_hull_region_pixels_match_the_unblurred_rende
 		"the hull region is on the framebuffer with pixels to compare (%s)" % hull[&"note"]
 	)
 	assert_true(
-		_near(float(hull[&"max"]), 0.0, 1e-6),
+		Support.near(float(hull[&"max"]), 0.0, 1e-6),
 		(
 			"full blur strength: every hull-region pixel equals the unblurred render (split "
 			+ "included), max channel delta %.6f"
@@ -539,7 +540,3 @@ func _tree() -> SceneTree:
 	var main := Engine.get_main_loop()
 	assert_true(main is SceneTree, "the suite runs inside a SceneTree")
 	return main as SceneTree
-
-
-func _near(value: float, expected: float, tolerance: float = TOL) -> bool:
-	return absf(value - expected) <= tolerance

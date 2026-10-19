@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s21_stability: wave S21's stability and playtest fixes, the S21-B1 subset - the
 ## real death state (L24/A1), the 5-minute wreck window across a scene rebuild (L23/A2),
 ## ship-vs-ship crash damage charged exactly once (L22/A3), the stale crossing flag
@@ -117,14 +118,14 @@ func teardown() -> void:
 func suite_teardown() -> void:
 	_free_scenes()
 	_reset_shared_state()
-	var profile := _store()
+	var profile := Support.profile()
 	if profile != null:
 		profile.call(&"reset_to_defaults")
 		profile.call(&"flush")
 		profile.set(&"save_path", _previous_path)
 	Log.log_path = Log.DEFAULT_PATH
-	_delete_file(SCRATCH_PROFILE)
-	_delete_file(SCRATCH_LOG)
+	Support.delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_LOG)
 
 
 ## ---------------------------------------------------------------------------
@@ -213,7 +214,7 @@ func test_a_dead_hulls_contact_monitor_charges_nothing() -> void:
 ## is already inert and a scene that is already dead.
 func test_the_death_order_is_explosion_then_wreck_then_respawn() -> void:
 	_reset_profile()
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		assert_true(false, "the PlayerProfile autoload is the drop's store")
 		return
@@ -263,7 +264,7 @@ func test_the_death_order_is_explosion_then_wreck_then_respawn() -> void:
 func test_a_wreck_drop_carries_the_five_minute_window() -> void:
 	ClockScript.set_override(FAKE_NOW)
 	_reset_profile()
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null or not _arm_wreck_drop(profile, 7):
 		return
 	var scene := _open_game()
@@ -311,7 +312,7 @@ func test_a_wreck_drop_carries_the_five_minute_window() -> void:
 func test_the_wreck_window_survives_the_respawn_route_and_a_crossing() -> void:
 	ClockScript.set_override(FAKE_NOW)
 	_reset_profile()
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null or not _arm_wreck_drop(profile, 7):
 		return
 	var scene := _open_game()
@@ -362,7 +363,7 @@ func test_the_wreck_window_survives_the_respawn_route_and_a_crossing() -> void:
 func test_a_collected_wreck_drop_leaves_the_ledger() -> void:
 	ClockScript.set_override(FAKE_NOW)
 	_reset_profile()
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null or not _arm_wreck_drop(profile, 7):
 		return
 	var scene := _open_game()
@@ -619,7 +620,7 @@ func test_a_stale_transit_flag_cannot_survive_an_interrupted_crossing() -> void:
 func test_the_heat_minute_survives_a_scene_rebuild() -> void:
 	GameScript._heat_play_time = 0.0
 	_reset_profile()
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		return
 	profile.call(&"set_heat", {"concord": 40})
@@ -658,7 +659,7 @@ func test_a_running_charge_is_called_off_on_zone_exit_damage_and_death() -> void
 	if scene == null:
 		assert_true(false, "game.tscn instantiates")
 		return
-	var profile := _store()
+	var profile := Support.profile()
 	var gate := _gate(scene)
 	var ship: Node2D = scene.get(&"_ship")
 	if profile == null or gate == null or ship == null:
@@ -703,7 +704,7 @@ func test_the_gate_prompt_gains_the_not_enough_cr_rung() -> void:
 	if scene == null:
 		assert_true(false, "game.tscn instantiates")
 		return
-	var profile := _store()
+	var profile := Support.profile()
 	var gate := _gate(scene)
 	var ship: Node2D = scene.get(&"_ship")
 	if profile == null or gate == null or ship == null:
@@ -817,7 +818,7 @@ func test_a_re_setup_rock_is_an_original_again() -> void:
 ## `MOVED ·  · B2`) and a swap, where the post-write source address holds the other barrel.
 func test_the_armory_move_line_names_the_barrel_it_moved() -> void:
 	_reset_profile()
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		assert_true(false, "the PlayerProfile autoload is the armory's store")
 		return
@@ -871,7 +872,7 @@ func test_the_armory_move_line_names_the_barrel_it_moved() -> void:
 ## the market, and the shell's switch into the AUCTION pane rolls its shelf.
 func test_booting_the_station_writes_nothing_to_user() -> void:
 	_reset_profile()
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		assert_true(false, "the PlayerProfile autoload is the station's store")
 		return
@@ -974,7 +975,7 @@ func test_the_credits_reserve_is_measured_with_an_api_the_theme_font_has() -> vo
 ## scratch `user://`.
 func test_the_launch_orders_its_slots_by_the_fit_and_draws_its_own_hold() -> void:
 	_reset_profile()
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		assert_true(false, "the PlayerProfile autoload is the launch's store")
 		return
@@ -1029,7 +1030,7 @@ func test_the_launch_orders_its_slots_by_the_fit_and_draws_its_own_hold() -> voi
 ## counts units (its pin), the armory's inventory row counts cells (its own suite's pin).
 func test_the_bag_law_reads_records_and_aggregates_instances() -> void:
 	_reset_profile()
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		assert_true(false, "the PlayerProfile autoload is the bag's store")
 		return
@@ -1086,7 +1087,7 @@ func test_the_bag_law_reads_records_and_aggregates_instances() -> void:
 ## with `OWNED ×0` spares.
 func test_a_fitted_instance_with_a_lost_record_renders_one_row() -> void:
 	_reset_profile()
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		assert_true(false, "the PlayerProfile autoload is the bag's store")
 		return
@@ -1138,7 +1139,7 @@ func test_a_fitted_instance_with_a_lost_record_renders_one_row() -> void:
 ## launch's draw). The LAUNCH strip reads the hold's units and the fit's real weapons.
 func test_the_ammo_edges_and_the_launch_strip_read_them() -> void:
 	_reset_profile()
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		assert_true(false, "the PlayerProfile autoload is the exchange's store")
 		return
@@ -1237,7 +1238,7 @@ func test_the_ammo_edges_and_the_launch_strip_read_them() -> void:
 ## does not own keeps its live `BUY` row.
 func test_an_owned_hull_row_is_disabled_with_the_owned_plate() -> void:
 	_reset_profile()
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		assert_true(false, "the PlayerProfile autoload is the AUCTION's store")
 		return
@@ -1254,7 +1255,7 @@ func test_an_owned_hull_row_is_disabled_with_the_owned_plate() -> void:
 	assert_true(owned_row != null, "the shelf lists the owned hull")
 	if owned_row != null:
 		assert_true(owned_row.disabled, "whose row is disabled (R-S21-3)")
-		assert_eq(_cell_text(owned_row, "Action"), "OWNED", "with the OWNED plate in ACTION")
+		assert_eq(Support.cell_text(owned_row, "Action"), "OWNED", "with the OWNED plate in ACTION")
 	assert_false(
 		bool(panel.call(&"buy_hull", owned_id)),
 		"and a direct press still refuses through the transaction's own line"
@@ -1272,32 +1273,12 @@ func test_an_owned_hull_row_is_disabled_with_the_owned_plate() -> void:
 	if other != &"":
 		var live_row: Button = panel.call(&"row_of", other)
 		assert_true(live_row != null and not live_row.disabled, "whose row stays live")
-		assert_eq(_cell_text(live_row, "Action"), "BUY", "and wears BUY")
+		assert_eq(Support.cell_text(live_row, "Action"), "BUY", "and wears BUY")
 
 
 ## ---------------------------------------------------------------------------
 ## Fixtures
 ## ---------------------------------------------------------------------------
-
-
-## Where a fixture may enter the tree: the runner calls every test from inside its own
-## `_ready`, when the root viewport is still busy adding the runner scene, so
-## `root.add_child(...)` fails there. The profile autoload takes children all run long
-## (the same host `test_s6_travel.gd` and `test_s6_heat.gd` use).
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-func _store() -> Node:
-	return _tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
-
-
 func _open_game() -> Node2D:
 	var packed := load(GAME_SCENE) as PackedScene
 	if packed == null:
@@ -1305,7 +1286,7 @@ func _open_game() -> Node2D:
 	var scene := packed.instantiate() as Node2D
 	if scene == null:
 		return null
-	_fixture_host().add_child(scene)
+	Support.fixture_host().add_child(scene)
 	_scenes.append(scene)
 	return scene
 
@@ -1334,24 +1315,13 @@ func _mount_panel(path: String) -> Control:
 	host.name = "S21PaneHost"
 	host.theme = ThemeRes
 	host.size = Vector2(1920.0, 1080.0)
-	_fixture_host().add_child(host)
+	Support.fixture_host().add_child(host)
 	_nodes.append(host)
 	var pane := packed.instantiate() as Control
 	if pane == null:
 		return null
 	host.add_child(pane)
 	return pane
-
-
-## One row's cell text: the cell box's own `Value` label, `""` for a cell the row does not
-## carry (`test_s3_auction.gd`'s own read-back).
-func _cell_text(row: Button, cell_name: String) -> String:
-	var cell := row.find_child(cell_name, true, false) as Control
-	if cell == null:
-		return ""
-	var value := cell.get_node_or_null(^"Value") as Label
-	return value.text if value != null else ""
-
 
 func _free_scenes() -> void:
 	for scene: Node2D in _scenes:
@@ -1394,7 +1364,7 @@ func _field() -> Node2D:
 	var field := AsteroidFieldScript.new() as Node2D
 	if field == null:
 		return null
-	_fixture_host().add_child(field)
+	Support.fixture_host().add_child(field)
 	_nodes.append(field)
 	field.call(
 		&"setup",
@@ -1477,7 +1447,7 @@ func _reset_shared_state() -> void:
 
 
 func _reset_profile() -> void:
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		return
 	profile.call(&"reset_to_defaults")
@@ -1485,7 +1455,7 @@ func _reset_profile() -> void:
 
 
 func _stage_scratch_store() -> void:
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		return
 	_previous_path = String(profile.get(&"save_path"))
@@ -1493,9 +1463,3 @@ func _stage_scratch_store() -> void:
 	profile.call(&"reset_to_defaults")
 	profile.call(&"flush")
 	Log.log_path = SCRATCH_LOG
-
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())

@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite p2b_retirement: the P2-B proper save v5 flag day and the two composed
 ## fitting transactions (CONTRACTS section 13, 09 section 4 items 9, 10 and 13,
 ## docs/gameplay/10 section 5).
@@ -56,7 +57,7 @@ func suite_name() -> String:
 
 
 func setup() -> void:
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_reset_log()
 	_signals.clear()
 
@@ -70,8 +71,8 @@ func teardown() -> void:
 
 
 func suite_teardown() -> void:
-	_delete_file(PROFILE_PATH)
-	_delete_file(LOG_PATH)
+	Support.delete_file(PROFILE_PATH)
+	Support.delete_file(LOG_PATH)
 	Log.log_path = Log.DEFAULT_PATH
 
 
@@ -494,13 +495,6 @@ func _read_source(path: String) -> String:
 	var text := file.get_as_text()
 	file.close()
 	return text
-
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
 
 func _reset_log() -> void:
 	Log.log_path = LOG_PATH

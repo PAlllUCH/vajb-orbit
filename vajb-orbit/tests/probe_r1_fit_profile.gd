@@ -1,4 +1,5 @@
 extends Node
+const Support := preload("res://tests/support.gd")
 ## R1 evidence probe (P2-B proper review, part 1 of 2): the two composed fitting
 ## transactions measured on R1's own throwaway profile instance - the per-cell install,
 ## the swap that hands the displaced module back, the mandatory-cell refusal, the cell
@@ -45,8 +46,8 @@ var _signals: Array[StringName] = []
 
 
 func _ready() -> void:
-	_delete(PROFILE_PATH)
-	_delete(LOG_PATH)
+	Support.delete_file(PROFILE_PATH)
+	Support.delete_file(LOG_PATH)
 	Log.log_path = LOG_PATH
 	_probe_the_delivered_fit()
 	_probe_the_per_cell_install()
@@ -57,8 +58,8 @@ func _ready() -> void:
 	_probe_the_power_refusal()
 	_probe_the_line_and_signals()
 	Log.log_path = Log.DEFAULT_PATH
-	_delete(PROFILE_PATH)
-	_delete(LOG_PATH)
+	Support.delete_file(PROFILE_PATH)
+	Support.delete_file(LOG_PATH)
 	print("[R1-PROFILE] done")
 	get_tree().quit(0)
 
@@ -72,17 +73,6 @@ func _process(_delta: float) -> void:
 
 ## --------------------------------------------------------------------------- harness
 
-
-func _delete(path: String) -> void:
-	if not FileAccess.file_exists(path):
-		return
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
-## A fresh account holding `modules` (id -> count) with the delivered standard fit of
-## `hull` written the way the OUTFITTING pane's own seed writes it.
 func _seed(hull: StringName, modules: Dictionary) -> Node:
 	if _profile != null and is_instance_valid(_profile):
 		_profile.free()
@@ -96,7 +86,7 @@ func _seed(hull: StringName, modules: Dictionary) -> Node:
 	_profile.set(&"_fits", {})
 	_profile.set(&"_modules", _records(modules))
 	_profile.call(&"set_fit", hull, FitData.standard_fit(hull))
-	_delete(LOG_PATH)
+	Support.delete_file(LOG_PATH)
 	_signals.clear()
 	if not _profile.profile_changed.is_connected(_on_changed):
 		_profile.profile_changed.connect(_on_changed)

@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s5_ammo_cargo: ammunition as a cargo item (wave S5, AC4).
 ##
 ## The law is 10 section 6.1's 2026-09-23 amendment and CONTRACTS section 17, read with the
@@ -86,7 +87,7 @@ func suite_name() -> String:
 
 
 func suite_setup(_ctx: Dictionary) -> void:
-	_profile = _fixture_host()
+	_profile = Support.profile()
 	if _profile == null:
 		fail_setup("the PlayerProfile autoload is the cargo owner this suite measures")
 		return
@@ -101,7 +102,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_modules = _profile.call(&"modules")
 	_previous_market = (_profile.get(&"_market") as Dictionary).duplicate(true)
 	_profile.set(&"save_path", SCRATCH_PROFILE)
-	_delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 
 
 func suite_teardown() -> void:
@@ -124,7 +125,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_market", _previous_market)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 	_profile = null
 
 
@@ -949,7 +950,7 @@ func _launch(hull_id: StringName, fit: Dictionary) -> Node2D:
 	_profile.set(&"_active_ship", hull_id)
 	_profile.call(&"set_fit", hull_id, fit)
 	_scene = GameScene.instantiate() as Node2D
-	_fixture_host().add_child(_scene)
+	Support.profile().add_child(_scene)
 	return _scene
 
 
@@ -967,7 +968,7 @@ func _mount_panel() -> Control:
 		_host.name = "AmmoHost"
 		_host.theme = ThemeRes
 		_host.size = Vector2(1920.0, 1080.0)
-		_fixture_host().add_child(_host)
+		Support.profile().add_child(_host)
 	_panel = PanelScene.instantiate() as Control
 	_host.add_child(_panel)
 	return _panel
@@ -1003,20 +1004,3 @@ func _hold_cell(row: Node, path: String) -> String:
 	var label := row.get_node_or_null(NodePath("RowInner/RowBox/%s" % path)) as Label
 	assert_true(label != null, "the row carries %s" % path)
 	return "" if label == null else label.text
-
-
-## Where a fixture may enter the tree: the runner calls every test from inside its own
-## `_ready`, when the root viewport is still busy adding the runner scene, so
-## `root.add_child(...)` fails there. The profile autoload took children all through the run,
-## and `game.gd` resolves the profile from the tree root (`test_p2a_launch_fit.gd`'s reason).
-func _fixture_host() -> Node:
-	var tree := Engine.get_main_loop() as SceneTree
-	if tree == null:
-		return null
-	return tree.root.get_node_or_null(NodePath(PROFILE_SERVICE))
-
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())

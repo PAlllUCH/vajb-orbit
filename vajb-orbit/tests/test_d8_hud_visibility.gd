@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite d8_hud_visibility: wave D8 item 10's top-left acceptance, measured on the
 ## shipped `hud.tscn` at the project's own 1920 x 1080 viewport.
 ##
@@ -69,7 +70,7 @@ func setup() -> void:
 		fail_setup("hud.tscn did not instantiate")
 		return
 	_hud.theme = HudTheme
-	_fixture_host().add_child(_hud)
+	Support.fixture_host().add_child(_hud)
 	_settle_layout()
 
 
@@ -77,16 +78,6 @@ func teardown() -> void:
 	if _hud != null and is_instance_valid(_hud):
 		_hud.free()
 	_hud = null
-
-
-## The runner calls every test from inside its own `_ready`, so `root.add_child`
-## would fail ("Parent node is busy setting up children"); the profile autoload
-## entered the tree first and hosts the fixture the way the D6/D7 suites use it.
-func _fixture_host() -> Node:
-	var root := (Engine.get_main_loop() as SceneTree).root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root
-
 
 func viewport_size() -> Vector2:
 	return Vector2(

@@ -1,4 +1,5 @@
 extends Node
+const Support := preload("res://tests/support.gd")
 ## S8-Q0 evidence probe (part 3): M2 and M3 - the Exchange confirm strip's name and the
 ## honored quote - measured on the shipped panel with the shipped `Exchange` functions.
 ##
@@ -115,7 +116,7 @@ func _borrow() -> void:
 	_previous_credits = int(_profile.call(&"credits"))
 	_previous_market = (_profile.get(&"_market") as Dictionary).duplicate(true)
 	_profile.set(&"save_path", SCRATCH_PROFILE)
-	_remove(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 
 
 func _hand_back() -> void:
@@ -124,11 +125,5 @@ func _hand_back() -> void:
 	_profile.set(&"_market", _previous_market)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_remove(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 	print("%s scratch removed=%s" % [TAG, str(not FileAccess.file_exists(SCRATCH_PROFILE))])
-
-
-func _remove(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())

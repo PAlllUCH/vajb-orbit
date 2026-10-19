@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s19_quadrants: wave S19's directional armour and breach malfunctions (owner
 ## ruling 23; 09 section 3.3's 2026-09-26 amendment, P1-P8, and 01 section 6's repair
 ## amendment). One section per acceptance criterion:
@@ -156,7 +157,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 
 func setup() -> void:
 	_release_all()
-	_delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 	Log.log_path = SCRATCH_LOG
 
 
@@ -174,8 +175,8 @@ func suite_teardown() -> void:
 		_pane_host.free()
 	_pane_host = null
 	Log.log_path = Log.DEFAULT_PATH
-	_delete_file(SCRATCH_PROFILE)
-	_delete_file(SCRATCH_LOG)
+	Support.delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_LOG)
 
 
 ## ---------------------------------------------------------------------------
@@ -885,8 +886,3 @@ func _release_all() -> void:
 	for action: StringName in ACTIONS:
 		if InputMap.has_action(action):
 			Input.action_release(action)
-
-
-func _delete_file(path: String) -> void:
-	if FileAccess.file_exists(path):
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(path))

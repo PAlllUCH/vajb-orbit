@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite ui_slot_layout: the UI-chrome wave's D3 guard, re-pointed at the P2-A layout.
 ##
 ## D3: every slot plate is a TextureButton whose minimum size was driven by the plate
@@ -112,7 +113,7 @@ func setup() -> void:
 	_host.name = "SlotLayoutHost"
 	_host.theme = ThemeRes
 	_host.size = viewport_size()
-	_fixture_host().add_child(_host)
+	Support.fixture_host().add_child(_host)
 
 
 func teardown() -> void:
@@ -120,22 +121,6 @@ func teardown() -> void:
 		_host.free()
 	_host = null
 
-
-## The runner calls every test from inside its own `_ready`, so the root viewport is still
-## busy adding the runner scene and `root.add_child(...)` fails ("Parent node is busy setting
-## up children"). The profile autoload entered the tree before the main scene, so it hosts
-## the fixtures the way suite engine2_hud hosts its own.
-func _fixture_host() -> Node:
-	var tree := Engine.get_main_loop() as SceneTree
-	if tree == null:
-		return null
-	var root := tree.root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root
-
-
-## The live window size, read from the project rather than assumed, so the panel has to fit
-## the same frame the game boots into.
 func viewport_size() -> Vector2:
 	var width: float = float(ProjectSettings.get_setting(VIEWPORT_WIDTH_SETTING, FALLBACK_VIEWPORT.x))
 	var height: float = float(ProjectSettings.get_setting(VIEWPORT_HEIGHT_SETTING, FALLBACK_VIEWPORT.y))
@@ -154,7 +139,7 @@ func _mount(scene: PackedScene) -> Control:
 ## HUD's weapon row and the LAUNCH briefing both describe this hull, and the test derives
 ## its expectation from the same source instead of naming a ship.
 func _active_hull() -> StringName:
-	var host := _fixture_host()
+	var host := Support.fixture_host()
 	if host != null and host.has_method(&"active_ship"):
 		return StringName(host.call(&"active_ship"))
 	return &""
@@ -174,7 +159,7 @@ func _panel_hull(panel: Control) -> StringName:
 ## order (STATION_HUB section 5.11), read from the profile rather than from a literal.
 func _owned_roster() -> Array[StringName]:
 	var roster: Array[StringName] = []
-	var host := _fixture_host()
+	var host := Support.fixture_host()
 	if host == null or not host.has_method(&"owned_ships"):
 		return roster
 	var owned: Array = host.call(&"owned_ships")

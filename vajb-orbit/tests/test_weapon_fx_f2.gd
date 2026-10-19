@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite weapon_fx_f2: the hit's other half of the weapon FX & audio wave (brief
 ## `.agents/gen/weapon_fx_wave_task.md`, worker F2) - the impact cue per target kind,
 ## the shield's ring, break and held bed, the railgun's arc, a hull's death blast and
@@ -91,7 +92,7 @@ func suite_name() -> String:
 func suite_setup(_ctx: Dictionary) -> void:
 	_root = Node2D.new()
 	_root.name = &"F2Fixture"
-	_fixture_host().add_child(_root)
+	Support.fixture_host().add_child(_root)
 
 
 func suite_teardown() -> void:
@@ -133,7 +134,7 @@ func test_the_impact_cue_table_is_the_handoffs_rows() -> void:
 
 
 func test_a_hit_on_a_rock_plays_the_rock_cue() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -152,7 +153,7 @@ func test_a_hit_on_a_rock_plays_the_rock_cue() -> void:
 
 
 func test_a_hit_on_an_unshielded_hull_plays_the_hull_pool() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -165,7 +166,7 @@ func test_a_hit_on_an_unshielded_hull_plays_the_hull_pool() -> void:
 		% StringName(audio.call(&"last_sfx"))
 	)
 	assert_true(
-		_near(hull.hull_taken, SHOT_DAMAGE),
+		Support.near(hull.hull_taken, SHOT_DAMAGE),
 		"the wiring drew a cue and moved no damage (%.3f)" % hull.hull_taken
 	)
 	assert_true(_sheet_up(RIPPLE_SHEET) == null, "an unshielded hit draws no shield ring")
@@ -175,7 +176,7 @@ func test_a_hit_on_an_unshielded_hull_plays_the_hull_pool() -> void:
 
 
 func test_a_shielded_hit_plays_the_shield_pool_and_holds_the_bed() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -187,7 +188,7 @@ func test_a_shielded_hit_plays_the_shield_pool_and_holds_the_bed() -> void:
 		"an absorbed hit takes one of S5's nine takes (played %s)"
 		% StringName(audio.call(&"last_sfx"))
 	)
-	assert_true(_near(hull.hull_taken, 0.0), "the shield took it with no carry-over")
+	assert_true(Support.near(hull.hull_taken, 0.0), "the shield took it with no carry-over")
 	assert_eq(
 		StringName(audio.call(&"current_loop")),
 		ProjectileScript.SHIELD_LOOP_CUE,
@@ -209,17 +210,17 @@ func test_the_shield_ring_draws_at_the_hit_and_starts_collapsed() -> void:
 	if atlas != null:
 		assert_eq(atlas.region, ProjectileScript.FEEDBACK[&"ripple"][&"region"], "the measured object")
 	assert_true(
-		_near((ring as Node2D).global_position.distance_to(HIT_POINT), 0.0),
+		Support.near((ring as Node2D).global_position.distance_to(HIT_POINT), 0.0),
 		"the spec's ring sits at the contact point"
 	)
 	assert_true(
-		_near((ring as Node2D).scale.x, 0.0),
+		Support.near((ring as Node2D).scale.x, 0.0),
 		"section 1.5: it starts collapsed and grows to 1.5x (%.3f)" % (ring as Node2D).scale.x
 	)
 
 
 func test_the_shield_bed_goes_out_when_the_shield_breaks() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -231,7 +232,7 @@ func test_the_shield_bed_goes_out_when_the_shield_breaks() -> void:
 		"the bed is up while the shield holds"
 	)
 	_shot(ProjectileScript.KIND_BOLT, 30.0).call(&"_hit_body", hull, HIT_POINT)
-	assert_true(_near(hull.shield, 0.0), "the second hit empties the pool")
+	assert_true(Support.near(hull.shield, 0.0), "the second hit empties the pool")
 	assert_eq(
 		StringName(audio.call(&"current_loop")),
 		&"",
@@ -270,7 +271,7 @@ func test_the_railguns_slug_arcs_on_its_hit() -> void:
 
 
 func test_a_hull_death_draws_the_explosion_the_secondary_and_the_blast() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -299,7 +300,7 @@ func test_a_hull_death_draws_the_explosion_the_secondary_and_the_blast() -> void
 		"the spec's five frames"
 	)
 	assert_true(
-		_near(animated.sprite_frames.get_animation_speed(FxScript.ANIMATION), EXPLOSION_FPS),
+		Support.near(animated.sprite_frames.get_animation_speed(FxScript.ANIMATION), EXPLOSION_FPS),
 		"at the spec's 15 FPS"
 	)
 	assert_false(
@@ -309,7 +310,7 @@ func test_a_hull_death_draws_the_explosion_the_secondary_and_the_blast() -> void
 
 
 func test_the_players_hull_dies_with_the_same_blast() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -327,7 +328,7 @@ func test_the_players_hull_dies_with_the_same_blast() -> void:
 
 
 func test_a_detonation_draws_the_blast() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -371,7 +372,7 @@ func test_a_hull_below_a_quarter_trails_the_plume() -> void:
 	assert_true(process != null, "a particle emitter needs its process material")
 	if process != null:
 		assert_true(
-			_near(process.scale_max, base * ProjectileScript.PLUME_SCALE_MAX, 0.0001),
+			Support.near(process.scale_max, base * ProjectileScript.PLUME_SCALE_MAX, 0.0001),
 			"a puff reads the row's own 40 units, not the master's 1580 pixels (%.4f)"
 			% process.scale_max
 		)
@@ -420,7 +421,7 @@ func test_every_wired_sheet_region_and_cue_resolves() -> void:
 					region.end.x <= size.x and region.end.y <= size.y,
 					"%s's region is inside its own frame" % name
 				)
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -588,12 +589,12 @@ func _assert_alpha(node: CanvasItem) -> void:
 
 
 func _clear_world() -> void:
-	var tree := _tree()
+	var tree := Support.tree()
 	if tree != null:
 		for shot: Node in tree.get_nodes_in_group(ProjectileScript.PROJECTILE_GROUP):
 			if is_instance_valid(shot):
 				shot.free()
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio != null and audio.has_method(&"stop_loop"):
 		audio.call(&"stop_loop", 0.0)
 	if _root == null or not is_instance_valid(_root):
@@ -601,24 +602,3 @@ func _clear_world() -> void:
 	for child: Node in _root.get_children():
 		if is_instance_valid(child):
 			child.free()
-
-
-func _audio() -> Node:
-	var tree := _tree()
-	if tree == null:
-		return null
-	return tree.root.get_node_or_null(NodePath(AUDIO_SERVICE))
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root
-
-
-func _near(measured: float, expected: float, tolerance: float = TOLERANCE) -> bool:
-	return absf(measured - expected) <= tolerance

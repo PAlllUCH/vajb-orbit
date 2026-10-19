@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s8_launch_ammo: the S8 QA wave's accounting family (CONTRACTS section 21, H1 / H2 / M4
 ## and the range copy). Every reading is taken off the shipped scenes and the borrowed
 ## `PlayerProfile` autoload, so what is measured is the tree's own behaviour.
@@ -112,7 +113,7 @@ func suite_name() -> String:
 
 
 func suite_setup(_ctx: Dictionary) -> void:
-	_profile = _fixture_host()
+	_profile = Support.fixture_host()
 	if _profile == null or not _profile.has_method(&"ammo_of"):
 		fail_setup("the PlayerProfile autoload is the store this suite measures")
 		return
@@ -127,7 +128,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_vitals = (_profile.get(&"_vitals") as Dictionary).duplicate(true)
 	_previous_batteries = (_profile.get(&"_batteries") as Dictionary).duplicate(true)
 	_profile.set(&"save_path", SCRATCH_PROFILE)
-	_delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 
 
 func suite_teardown() -> void:
@@ -146,7 +147,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_batteries", _previous_batteries)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 	_profile = null
 
 
@@ -251,7 +252,7 @@ func test_a_stocked_family_fires_its_own_slot() -> void:
 	var fired := _pull(90)
 	assert_false(fired.is_empty(), "the stocked cannon fires")
 	assert_eq(_unique(fired), [&"cannon"] as Array[StringName], "and it is the cannon barrel")
-	var tree := _fixture_host().get_tree()
+	var tree := Support.fixture_host().get_tree()
 	var projectiles: int = tree.get_nodes_in_group(ProjectileScript.PROJECTILE_GROUP).size()
 	assert_true(projectiles >= 1, "a projectile node reached the sector (%d)" % projectiles)
 	assert_eq(
@@ -546,7 +547,7 @@ func _one_gun_fit(module_id: StringName, _unused := "") -> Dictionary:
 func _launch() -> Node2D:
 	_free_scene()
 	_scene = GameScene.instantiate() as Node2D
-	_fixture_host().add_child(_scene)
+	Support.fixture_host().add_child(_scene)
 	var guns: Node2D = _scene.get(&"_guns")
 	var ship: Node2D = _scene.get_node_or_null(NodePath("PlayerShip"))
 	if guns != null and ship != null:
@@ -591,7 +592,7 @@ func _mount(scene: PackedScene) -> Control:
 		_host.name = "S8AmmoHost"
 		_host.theme = ThemeRes
 		_host.size = Vector2(1920.0, 1080.0)
-		_fixture_host().add_child(_host)
+		Support.fixture_host().add_child(_host)
 	var node := scene.instantiate() as Control
 	_host.add_child(node)
 	return node
@@ -601,16 +602,6 @@ func _free_host() -> void:
 	if _host != null and is_instance_valid(_host):
 		_host.free()
 	_host = null
-
-
-func _fixture_host() -> Node:
-	var tree := Engine.get_main_loop() as SceneTree
-	if tree == null:
-		return null
-	var root := tree.root
-	var host := root.get_node_or_null(NodePath(PROFILE_SERVICE))
-	return host if host != null else root
-
 
 func _brief_value(panel: Control, key: StringName) -> String:
 	var values: Dictionary = panel.get(&"_brief_values")
@@ -705,15 +696,6 @@ static func _unique(values: Array[StringName]) -> Array[StringName]:
 		if not seen.has(value):
 			seen.append(value)
 	return seen
-
-
-## The scratch file's own removal: `ConfigFile` leaves it behind, and the next suite must not
-## load a predecessor's account (`test_s5_ammo_cargo`'s own helper).
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
 
 func _all_families() -> Array[StringName]:
 	var families: Array[StringName] = []

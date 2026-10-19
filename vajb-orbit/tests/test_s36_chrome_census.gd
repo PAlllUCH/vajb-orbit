@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s36_chrome_census: wave S36's one true-aspect chrome family (UI_SPEC section 15).
 ##
 ## The station is mounted the way `test_s30_shell.gd` mounts it (the shipped scene, the
@@ -91,7 +92,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_modules = (_profile.get(&"_modules") as Dictionary).duplicate(true)
 	_previous_credits = int(_profile.call(&"credits"))
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile.set(&"_active_ship", SHIP)
 	_profile.set(&"_owned_ships", [SHIP] as Array[StringName])
 	_profile.set(&"_fits", {})
@@ -112,7 +113,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_credits", _previous_credits)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile = null
 
 
@@ -121,15 +122,6 @@ func setup() -> void:
 		_station.get_parent().free()
 	_station = null
 
-
-func _delete_file(path: String) -> void:
-	var absolute := ProjectSettings.globalize_path(path)
-	if FileAccess.file_exists(absolute):
-		DirAccess.remove_absolute(absolute)
-
-
-## A fresh shell per row under a themed host, added to the profile autoload (the runner
-## calls every test from inside its own `_ready`, when `/root` is still busy).
 func _mount() -> Control:
 	var host := Control.new()
 	host.name = "S36Host"
@@ -161,7 +153,7 @@ func _switch(screen: Control, deck: int) -> void:
 
 
 func _pane(screen: Control, deck: int) -> Node:
-	var panes := screen.get(&"_panels") as Array
+	var panes := screen.call(&"panes") as Array
 	if deck < 0 or deck >= panes.size():
 		return null
 	return panes[deck] as Node
@@ -360,6 +352,7 @@ func test_b_the_rows_and_the_tooltip_wear_their_nine_slice() -> void:
 	## the C4 ui_row_strip census re-points to the VAULTS panel's tier rows - the same
 	## apply_row idiom, still shipped (the overview tile wears the flat box, asserted in
 	## the C1 row above).
+	screen.call(&"service_panel", &"vaults")
 	var row := _find(screen, "Tier1") as Button
 	assert_true(row != null, "the VAULTS tier row ships (the C4 row census's surface)")
 	if row != null:

@@ -1,4 +1,5 @@
 extends Node2D
+const Support := preload("res://tests/support.gd")
 ## S1's probe for the speed-fantasy / damage-state wave (slice 2.5, 2026-09-21).
 ##
 ## It prints one `[S25]` line per measurement the wave's brief asks for, with the raw
@@ -131,14 +132,6 @@ func _ship(fraction: float, with_booster: bool) -> Variant:
 	ship.setup(stats, state, ShipFitScript.fitted_ids(fit))
 	_staged.append(ship)
 	return ship
-
-
-func _audio() -> Node:
-	return get_tree().root.get_node_or_null(NodePath(AUDIO_SERVICE))
-
-
-## --- 1. The blur (FX_SPEC section 5 row 1) ----------------------------------
-
 
 func _case_blur() -> void:
 	print(
@@ -399,7 +392,7 @@ func _case_trail() -> void:
 
 
 func _case_bed() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		print("%s BED audio=missing" % TAG)
 		return
@@ -461,7 +454,7 @@ func _case_bed() -> void:
 
 func _case_boost() -> void:
 	var ship: Variant = _ship(1.0, true)
-	var audio := _audio()
+	var audio := Support.audio()
 	Input.action_press(PlayerShipScript.BOOST_ACTION)
 	_pressed.append(PlayerShipScript.BOOST_ACTION)
 	for i in 3:

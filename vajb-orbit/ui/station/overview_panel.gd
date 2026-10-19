@@ -1,4 +1,4 @@
-extends VBoxContainer
+extends "res://ui/station/station_panel.gd"
 ## OVERVIEW pane (S42, STATION_HUB section 23.1 P44-P47 + section 19): the landing pane on
 ## dock, wearing P7's one skeleton (PaneHeader / content split / foot band). Its split
 ## carries P46's four blocks as one stack inside a vertical `ScrollContainer` (P22, kept
@@ -510,16 +510,6 @@ func _slot_cell_count(hull_id: StringName) -> int:
 			total += int((cell as Dictionary).get(&"count", 1))
 	return total
 
-
-func _vitals(profile: ProfileScript, ship_id: StringName) -> Dictionary:
-	if profile == null or ship_id == &"":
-		return {}
-	var raw: Variant = profile.call(&"vitals_of", ship_id)
-	return raw if raw is Dictionary else {}
-
-
-## The two denominators (repairs_panel.gd's own rule): `ShipFit.resolve` for the fit the
-## launch would fly, with the catalogue row as the fallback.
 func _maxima(profile: ProfileScript, ship_id: StringName, ship: Dictionary) -> Dictionary:
 	var fallback := {
 		&"hull": int(ship.get(&"hull", 0)),
@@ -561,24 +551,6 @@ func _docked_faction() -> StringName:
 		StationRegistryScript.docked_station(profile).get(&"faction", &"")
 	)
 
-
-func _profile() -> ProfileScript:
-	if not is_inside_tree():
-		return null
-	var service := get_tree().root.get_node_or_null(NodePath(PROFILE_SERVICE))
-	if service == null:
-		return null
-	var profile: ProfileScript = service
-	return profile
-
-
-func _token(token: StringName) -> Color:
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return Color.WHITE
-
-
-## A code-drawn chevron mark (P30) inside its own child rect (A5.2(iii)).
 class Chevron extends Control:
 	var colour: Color = Color.WHITE
 

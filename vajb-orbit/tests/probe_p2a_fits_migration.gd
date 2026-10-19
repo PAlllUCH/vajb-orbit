@@ -1,4 +1,5 @@
 extends SceneTree
+const Support := preload("res://tests/support.gd")
 ## P2-A W2 evidence probe: drive the fit store's save v2 -> v4 migration end to
 ## end and print the persisted shapes before and after, so every number in
 ## `.agents/gen/p2a_w2_report.md` can be re-measured by hand.
@@ -62,7 +63,7 @@ func _init() -> void:
 	## flushed before the scratch file goes away.
 	first.flush()
 	second.flush()
-	_remove(PROBE_PATH)
+	Support.delete_file(PROBE_PATH)
 	print("[probe] scratch file removed: %s" % str(not FileAccess.file_exists(PROBE_PATH)))
 	quit()
 
@@ -111,9 +112,3 @@ func _file_text() -> String:
 	var text := file.get_as_text()
 	file.close()
 	return text
-
-
-func _remove(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())

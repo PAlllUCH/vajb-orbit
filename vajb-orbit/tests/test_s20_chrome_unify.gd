@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s20_chrome_unify: wave S20's ARMORY chrome unification and the station shell's
 ## inspector pin (UI_SPEC section 3.10 Amendment 4, A4.1-A4.5; owner feedback after the
 ## S18 live playtest: "i need to unify it to the rest of game (chromes) and on hover the
@@ -98,7 +99,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_cargo = (_profile.get(&"_cargo") as Dictionary).duplicate(true)
 	_previous_batteries = (_profile.get(&"_batteries") as Dictionary).duplicate(true)
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 func suite_teardown() -> void:
@@ -114,8 +115,8 @@ func suite_teardown() -> void:
 	_profile.set(&"_batteries", _previous_batteries)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(PROFILE_PATH)
-	_delete_file(STYLE_PROBE_PATH)
+	Support.delete_file(PROFILE_PATH)
+	Support.delete_file(STYLE_PROBE_PATH)
 	_profile = null
 
 
@@ -132,7 +133,7 @@ func setup() -> void:
 	_host.name = "ArmoryS20Host"
 	_host.theme = ThemeRes
 	_host.size = HOST
-	_fixture_host().add_child(_host)
+	Support.profile().add_child(_host)
 
 
 func teardown() -> void:
@@ -146,28 +147,10 @@ func teardown() -> void:
 		_host.free()
 	_host = null
 
-
-func _fixture_host() -> Node:
-	var tree := Engine.get_main_loop() as SceneTree
-	if tree == null:
-		return null
-	var profile := tree.root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return profile if profile != null else tree.root
-
-
 func _mount() -> Control:
 	_panel = PanelScene.instantiate() as Control
 	_host.add_child(_panel)
 	return _panel
-
-
-func _delete_file(path: String) -> void:
-	if not FileAccess.file_exists(path):
-		return
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
 
 func _style() -> Resource:
 	return _panel.call(&"style")
@@ -430,7 +413,7 @@ func test_ac5_the_inspector_band_is_retired_and_the_pane_fills_the_body() -> voi
 	assert_true(page.get_node_or_null(^"Inspector") == null, "the inspector band is retired")
 	var body := _station.get_node(^"Layout/Page/Body") as Control
 	var module_host := _station.get_node(^"%ModuleHost") as Control
-	var panels: Array = _station.get(&"_panels")
+	var panels: Array = _station.call(&"panes")
 	assert_eq(panels.size(), 6, "the shell mounted its six service panes (P16)")
 	assert_true(module_host != null, "the one body pane ships")
 	assert_eq(module_host.get_parent(), body, "the pane sits in the body band (P15)")

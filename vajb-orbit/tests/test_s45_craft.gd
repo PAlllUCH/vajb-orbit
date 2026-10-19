@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s45_craft: the CRAFT tab's crafting model and list (07 section 6 C1-C10,
 ## STATION_HUB section 23.6 P52). One row per acceptance item:
 ##   1. `CraftingCatalog` is the four-recipe table, verbatim: ids/names/inputs (id ->
@@ -84,7 +85,7 @@ func suite_name() -> String:
 
 
 func suite_setup(_ctx: Dictionary) -> void:
-	_profile = _fixture_host()
+	_profile = Support.profile()
 	if _profile == null:
 		fail_setup("the PlayerProfile autoload is the account the pane reads")
 		return
@@ -104,8 +105,8 @@ func suite_setup(_ctx: Dictionary) -> void:
 		&"next_id": _profile.call(&"refinery_next_job_id"),
 	}
 	_profile.set(&"save_path", SCRATCH_PROFILE)
-	_delete_file(SCRATCH_PROFILE)
-	_delete_file(SCRATCH_LOG)
+	Support.delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_LOG)
 
 
 func suite_teardown() -> void:
@@ -126,8 +127,8 @@ func suite_teardown() -> void:
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
 	Log.log_path = _previous_log_path
-	_delete_file(SCRATCH_PROFILE)
-	_delete_file(SCRATCH_LOG)
+	Support.delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_LOG)
 	_profile = null
 
 
@@ -148,8 +149,8 @@ func teardown() -> void:
 	if _model != null and is_instance_valid(_model):
 		_model.free()
 	_model = null
-	_delete_file(MODEL_SAVE)
-	_delete_file(MODEL_LOG)
+	Support.delete_file(MODEL_SAVE)
+	Support.delete_file(MODEL_LOG)
 
 
 ## ------------------------------------------------- AC1: the recipe table (C2/C3/C4)
@@ -258,7 +259,7 @@ func test_c10_the_commit_is_all_or_nothing() -> void:
 	assert_eq(int(_model.call(&"cargo_qty", MECH_2)), 2, "the hold kept its inputs")
 	assert_eq(int(_model.call(&"credits")), before, "no credits moved on a refusal")
 	assert_eq(int(_model.call(&"module_count", REACTOR)), 0, "no module was granted")
-	_delete_file(MODEL_LOG)
+	Support.delete_file(MODEL_LOG)
 	assert_false(FileAccess.file_exists(MODEL_LOG), "a refusal logs nothing")
 	## A covered bill with a short purse refuses the same way.
 	_model.add_cargo(INGOT_COBALT, 6)
@@ -511,7 +512,7 @@ func test_p52_the_state_chips_read_the_hold() -> void:
 
 
 func _make_model() -> Node:
-	_delete_file(MODEL_LOG)
+	Support.delete_file(MODEL_LOG)
 	var model: Node = load("res://autoload/player_profile.gd").new()
 	model.save_path = MODEL_SAVE
 	Log.log_path = MODEL_LOG
@@ -542,7 +543,7 @@ func _mount_panel() -> void:
 		_host.name = "S45CraftHost"
 		_host.theme = ThemeRes
 		_host.size = Vector2(1920.0, 1080.0)
-		_fixture_host().add_child(_host)
+		Support.profile().add_child(_host)
 	_panel = PanelScene.instantiate() as Control
 	_host.add_child(_panel)
 	## `profile_changed` stays DISCONNECTED for this suite (the s45 idiom): every
@@ -599,18 +600,3 @@ func _on_confirm_requested(payload: Dictionary) -> void:
 
 func _on_sheet_requested(payload: Dictionary) -> void:
 	_sheets.append(payload)
-
-
-func _fixture_host() -> Node:
-	var tree := Engine.get_main_loop() as SceneTree
-	if tree == null:
-		return null
-	return tree.root.get_node_or_null(NodePath(PROFILE_SERVICE))
-
-
-func _delete_file(path: String) -> void:
-	if not FileAccess.file_exists(path):
-		return
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())

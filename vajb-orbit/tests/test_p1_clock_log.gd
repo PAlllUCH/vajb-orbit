@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite p1_clock_log: the one 20-minute clock and the append-only economy log
 ## (docs/gameplay/17_coder_handoff.md sections 4 and 5,
 ## docs/gameplay/01_economy_core.md section 7).
@@ -22,7 +23,7 @@ func suite_name() -> String:
 
 func setup() -> void:
 	Clock.clear_override()
-	_delete_file(BAD_PATH)
+	Support.delete_file(BAD_PATH)
 	_reset_log()
 
 
@@ -31,8 +32,8 @@ func teardown() -> void:
 
 
 func suite_teardown() -> void:
-	_delete_file(LOG_PATH)
-	_delete_file(BAD_PATH)
+	Support.delete_file(LOG_PATH)
+	Support.delete_file(BAD_PATH)
 	Log.log_path = Log.DEFAULT_PATH
 	Clock.clear_override()
 
@@ -101,13 +102,6 @@ func test_unwritable_log_path_is_survivable() -> void:
 ## ---------------------------------------------------------------------------
 ## Helpers
 ## ---------------------------------------------------------------------------
-
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
 
 func _reset_log() -> void:
 	Log.log_path = LOG_PATH

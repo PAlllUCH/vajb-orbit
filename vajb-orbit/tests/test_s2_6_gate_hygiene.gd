@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s2_6_gate_hygiene: the gate's own hermeticity (CONTRACTS section 14, L90/L93).
 ##
 ## The gate's complaint (L93) was that one tree reads `passed=437 failed=0` on a sandboxed
@@ -80,7 +81,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	if _scene == null:
 		fail_setup("game.tscn did not instantiate")
 		return
-	_fixture_host().add_child(_scene)
+	Support.fixture_host().add_child(_scene)
 
 
 func suite_teardown() -> void:
@@ -221,10 +222,10 @@ func test_a_mutated_store_file_cannot_reach_the_in_memory_profile() -> void:
 ## The harness under test, found by its own script so the suite never fails on the editor's
 ## runner (which does not sandbox the store and where this suite skips instead).
 func _runner() -> Node:
-	var scene := _tree().current_scene
+	var scene := Support.tree().current_scene
 	if scene != null and scene.get_script() == RunnerScript:
 		return scene
-	for child: Node in _tree().root.get_children():
+	for child: Node in Support.tree().root.get_children():
 		if child.get_script() == RunnerScript:
 			return child
 	return null
@@ -247,23 +248,8 @@ func _mutated_config() -> ConfigFile:
 
 
 func _profile() -> Node:
-	return _tree().root.get_node_or_null(NodePath(PROFILE_SERVICE))
+	return Support.tree().root.get_node_or_null(NodePath(PROFILE_SERVICE))
 
-
-## Where a fixture may enter the tree: the `PlayerProfile` autoload is already in it and takes
-## children all through the run, whereas the root viewport is busy adding the runner scene
-## during `_ready` (the same seam the engine2 suites use).
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(PROFILE_SERVICE))
-	return host if host != null else root
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-## -1 for a file that is not there, so "unchanged" is provable without creating it.
 func _size_of(path: String) -> int:
 	if not FileAccess.file_exists(path):
 		return -1

@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite engine2_weapons: the family table, the group/ammo seams and the projectile
 ## configuration of engine slice 2's W1 (ENGINE_SPEC sections 4.1, 4.3, 4.4, 4.6 and
 ## 13; docs/CONTRACTS.md sections 2/4/5/8.1).
@@ -96,18 +97,10 @@ func teardown() -> void:
 	_state = null
 	_restore_pools()
 
-
-func _audio() -> Node:
-	var tree := _tree()
-	if tree == null:
-		return null
-	return tree.root.get_node_or_null(NodePath(AUDIO_SERVICE))
-
-
 func _save_pools() -> void:
 	_pool_state = {}
 	_had_pool_state = false
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		return
 	var cursors: Variant = audio.get(&"_pool_next")
@@ -121,7 +114,7 @@ func _save_pools() -> void:
 func _restore_pools() -> void:
 	if not _had_pool_state:
 		return
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		return
 	var cursors: Variant = audio.get(&"_pool_next")
@@ -574,7 +567,7 @@ func test_a_laser_battery_pays_a_draw_per_barrel_every_frame() -> void:
 	guns.call(&"set_firing", true)
 	guns.call(&"tick", frame)
 	assert_true(
-		_near(_state.energy, before - cost * 3.0),
+		Support.near(_state.energy, before - cost * 3.0),
 		"three barrels, three draws: %.3f Energy for one frame (expected %.3f)"
 		% [before - _state.energy, cost * 3.0]
 	)
@@ -619,10 +612,10 @@ func test_the_beam_frame_damage_is_the_open_barrels_sum() -> void:
 	var delta := 0.1
 	_guns.call(&"_apply_beam", &"laser", row, sink, Vector2.ZERO, delta, 1.0)
 	var one := sink.total
-	assert_true(_near(one, WeaponScript.dps_of(&"laser") * delta), "one barrel: dps x delta")
+	assert_true(Support.near(one, WeaponScript.dps_of(&"laser") * delta), "one barrel: dps x delta")
 	_guns.call(&"_apply_beam", &"laser", row, sink, Vector2.ZERO, delta, 3.0)
 	assert_true(
-		_near(sink.total - one, one * 3.0),
+		Support.near(sink.total - one, one * 3.0),
 		"three barrels: three times the one-barrel frame (%.3f, expected %.3f)"
 		% [sink.total - one, one * 3.0]
 	)
@@ -648,7 +641,7 @@ func test_a_laser_battery_deals_one_frame_of_damage_per_barrel() -> void:
 	guns.call(&"tick", delta)
 	var expected := WeaponScript.dps_of(&"laser") * delta * 3.0
 	assert_true(
-		_near(sink.total, expected),
+		Support.near(sink.total, expected),
 		"three barrels deliver three frames (%.3f damage, expected %.3f)"
 		% [sink.total, expected]
 	)
@@ -897,15 +890,8 @@ func _release_trigger(guns: Node2D, delta := 0.1) -> void:
 	guns.call(&"set_firing", false)
 	guns.call(&"tick", delta)
 
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-## The live shots in the world. The rig's own shots are what the volley's counts read,
-## so the suite clears the group before and after every travelling test.
 func _shots() -> Array[Node]:
-	var tree := _tree()
+	var tree := Support.tree()
 	if tree == null:
 		return []
 	return tree.get_nodes_in_group(ProjectileScript.PROJECTILE_GROUP)
@@ -915,14 +901,6 @@ func _clear_shots() -> void:
 	for shot: Node in _shots():
 		if is_instance_valid(shot):
 			shot.free()
-
-
-func _near(measured: float, expected: float, tolerance := 0.0001) -> bool:
-	return absf(measured - expected) <= tolerance
-
-
-## --- The projectile's pinned configuration -------------------------------
-
 
 func test_projectile_configure_reads_the_pinned_keys() -> void:
 	var shot := ProjectileScript.new() as Node2D

@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite weapon_fx_f1: the fire-and-travel feedback of the weapon FX & audio wave
 ## (brief `.agents/gen/weapon_fx_wave_task.md`, worker F1) - the shot's own sprite,
 ## the muzzle flash, the instant families' engine-drawn beam and the family fire cue
@@ -83,7 +84,7 @@ func suite_name() -> String:
 func suite_setup(_ctx: Dictionary) -> void:
 	_root = Node2D.new()
 	_root.name = &"F1Fixture"
-	_fixture_host().add_child(_root)
+	Support.fixture_host().add_child(_root)
 
 
 func suite_teardown() -> void:
@@ -120,7 +121,7 @@ func test_the_bolt_kind_draws_the_bolt_sheets_thin_cut() -> void:
 	assert_eq(atlas.region, ProjectileScript.SHEETS[&"bolt"][&"region"], "the frame's thin object")
 	_assert_alpha(visual)
 	assert_true(
-		_near(visual.scale.x * atlas.region.size.x, BOLT_LENGTH),
+		Support.near(visual.scale.x * atlas.region.size.x, BOLT_LENGTH),
 		"the light bolt reads the spec's 64 units"
 	)
 
@@ -140,7 +141,7 @@ func test_the_slug_kind_draws_the_bolt_sheets_other_cut() -> void:
 	assert_ne(atlas.region, ProjectileScript.SHEETS[&"bolt"][&"region"], "the two kinds differ")
 	_assert_alpha(visual)
 	assert_true(
-		_near(visual.scale.x * atlas.region.size.x, SLUG_LENGTH),
+		Support.near(visual.scale.x * atlas.region.size.x, SLUG_LENGTH),
 		"the medium bolt reads the spec's 96 units"
 	)
 
@@ -183,7 +184,7 @@ func test_the_mine_kind_draws_the_mine_familys_own_frames() -> void:
 	if first != null:
 		assert_eq(first.atlas.resource_path, MINE_FRAME, "`fx_mine_f1.png`, the family's own art")
 		assert_eq(first.region, ProjectileScript.SHEETS[&"mine"][&"region"], "the measured mine")
-	assert_true(_near(visual.rotation, 0.0), "a mine has no bearing to carry")
+	assert_true(Support.near(visual.rotation, 0.0), "a mine has no bearing to carry")
 
 
 func test_the_sprite_carries_the_shots_bearing() -> void:
@@ -192,7 +193,7 @@ func test_the_sprite_carries_the_shots_bearing() -> void:
 	assert_true(visual != null, "the bolt draws")
 	if visual != null:
 		assert_true(
-			_near(visual.rotation, Vector2.UP.angle()),
+			Support.near(visual.rotation, Vector2.UP.angle()),
 			"the sheet points right, so the sprite turns with the travel"
 		)
 
@@ -209,7 +210,7 @@ func test_the_muzzle_flash_is_the_four_frame_sheet() -> void:
 	var frames := flash.sprite_frames
 	assert_eq(frames.get_frame_count(FxScript.ANIMATION), FLASH_FRAMES, "section 1.2's four frames")
 	assert_true(
-		_near(frames.get_animation_speed(FxScript.ANIMATION), FLASH_FPS),
+		Support.near(frames.get_animation_speed(FxScript.ANIMATION), FLASH_FPS),
 		"the spec's 20 FPS (0.2 s)"
 	)
 	assert_false(frames.get_animation_loop(FxScript.ANIMATION), "the flash plays once")
@@ -246,7 +247,7 @@ func test_the_muzzle_flash_rides_the_muzzle_and_the_aim() -> void:
 	if flash == null:
 		return
 	assert_true(
-		_near(flash.rotation, Vector2.UP.angle() - guns.global_rotation),
+		Support.near(flash.rotation, Vector2.UP.angle() - guns.global_rotation),
 		"the flash points down the aim, in the mount's own space"
 	)
 	assert_true(flash.position.x < 0.0, "the barrel art sits behind the muzzle")
@@ -268,7 +269,7 @@ func test_the_instant_families_draw_an_engine_side_beam() -> void:
 	assert_true(halo.visible and core.visible, "a held trigger draws the shaft")
 	assert_eq(halo.points.size(), 2, "the shaft runs from the muzzle to its reach")
 	assert_true(
-		_near(halo.points[1].length(), AIM_DISTANCE),
+		Support.near(halo.points[1].length(), AIM_DISTANCE),
 		"the shaft ends at the aim point inside the weapon's range"
 	)
 	assert_true(halo.width > core.width, "a wide dim halo under a thin bright core")
@@ -292,7 +293,7 @@ func test_the_beam_goes_out_when_the_trigger_is_released() -> void:
 
 
 func test_the_cannon_fires_the_cannon_pools_first_tier() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -305,7 +306,7 @@ func test_the_cannon_fires_the_cannon_pools_first_tier() -> void:
 
 
 func test_the_railgun_fires_the_cannon_pools_second_tier() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -318,7 +319,7 @@ func test_the_railgun_fires_the_cannon_pools_second_tier() -> void:
 
 
 func test_the_energy_families_fire_the_laser_pool() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -336,7 +337,7 @@ func test_the_energy_families_fire_the_laser_pool() -> void:
 
 
 func test_the_rocket_fires_the_launch_layer() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -349,7 +350,7 @@ func test_the_rocket_fires_the_launch_layer() -> void:
 
 
 func test_the_mine_drops_with_the_mine_pools_own_cue() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -384,7 +385,7 @@ func test_the_fire_cue_table_is_the_handoffs_pools() -> void:
 
 
 func test_the_laser_pool_round_robins_its_takes_within_the_specs_ranges() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -417,7 +418,7 @@ func test_the_laser_pool_round_robins_its_takes_within_the_specs_ranges() -> voi
 
 
 func test_the_pool_reaches_every_cannon_tier() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -437,7 +438,7 @@ func test_the_pool_reaches_every_cannon_tier() -> void:
 
 
 func test_the_rocket_pool_layers_the_warhead_eighty_milliseconds_later() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -451,11 +452,11 @@ func test_the_rocket_pool_layers_the_warhead_eighty_milliseconds_later() -> void
 	if layers.size() != 1:
 		return
 	assert_eq(StringName(layers[0][&"take"]), &"sfx_weapon_rocket_02_warhead", "the warhead")
-	assert_true(_near(float(layers[0][&"delay"]), WARHEAD_DELAY), "at +80 ms")
+	assert_true(Support.near(float(layers[0][&"delay"]), WARHEAD_DELAY), "at +80 ms")
 
 
 func test_a_cue_without_a_pool_still_plays_through_play_sfx() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -473,7 +474,7 @@ func test_a_cue_without_a_pool_still_plays_through_play_sfx() -> void:
 
 
 func test_the_mining_shaft_plays_the_beam_bed_and_stops_with_it() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -528,7 +529,7 @@ func test_every_wired_sheet_and_cue_resolves() -> void:
 				)
 	for path: String in WeaponScript.FLASH_FRAMES:
 		assert_true(ResourceLoader.exists(path), "%s is on disk" % path)
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -635,32 +636,11 @@ func _assert_alpha(node: CanvasItem) -> void:
 
 
 func _clear_world() -> void:
-	var tree := _tree()
+	var tree := Support.tree()
 	if tree != null:
 		for shot: Node in tree.get_nodes_in_group(ProjectileScript.PROJECTILE_GROUP):
 			if is_instance_valid(shot):
 				shot.free()
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio != null and audio.has_method(&"stop_loop"):
 		audio.call(&"stop_loop", 0.0)
-
-
-func _audio() -> Node:
-	var tree := _tree()
-	if tree == null:
-		return null
-	return tree.root.get_node_or_null(NodePath(AUDIO_SERVICE))
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root
-
-
-func _near(measured: float, expected: float, tolerance: float = TOLERANCE) -> bool:
-	return absf(measured - expected) <= tolerance

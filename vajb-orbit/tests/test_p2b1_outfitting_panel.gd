@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite p2b1_outfitting_panel: the ARMORY pane (the OUTFITTING pane renamed, STATION_HUB
 ## section 5.11's 2026-09-23 S5 amendment) as the S3 retirement and the S5 rework leave it
 ## -- the battery racks over the inventory list over one row per
@@ -112,7 +113,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_cargo = _profile.get(&"_cargo")
 	_previous_batteries = _profile.get(&"_batteries")
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 func suite_teardown() -> void:
@@ -130,7 +131,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_batteries", _previous_batteries)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile = null
 
 
@@ -142,7 +143,7 @@ func setup() -> void:
 	_host.name = "ArmoryHost"
 	_host.theme = ThemeRes
 	_host.size = _viewport_size()
-	_fixture_host().add_child(_host)
+	Support.profile().add_child(_host)
 
 
 func teardown() -> void:
@@ -166,18 +167,6 @@ func _seed_account() -> void:
 	_profile.set(&"_ammo", {})
 	_profile.set(&"_cargo", AMMO_FIXTURE.duplicate())
 	_profile.set(&"_batteries", {})
-
-
-## The runner calls every test from inside its own `_ready`, so the root viewport is still
-## busy adding the runner scene and `root.add_child(...)` fails. The profile autoload
-## entered the tree before the main scene, so it hosts the fixture (suite ui_slot_layout's
-## own reason).
-func _fixture_host() -> Node:
-	var tree := Engine.get_main_loop() as SceneTree
-	if tree == null:
-		return null
-	return tree.root.get_node_or_null(NodePath(&"PlayerProfile"))
-
 
 func _viewport_size() -> Vector2:
 	var width := float(ProjectSettings.get_setting("display/window/size/viewport_width", 1920))
@@ -238,15 +227,6 @@ func _row_pack_id(row: Button) -> StringName:
 		if String(pack.get(&"name", "")).to_upper() == title.text.to_upper():
 			return pack.get(&"id", &"")
 	return &""
-
-
-func _cell_text(row: Button, cell_name: String) -> String:
-	var cell := row.find_child(cell_name, true, false) as Control
-	if cell == null:
-		return ""
-	var value := cell.get_node_or_null(^"Value") as Label
-	return value.text if value != null else ""
-
 
 func _cell_caption(row: Button, cell_name: String) -> String:
 	var cell := row.find_child(cell_name, true, false) as Control
@@ -359,22 +339,6 @@ func _last_status() -> String:
 func _last_danger() -> bool:
 	return _danger[_danger.size() - 1] if not _danger.is_empty() else false
 
-
-func _delete_file(path: String) -> void:
-	if not FileAccess.file_exists(path):
-		return
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
-## ------------------------------------------------------- the ammunition rows
-
-
-## One row per `StationCatalog.AMMO_PACKS` entry, in the catalogue's own order (05's
-## `PlayerState.WEAPONS` order), each one carrying the catalogue's name, its rounds meta,
-## its price and its icon. Nothing in this section is a literal: the pane reads the
-## catalogue and this suite reads the same catalogue back.
 func test_ammo_rows_are_the_catalogue_in_order() -> void:
 	var panel := _mount()
 	var rows := _ammo_rows(panel)
@@ -404,7 +368,7 @@ func test_ammo_rows_are_the_catalogue_in_order() -> void:
 			"%s's meta is its rounds" % pack_id
 		)
 		assert_eq(
-			_cell_text(row, "Price"),
+			Support.cell_text(row, "Price"),
 			PanelScript.PRICE_FORMAT % Catalog.group_int(int(pack[&"cost"])),
 			"%s's PRICE is the catalogue's cost with its unit word (P5)" % pack_id
 		)
@@ -452,13 +416,13 @@ func test_ammo_state_lines_and_tags() -> void:
 		if row == null:
 			continue
 		assert_eq(
-			_cell_text(row, "Held"),
+			Support.cell_text(row, "Held"),
 			PanelScript.HELD_FORMAT % [
 				_held(pack_id) * Catalog.ROUNDS_PER_CARGO_UNIT, _unit_cap(pack_id)
 			],
 			"%s's held line is the P5 worded rounds-against-units figure" % pack_id
 		)
-		assert_eq(_cell_text(row, "Status"), String(entry[&"tag"]), "%s's tag" % pack_id)
+		assert_eq(Support.cell_text(row, "Status"), String(entry[&"tag"]), "%s's tag" % pack_id)
 		assert_eq(_cell_caption(row, "Held"), String(entry[&"meta"]), "%s's state line" % pack_id)
 	## T5 retires the pane's own footer caption (LOW-3: the shell's StatusLabel does the same
 	## job); the advisory rule stays visible as the card's own state line.
@@ -902,20 +866,20 @@ func test_the_close_does_not_duplicate_a_base_keyed_unit() -> void:
 func test_profile_changed_drives_the_refresh() -> void:
 	var panel := _mount()
 	var row := _ammo_row(panel, &"plasma")
-	assert_eq(_cell_text(row, "Status"), PanelScript.TAG_EMPTY, "the plasma pack starts empty")
+	assert_eq(Support.cell_text(row, "Status"), PanelScript.TAG_EMPTY, "the plasma pack starts empty")
 	## Without the shell's wiring the pane is not told, and its cells do not move.
 	_profile.disconnect(&"profile_changed", Callable(panel, &"refresh_profile"))
 	_profile.call(&"add_cargo", &"ammo_plasma", 5)
 	assert_eq(_held(&"plasma"), 5, "the hold moved")
 	assert_eq(
-		_cell_text(row, "Status"), PanelScript.TAG_EMPTY, "an unwired pane is stale: nothing refreshed it"
+		Support.cell_text(row, "Status"), PanelScript.TAG_EMPTY, "an unwired pane is stale: nothing refreshed it"
 	)
 	## Wired, the same key refreshes it, and so does a credits change.
 	_profile.connect(&"profile_changed", Callable(panel, &"refresh_profile"))
 	_profile.call(&"add_cargo", &"ammo_plasma", 1)
-	assert_eq(_cell_text(row, "Status"), PanelScript.TAG_IN_STOCK, "cargo refreshed the tag")
+	assert_eq(Support.cell_text(row, "Status"), PanelScript.TAG_IN_STOCK, "cargo refreshed the tag")
 	assert_eq(
-		_cell_text(row, "Held"),
+		Support.cell_text(row, "Held"),
 		PanelScript.HELD_FORMAT % [6 * Catalog.ROUNDS_PER_CARGO_UNIT, _unit_cap(&"plasma")],
 		"and the worded held figure"
 	)

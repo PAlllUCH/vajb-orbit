@@ -1,4 +1,5 @@
 extends Node
+const Support := preload("res://tests/support.gd")
 ## S7-R1 reviewer probe B: the affix summary and every section 20 prefix row,
 ## re-measured off shipped data (never off the builders' suites).
 ##
@@ -32,7 +33,7 @@ var _fail := 0
 
 func _ready() -> void:
 	print("[S7R1-B] begin")
-	_delete(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile = ProfileScript.new()
 	_profile.save_path = PROFILE_PATH
 	add_child(_profile)
@@ -60,13 +61,6 @@ func _ready() -> void:
 
 
 ## ------------------------------------------------------------------ helpers
-
-
-func _delete(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
 
 func _fitted(base_id: StringName, prefixes: Array = [], suffixes: Array = []) -> StringName:
 	var id: StringName = _profile.add_instance(base_id, &"rare", prefixes, suffixes)
@@ -484,10 +478,10 @@ func _empty_identity() -> void:
 		var plain: ShipStats = FitData.resolve(hull, fit)
 		var empty: ShipStats = FitData.resolve(hull, fit, {})
 		var bridged: ShipStats = FitData.resolve(hull, fit, empty_profile.affix_summary(hull))
-		if not _deep_eq(_snapshot(empty), _snapshot(plain)):
+		if not Support.deep_eq(_snapshot(empty), _snapshot(plain)):
 			mismatches += 1
 			print("[S7R1-B] BAD {} differs hull=%s %s vs %s" % [hull, _repr(_snapshot(empty)), _repr(_snapshot(plain))])
-		if not _deep_eq(_snapshot(bridged), _snapshot(plain)):
+		if not Support.deep_eq(_snapshot(bridged), _snapshot(plain)):
 			mismatches += 1
 			print("[S7R1-B] BAD empty-summary differs hull=%s" % [hull])
 	print("[S7R1-B] empty identity: nine hulls, mismatches=%d" % [mismatches])
@@ -526,9 +520,9 @@ func _staged_noop() -> void:
 	var after := _snapshot(_resolve(hull))
 	print(
 		"[S7R1-B] staged five flags=%s identical=%s"
-		% [_repr(_summary(hull).get(&"suffixes", [])), str(_deep_eq(after, before))]
+		% [_repr(_summary(hull).get(&"suffixes", [])), str(Support.deep_eq(after, before))]
 	)
-	_check(_deep_eq(after, before), "staged five resolve no-op", "byte-identical")
+	_check(Support.deep_eq(after, before), "staged five resolve no-op", "byte-identical")
 
 
 func _bare_id_inert() -> void:
@@ -632,29 +626,3 @@ func _repr(value: Variant) -> String:
 			items.append(_repr(entry))
 		return "[%s]" % [", ".join(items)]
 	return str(value)
-
-
-func _deep_eq(a: Variant, b: Variant) -> bool:
-	if a is Dictionary and b is Dictionary:
-		var left: Dictionary = a
-		var right: Dictionary = b
-		if left.size() != right.size():
-			return false
-		for key: Variant in left.keys():
-			if not right.has(key):
-				return false
-			if not _deep_eq(left[key], right[key]):
-				return false
-		return true
-	if a is Array and b is Array:
-		var left_array: Array = a
-		var right_array: Array = b
-		if left_array.size() != right_array.size():
-			return false
-		for index: int in range(left_array.size()):
-			if not _deep_eq(left_array[index], right_array[index]):
-				return false
-		return true
-	if (a is float) or (b is float):
-		return is_equal_approx(float(a), float(b))
-	return a == b

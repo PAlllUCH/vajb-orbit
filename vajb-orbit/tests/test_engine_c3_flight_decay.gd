@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite engine_c3_flight_decay: the construction half of C3's flight-decay measurement.
 ##
 ## `tests/probe_c3_flight_decay.tscn` measures the shipped envelope (speed and distance
@@ -75,14 +76,14 @@ func test_the_coast_column_reaches_every_hulls_body_as_the_damp() -> void:
 			assert_true(false, "%s: the hull fixture did not build" % hull_id)
 			continue
 		assert_true(
-			_near(stats.coast_time, float(row[&"coast_time"]) * multiplier, TOLERANCE),
+			Support.near(stats.coast_time, float(row[&"coast_time"]) * multiplier, TOLERANCE),
 			(
 				"%s: the resolved coast time is the row x COAST_TIME_MULT (plating pays in mass since S22.7, got %.6f)"
 				% [hull_id, stats.coast_time]
 			)
 		)
 		assert_true(
-			_near(
+			Support.near(
 				float(stats.hull_mass),
 				float(row[&"hull_mass"]) * (1.0 + plate_penalty),
 				TOLERANCE
@@ -97,7 +98,7 @@ func test_the_coast_column_reaches_every_hulls_body_as_the_damp() -> void:
 			assert_true(false, "%s: the hull carries no rigid body" % hull_id)
 			continue
 		assert_true(
-			_near(body.linear_damp, 1.0 / stats.coast_time, TOLERANCE),
+			Support.near(body.linear_damp, 1.0 / stats.coast_time, TOLERANCE),
 			(
 				"%s: the linear damp is 1 / coast_time (got %.6f, coast_time %.3f)"
 				% [hull_id, body.linear_damp, stats.coast_time]
@@ -109,7 +110,7 @@ func test_the_coast_column_reaches_every_hulls_body_as_the_damp() -> void:
 			"%s: the class damp replaces the project default, it does not add to it" % hull_id
 		)
 		assert_true(
-			_near(
+			Support.near(
 				body.angular_damp,
 				ShipFitScript.ANGULAR_DAMP_MULT / stats.turn_spinup,
 				TOLERANCE
@@ -137,21 +138,21 @@ func test_the_release_rates_are_the_snapshots_own_ratios() -> void:
 			continue
 		assert_true(stats.coast_time > 0.0 and stats.accel_time > 0.0, "%s carries its two times" % hull_id)
 		assert_true(
-			_near(float(ship.call(&"_coast_rate")), stats.max_speed / stats.coast_time, TOLERANCE),
+			Support.near(float(ship.call(&"_coast_rate")), stats.max_speed / stats.coast_time, TOLERANCE),
 			(
 				"%s: the released throttle brakes at max_speed / coast_time (%.6f u/s^2)"
 				% [hull_id, stats.max_speed / stats.coast_time]
 			)
 		)
 		assert_true(
-			_near(float(ship.call(&"_accel_rate")), stats.max_speed / stats.accel_time, TOLERANCE),
+			Support.near(float(ship.call(&"_accel_rate")), stats.max_speed / stats.accel_time, TOLERANCE),
 			(
 				"%s: the accelerate leg is max_speed / accel_time (%.6f u/s^2)"
 				% [hull_id, stats.max_speed / stats.accel_time]
 			)
 		)
 		assert_true(
-			_near(float(ship.call(&"_linear_damp")), 1.0 / stats.coast_time, TOLERANCE),
+			Support.near(float(ship.call(&"_linear_damp")), 1.0 / stats.coast_time, TOLERANCE),
 			"%s: the damp the release rides on is 1 / coast_time" % hull_id
 		)
 
@@ -164,7 +165,7 @@ func test_the_release_rates_are_the_snapshots_own_ratios() -> void:
 func test_the_afterburner_case_rides_on_the_modules_own_numbers() -> void:
 	var effects: Dictionary = ShipFitScript.MODULES[BOOSTER][&"effects"]
 	assert_true(
-		_near(float(effects[&"boost_speed_mult"]), 1.6, TOLERANCE),
+		Support.near(float(effects[&"boost_speed_mult"]), 1.6, TOLERANCE),
 		"the burn's speed multiplier is the 09 section 3.5 +60 percent"
 	)
 	assert_true(float(effects[&"duration"]) > 0.0, "the burn has a duration to expire on")
@@ -228,14 +229,6 @@ func _launch(hull_id: StringName, fit: Dictionary) -> Array:
 ## takes children all through the run, whereas the root viewport is busy adding the
 ## runner scene during `_ready` (see `test_engine2_fixes.gd`).
 func _host() -> Node:
-	var root := _tree().root
+	var root := Support.tree().root
 	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
 	return host if host != null else root
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-func _near(measured: float, expected: float, tolerance: float) -> bool:
-	return absf(measured - expected) <= tolerance

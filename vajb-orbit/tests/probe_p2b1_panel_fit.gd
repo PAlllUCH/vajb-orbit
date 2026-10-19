@@ -1,4 +1,5 @@
 extends Node
+const Support := preload("res://tests/support.gd")
 ## P2-B1 W2 evidence probe: mount the shipped OUTFITTING panel and drive the MODULES
 ## section and the FITTED WEAPONS strip end to end (STATION_HUB section 5.1's amendment,
 ## CONTRACTS section 12, wave brief P2-B1 section 3), printing every number the wave
@@ -68,7 +69,7 @@ func _seed_evidence() -> void:
 	])
 	print("[probe]   fit_legal: legal=%s missing=%s" % [str(legal[&"legal"]), str(legal[&"missing"])])
 	bare.free()
-	_remove(BARE_SCRATCH)
+	Support.delete_file(BARE_SCRATCH)
 
 
 func _borrow() -> void:
@@ -81,7 +82,7 @@ func _borrow() -> void:
 		&"modules": _profile.call(&"modules"),
 	}
 	_profile.set(&"save_path", SCRATCH)
-	_remove(SCRATCH)
+	Support.delete_file(SCRATCH)
 
 
 func _seed() -> void:
@@ -101,7 +102,7 @@ func _restore() -> void:
 	_profile.set(&"_modules", _saved[&"modules"])
 	_profile.call(&"flush")
 	_profile.set(&"save_path", String(_saved[&"path"]))
-	_remove(SCRATCH)
+	Support.delete_file(SCRATCH)
 
 
 func _mount() -> void:
@@ -273,9 +274,3 @@ func _last_status() -> String:
 
 func _last_danger() -> bool:
 	return _danger[_danger.size() - 1] if not _danger.is_empty() else false
-
-
-func _remove(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())

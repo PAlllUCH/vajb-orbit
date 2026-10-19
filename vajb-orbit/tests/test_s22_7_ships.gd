@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s22_7_ships: the ships half of the mass physics wave (S22.7, owner ticks
 ## 2026-09-30 / 2026-10-01) -- one row per acceptance criterion, every figure measured
 ## and printed:
@@ -184,7 +185,7 @@ func test_ac2_the_shipped_vanguards_release_envelope_is_the_s226_record() -> voi
 		"the shipped Vanguard's t_10 is the S22.6 record to the tick grid (%.4f s)" % t_10
 	)
 	assert_true(
-		_near(t_10, derived_t10, ENVELOPE_TOLERANCE * derived_t10),
+		Support.near(t_10, derived_t10, ENVELOPE_TOLERANCE * derived_t10),
 		"and it is the derived 0.9 x coast_time x fitted/base (%.4f s)" % derived_t10
 	)
 	assert_true(
@@ -192,11 +193,11 @@ func test_ac2_the_shipped_vanguards_release_envelope_is_the_s226_record() -> voi
 		"the stop lands on the mass-scaled coast (%.3f s)" % t_stop
 	)
 	assert_true(
-		_near(carry, S226_CARRY, 0.01 * S226_CARRY),
+		Support.near(carry, S226_CARRY, 0.01 * S226_CARRY),
 		"the carried distance is the S22.6 record's %.2f u (measured %.2f)" % [S226_CARRY, carry]
 	)
 	assert_true(
-		_near(carry, derived_carry, ENVELOPE_TOLERANCE * derived_carry),
+		Support.near(carry, derived_carry, ENVELOPE_TOLERANCE * derived_carry),
 		"and it is the derived 0.5 x v0 x coast_time x fitted/base (%.2f u)" % derived_carry
 	)
 
@@ -456,7 +457,7 @@ func test_ac5_the_released_forward_strafe_holds_its_bearing_to_the_tenth() -> vo
 			"the release force stays antiparallel to the velocity (%.9f)" % max_cross
 		)
 		assert_true(
-			_near(tenth_time, derived, ENVELOPE_TOLERANCE * derived),
+			Support.near(tenth_time, derived, ENVELOPE_TOLERANCE * derived),
 			"one stop on the derived ramp (%.4f against %.4f s)" % [tenth_time, derived]
 		)
 
@@ -494,14 +495,9 @@ func _launch(hull_id: StringName, fit: Dictionary) -> Array:
 ## takes children all through the run, whereas the root viewport is busy adding the
 ## runner scene during `_ready` (see `test_engine2_fixes.gd`).
 func _host() -> Node:
-	var root := _tree().root
+	var root := Support.tree().root
 	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
 	return host if host != null else root
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
 
 func _drive(
 	ship: Variant, body: RigidBody2D, heading: float, position: Vector2,
@@ -584,11 +580,6 @@ func _ramp_time(ship: Variant, target: float) -> float:
 			return elapsed
 	_release_all()
 	return -1.0
-
-
-func _near(value: float, expected: float, tolerance: float) -> bool:
-	return absf(value - expected) <= tolerance
-
 
 func _press(action: StringName) -> void:
 	Input.action_press(action)

@@ -1,4 +1,4 @@
-extends VBoxContainer
+extends "res://ui/station/station_panel.gd"
 ## CONTRACTS panel (S25): 14_station_services.md section 2's board as the SERVICES deck's
 ## one shipped service - the six-row job list (R-S25-1) on the left, the active contracts
 ## and their escrow on the right. Contract: docs/design/STATION_HUB.md section 15.2 (the
@@ -598,29 +598,12 @@ func _standing_text(contract: Dictionary) -> String:
 		return STANDING_NEGATIVE_FORMAT % delta
 	return STANDING_FORMAT % delta
 
-
-func _profile() -> Node:
-	if not is_inside_tree():
-		return null
-	return get_tree().root.get_node_or_null(NodePath(PROFILE_SERVICE))
-
-
 func _station_standing(profile: Node) -> int:
 	if profile == null or _station_row.is_empty():
 		return 0
 	return int(
 		profile.call(&"standing_of", StringName(_station_row.get(&"faction", &"")))
 	)
-
-
-func _clear_list(list: VBoxContainer) -> void:
-	for child: Node in list.get_children():
-		list.remove_child(child)
-		child.queue_free()
-
-
-## ------------------------------------------------------------------ the small builders
-
 
 func _make_hbox(parent: Control, width: float) -> HBoxContainer:
 	var box := HBoxContainer.new()
@@ -679,13 +662,6 @@ func _make_action(text: String) -> Button:
 	ChromeFamily.apply_chip(button)
 	return button
 
-
-func _load_texture(path: String) -> Texture2D:
-	if path.is_empty() or not ResourceLoader.exists(path):
-		return null
-	return load(path) as Texture2D
-
-
 func _apply_tokens() -> void:
 	_chip.add_theme_stylebox_override(&"panel", _chip_box())
 	if _pane_title != null:
@@ -717,17 +693,6 @@ func _chip_box() -> StyleBoxFlat:
 	box.content_margin_bottom = 2.0
 	return box
 
-
-func _token(name: StringName) -> Color:
-	if has_theme_color(name, TOKENS_TYPE):
-		return get_theme_color(name, TOKENS_TYPE)
-	return Color.WHITE
-
-
-## ------------------------------------------------------------------ the probes' reads
-
-
-## The board the panel is drawing, in the deck law's own order.
 func board_rows() -> Array[Dictionary]:
 	return _board
 

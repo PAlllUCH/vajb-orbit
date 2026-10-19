@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s25_contracts: wave S25's contracts board - 14_station_services.md section 2 and
 ## section 6 plus its 2026-09-27 P3 block (R-S25-1) and its 2026-10-08 S28 block (the payout
 ## scaling), 12_factions.md section 3/4.1 plus its 2026-10-08 S24 block (V3's gate), and
@@ -94,7 +95,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 		&"docked_station": StringName(_profile.call(&"docked_station")),
 	}
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_wipe()
 
 
@@ -124,7 +125,7 @@ func suite_teardown() -> void:
 				_profile.call(&"set_docked_station", value)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", String(_previous[&"save_path"]))
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_previous = {}
 	_profile = null
 
@@ -150,15 +151,6 @@ func _free_station() -> void:
 		_station.get_parent().free()
 	_station = null
 
-
-func _delete_file(path: String) -> void:
-	var absolute := ProjectSettings.globalize_path(path)
-	if FileAccess.file_exists(absolute):
-		DirAccess.remove_absolute(absolute)
-
-
-## A themed host inside the profile autoload (the runner calls every test from inside its
-## own `_ready`, when `/root` is still busy), carrying the shipped station scene.
 func _mount() -> Control:
 	var host := Control.new()
 	host.name = "S25Host"
@@ -1073,6 +1065,8 @@ func test_a7_the_services_host_expands_every_pane() -> void:
 	assert_true(deck != null, "the SERVICES deck exists")
 	var host := deck.get_node_or_null(NodePath("ServiceHost")) as Control
 	assert_true(host != null, "and it carries its own service host")
+	for service: StringName in [&"contracts", &"insurance", &"vaults"]:
+		screen.call(&"service_panel", service)
 	assert_eq(host.get_child_count(), 3, "one pane per service in the strip")
 	for child: Node in host.get_children():
 		var pane := child as Control

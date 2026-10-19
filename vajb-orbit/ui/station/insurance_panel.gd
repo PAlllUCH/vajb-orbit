@@ -1,4 +1,4 @@
-extends VBoxContainer
+extends "res://ui/station/station_panel.gd"
 ## INSURANCE panel (S26): 14_station_services.md section 3 as the SERVICES deck's service.
 ## Contract: docs/design/STATION_HUB.md section 15.3 (the premium table, the policy and
 ## mercy chips, the one-death line, the loss warning and the opt-in toggle) plus UI_SPEC
@@ -281,24 +281,10 @@ func _set_insured(next: bool) -> void:
 		("POLICY SET · %s" % STATE_INSURED) if next else "POLICY CANCELLED", false
 	)
 
-
-func _profile() -> Node:
-	if not is_inside_tree():
-		return null
-	return get_tree().root.get_node_or_null(NodePath(PROFILE_SERVICE))
-
-
 func _tier_premium(profile: Node, tier: StringName) -> int:
 	if profile != null and profile.has_method(&"insurance_tier_premium"):
 		return int(profile.call(&"insurance_tier_premium", tier))
 	return 0
-
-
-func _clear_list(list: VBoxContainer) -> void:
-	for child: Node in list.get_children():
-		list.remove_child(child)
-		child.queue_free()
-
 
 func _make_label(variation: StringName, text: String) -> Label:
 	var label := Label.new()
@@ -318,42 +304,12 @@ func _make_chip(text: String) -> PanelContainer:
 	chip.add_child(label)
 	return chip
 
-
-func _load_texture(path: String) -> Texture2D:
-	if path.is_empty() or not ResourceLoader.exists(path):
-		return null
-	return load(path) as Texture2D
-
-
 func _apply_tokens() -> void:
 	if _pane_title != null:
 		_pane_title.add_theme_color_override(&"font_color", _token(&"text_primary"))
 	for label: Label in [_note, _one_death, _mercy_caption, _warning_label, _pane_hint]:
 		if label != null:
 			label.add_theme_color_override(&"font_color", _token(&"text_dim"))
-
-
-func _token(name: StringName) -> Color:
-	if has_theme_color(name, TOKENS_TYPE):
-		return get_theme_color(name, TOKENS_TYPE)
-	return Color.WHITE
-
-
-func _format_int(value: int) -> String:
-	var digits := str(absi(value))
-	var grouped := ""
-	var count := 0
-	for index in range(digits.length() - 1, -1, -1):
-		grouped = digits[index] + grouped
-		count += 1
-		if count % 3 == 0 and index > 0:
-			grouped = " " + grouped
-	return ("-" if value < 0 else "") + grouped
-
-
-## --- the probes' reads --------------------------------------------------------------
-
-
 func premium_rows() -> Array[Dictionary]:
 	return _rows
 

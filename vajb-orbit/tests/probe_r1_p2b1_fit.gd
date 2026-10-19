@@ -1,4 +1,5 @@
 extends Node
+const Support := preload("res://tests/support.gd")
 ## P2-B1 R1 review probe (independent of W2's probe): mount the shipped OUTFITTING
 ## pane and re-measure the wave's own claims from the outside - the row table against
 ## 09 section 3.1 parsed out of the document, the buy / install / swap / remove round
@@ -76,9 +77,9 @@ func _borrow() -> void:
 	}
 	_log_path_before = String(Log.log_path)
 	Log.log_path = LOG_SCRATCH
-	_remove(LOG_SCRATCH)
+	Support.delete_file(LOG_SCRATCH)
 	_profile.set(&"save_path", SCRATCH)
-	_remove(SCRATCH)
+	Support.delete_file(SCRATCH)
 	_profile.connect(&"profile_changed", _on_changed)
 	_profile.connect(&"purchase_failed", _on_failed)
 
@@ -117,8 +118,8 @@ func _restore() -> void:
 	_profile.set(&"_modules", _saved[&"modules"])
 	_profile.call(&"flush")
 	_profile.set(&"save_path", String(_saved[&"path"]))
-	_remove(SCRATCH)
-	_remove(LOG_SCRATCH)
+	Support.delete_file(SCRATCH)
+	Support.delete_file(LOG_SCRATCH)
 	Log.log_path = _log_path_before
 
 
@@ -154,18 +155,6 @@ func _log_lines() -> int:
 	file.close()
 	return count
 
-
-func _remove(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
-## ------------------------------------------------- 09 section 3.1, out of the document
-
-
-## Every backticked id of 09 section 3.1's WEAPONS table with its draw, cost and effect,
-## parsed by R1 rather than read from W2's suite.
 func _doc_table() -> Dictionary:
 	var lines := FileAccess.get_file_as_string(DOC_09).split("\n")
 	var ids := PackedStringArray()

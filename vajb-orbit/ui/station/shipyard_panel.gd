@@ -1,4 +1,4 @@
-extends VBoxContainer
+extends "res://ui/station/station_panel.gd"
 ## SHIPYARD module panel: the hangar. The list holds **owned hulls only** -- one row per
 ## owned ship, its name, its class and the `ACTIVE` badge -- and selecting a row **previews**
 ## it (side render, comparison stats, its own fit grid) without writing anything; the
@@ -89,18 +89,6 @@ const PLATE_ICON_INSET := 6.0
 ## 09 section 1's slot glyph per slot-type key. The glyph files are named by the
 ## document's own stems (`icon_slot_engine`, `icon_slot_power`, `icon_slot_w`, ...),
 ## which are not the API's key names, so the mapping is stated once here.
-const SLOT_GLYPHS: Dictionary = {
-	&"engines": "engine",
-	&"power": "power",
-	&"weapons": "w",
-	&"shields": "s",
-	&"armour": "h",
-	&"computers": "c",
-	&"boosters": "b",
-	&"utility": "u",
-}
-const SLOT_GLYPH_DIR := "res://assets/icons/slot/"
-const SLOT_GLYPH_TEMPLATE := "icon_slot_%s.svg"
 
 const PREVIEW_SCALE := 0.70
 const PREVIEW_MAX_WIDTH := 480.0
@@ -287,7 +275,6 @@ var _payloads: Array[Dictionary] = []
 var _stat_cells: Dictionary = {}
 var _selected_id: StringName = &""
 var _selected_row: Button = null
-var _tweens: Array[Tween] = []
 ## S30 (UI_SPEC section 12.5 row 1, N30): the hovered cell's stat block text. The in-flow
 ## `HoverStatBlock` label is deleted; its bytes now ride the N27 tooltip's body and are
 ## tracked here for probes.
@@ -354,13 +341,6 @@ func _notification(what: int) -> void:
 		## tooltip (S30-F1, F5: the tooltip opens on a real hover only).
 		_refresh_all()
 		inspect_requested.emit("", "", false)
-
-
-func _exit_tree() -> void:
-	for tween: Tween in _tweens:
-		if tween.is_valid():
-			tween.kill()
-
 
 func refresh_profile(key: StringName) -> void:
 	## STATION_HUB section 12.4: &"credits" moves the tags and the action label, &"ships"
@@ -441,16 +421,6 @@ func selected_id() -> StringName:
 func _apply_tokens() -> void:
 	_pane_icon.modulate = _token(&"text_primary")
 
-
-func _token(token: StringName) -> Color:
-	if has_theme_color(token, TOKENS_TYPE):
-		return get_theme_color(token, TOKENS_TYPE)
-	return Color.WHITE
-
-
-## Section 5.11's hangar list: one row per **owned** hull, in the catalogue's ladder order
-## so the list reads the same ladder the AUCTION's shelf does. No row ships for a hull the
-## account does not own -- the buy door is the AUCTION's (10 sections 2.1, 6.1).
 func _build_rows() -> void:
 	_clear(_list)
 	_payloads.clear()
@@ -733,33 +703,6 @@ func _make_slot_cell(cell: Dictionary) -> void:
 	glyph.offset_right = -PLATE_ICON_INSET
 	glyph.offset_bottom = -PLATE_ICON_INSET
 
-
-## 09 section 1's shipped slot glyph for a slot-type key: `icon_slot_<stem>_48.png`.
-## Null for a type with no glyph (never one of the eight), so the cell then draws its
-## plate alone rather than an error.
-func _slot_glyph(slot_key: StringName) -> Texture2D:
-	var stem := String(SLOT_GLYPHS.get(slot_key, ""))
-	if stem.is_empty():
-		return null
-	var path := SLOT_GLYPH_DIR + SLOT_GLYPH_TEMPLATE % stem
-	if not ResourceLoader.exists(path):
-		return null
-	return load(path) as Texture2D
-
-
-## The hover line for one grid cell (STATION_HUB section 5.2's 2026-09-22 amendment): the
-## cell's own type token and layout index, the selected hull's module in that cell - or the
-## pin's `EMPTY` - and how many of it the account holds. A hull the account owns reads the fit
-## the launch would fly (`resolved_fit`, the profile's own fallback: the stored fit when it
-## holds a module, else 09 section 9's `ShipFit.standard_fit`), so the line agrees with the
-## FITTING pane's preview and with the ship this hull would launch as; a hull it does not own
-## keeps reading `fit_for`, whose all-empty shape answers `EMPTY` for every cell. An instance
-## id resolves through the profile's own `base_module_id` bridge, the way the fitting pane
-## names its modules; `&""` for a gap, which carries no plate to hover.
-##
-## STATION_HUB section 5.3's S3 amendment: where the cell holds an instance, the name is 15
-## section 7's **full rolled name** (the shared builder) and the `OWNED ×<n>` tail counts the
-## base id's held instances, summed over the bag's own keys.
 func hover_line(cell: Dictionary) -> String:
 	if bool(cell.get(&"gap", false)):
 		return ""
@@ -850,24 +793,6 @@ func _fit_cell_module(fit: Dictionary, slot_key: StringName, index: int) -> Stri
 		return &""
 	return StringName(String(cells[index]))
 
-
-## The fit stores a module *instance* id (15 section 6) and the catalogue reads base ids, so
-## every id the line names goes through the profile's own bridge.
-func _base_id(profile: ProfileScript, entry: StringName) -> StringName:
-	if profile == null or entry == &"":
-		return entry
-	return StringName(profile.call(&"base_module_id", entry))
-
-
-## ------------------------------------------------------- the hover stat block (15 section 7)
-##
-## STATION_HUB section 5.3's S3 amendment: a plate that holds an instance shows the rolled name
-## in the hover line and the pane adds the instance's stat block - the base module's catalogue
-## stats plus one line per rolled affix. **S30 (UI_SPEC section 12.5 row 1, N30): the in-flow
-## `HoverStatBlock` label is deleted** - the block's bytes now ride the N27 tooltip's body
-## (UI_SPEC section 12.2), so no node is added, moved or made visible on a hover. The text is
-## tracked in `_hover_block_text` for probes. The formatter is `fitting_panel.gd`'s,
-## byte-equivalently.
 func _refresh_hover_block(cell: Dictionary) -> void:
 	_hover_block_text = _stat_block_of(_profile(), _hover_entry(cell))
 
@@ -1179,16 +1104,6 @@ func _apply_plate_textures(plate: TextureButton) -> void:
 	plate.texture_pressed = _plate_texture(variation, &"pressed")
 	plate.texture_disabled = _plate_texture(variation, &"disabled")
 
-
-func _plate_texture(variation: StringName, state: StringName) -> Texture2D:
-	if not has_theme_stylebox(state, variation):
-		return null
-	var box := get_theme_stylebox(state, variation)
-	if box is StyleBoxTexture:
-		return (box as StyleBoxTexture).texture
-	return null
-
-
 func _refresh_plate_textures() -> void:
 	# A gap cell is a bare Control, so the cast filters it out; the plates re-copy the
 	# theme's four plate textures on every theme change, as before.
@@ -1395,55 +1310,6 @@ func _owned_ids(profile: ProfileScript) -> Array:
 	if profile == null:
 		return []
 	return profile.call(&"owned_ships")
-
-
-func _profile() -> ProfileScript:
-	## Autoloads are children of /root; STATION_HUB section 12.4 names a bare
-	## ^"PlayerProfile" path, which would resolve against this node instead, so the
-	## lookup is anchored at the tree root the way router.gd anchors its services.
-	if not is_inside_tree():
-		return null
-	var service := get_tree().root.get_node_or_null(NodePath(PROFILE_SERVICE))
-	if service == null:
-		return null
-	var profile: ProfileScript = service
-	return profile
-
-
-func _pulse(node: CanvasItem) -> void:
-	var tween := _make_tween()
-	tween.tween_property(node, "modulate:a", PULSE_MIN_ALPHA, PULSE_DOWN_SECONDS).set_trans(Tween.TRANS_SINE)
-	tween.tween_property(node, "modulate:a", 1.0, PULSE_UP_SECONDS).set_trans(Tween.TRANS_SINE)
-	tween.tween_property(node, "modulate:a", PULSE_MIN_ALPHA, PULSE_DOWN_SECONDS).set_trans(Tween.TRANS_SINE)
-	tween.tween_property(node, "modulate:a", 1.0, PULSE_UP_SECONDS).set_trans(Tween.TRANS_SINE)
-
-
-func _make_tween() -> Tween:
-	for index in range(_tweens.size() - 1, -1, -1):
-		if not _tweens[index].is_valid():
-			_tweens.remove_at(index)
-	var tween := create_tween()
-	_tweens.append(tween)
-	return tween
-
-
-## CONTRACTS section 23.1: one home for the digit-grouping rule (`StationCatalog.group_int`),
-## the shell's own copy - so the fee line and the credits readout cannot drift.
-func _format_int(value: int) -> String:
-	return Catalog.group_int(value)
-
-
-## ---------------------------------------------------- the repair block (P5, P13)
-##
-## STATION_HUB section 17.2: the repairs surface folds in below the comparison - the
-## damage table on `repairs_panel.gd:74-89`'s own REPORT_ROWS minus the `MISSING` and
-## `FEE` body rows, `NOMINAL` in `text_dim` for intact systems (P13), the fee in the
-## footer line only (`REPAIR AVAILABLE · <n> CR` / `ALL SYSTEMS NOMINAL`, both shipped
-## wordings) and `REPAIR` as the P1 ActionPrimary at the foot. The block is the ACTIVE
-## hull's (the table's own first row names it), so the repair restores the hull the
-## launch would fly.
-
-
 func _build_repair_rows() -> void:
 	_repair_rows.add_theme_constant_override(&"separation", REPAIR_ROW_SEPARATION)
 	for row: Dictionary in RepairsPanelScript.REPORT_ROWS:
@@ -1923,24 +1789,6 @@ func _make_build_chip() -> Button:
 	ChromeFamily.apply_chip(chip)
 	return chip
 
-
-func _strip_chip_box() -> StyleBoxFlat:
-	var box := StyleBoxFlat.new()
-	box.bg_color = _token(&"armory_chip_bg")
-	box.border_color = _token(&"metal_mid")
-	box.set_border_width_all(1)
-	box.set_corner_radius_all(0)
-	box.content_margin_left = 8.0
-	box.content_margin_top = 3.0
-	box.content_margin_right = 8.0
-	box.content_margin_bottom = 3.0
-	return box
-
-
-## The per-row availability chip (P54): `READY` when the hold covers every material,
-## else `MISSING <n>× <name>` for the first short material in the recipe's own order,
-## the shortfall named (the craft chip's own law). Reads `cargo_qty` only - no price,
-## no quote, no recomputation.
 func _refresh_build_state(payload: Dictionary) -> void:
 	var label: Label = payload[&"state"]
 	var missing := _first_missing_material(payload[&"recipe"])

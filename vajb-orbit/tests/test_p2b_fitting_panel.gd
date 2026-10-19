@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite p2b_fitting_panel: the FITTING pane (STATION_HUB section 5.3's 2026-09-22 amendment,
 ## CONTRACTS section 13) and the rail swap that retired UPGRADES.
 ##
@@ -150,7 +151,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_modules = _profile.call(&"modules")
 	_previous_counter = int(_profile.get(&"_instance_counter"))
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 func suite_teardown() -> void:
@@ -166,7 +167,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_instance_counter", _previous_counter)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile = null
 
 
@@ -178,7 +179,7 @@ func setup() -> void:
 	_host.name = "FittingHost"
 	_host.theme = ThemeRes
 	_host.size = _viewport_size()
-	_fixture_host().add_child(_host)
+	Support.profile().add_child(_host)
 
 
 func teardown() -> void:
@@ -230,17 +231,6 @@ func _record(instance_id: StringName) -> Dictionary:
 ## One instance's 15 section 7 name, through the shared builder the pane calls.
 func _rolled(instance_id: StringName) -> String:
 	return String(AuctionScript.rolled_name(_record(instance_id)))
-
-
-## The runner calls every test from inside its own `_ready`, so the root viewport is still busy
-## adding the runner scene and `root.add_child(...)` fails. The profile autoload entered the
-## tree before the main scene, so it hosts the fixture (suite ui_slot_layout's own reason).
-func _fixture_host() -> Node:
-	var tree := Engine.get_main_loop() as SceneTree
-	if tree == null:
-		return null
-	return tree.root.get_node_or_null(NodePath(&"PlayerProfile"))
-
 
 func _viewport_size() -> Vector2:
 	var width := float(ProjectSettings.get_setting("display/window/size/viewport_width", 1920))
@@ -316,15 +306,6 @@ func _row_name(row: Button) -> String:
 func _plate(panel: Control, token: String, index: int) -> Button:
 	return _grid(panel).get_node_or_null(NodePath("Slot%s%02d" % [token, index])) as Button
 
-
-func _cell_text(row: Button, cell_name: String) -> String:
-	var cell := row.find_child(cell_name, true, false) as Control
-	if cell == null:
-		return ""
-	var value := cell.get_node_or_null(^"Value") as Label
-	return value.text if value != null else ""
-
-
 func _press(panel: Control, module_id: StringName) -> void:
 	var row := _row(panel, module_id)
 	assert_true(row != null, "%s has a row to press" % module_id)
@@ -390,22 +371,6 @@ func _read_source(path: String) -> String:
 	assert_true(FileAccess.file_exists(path), "%s is readable" % path)
 	return FileAccess.get_file_as_string(path)
 
-
-func _delete_file(path: String) -> void:
-	if not FileAccess.file_exists(path):
-		return
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
-## ------------------------------------------------------------- the rail swap (section 5.3)
-
-
-## P7 (STATION_HUB section 17.4, S29): the rail folds 8 -> 6 entries - FITTING folds into
-## ARMORY and REPAIRS into SHIPYARD, and the two tiles retire with their panes. Measured
-## both on the script's own tables and on the assembled shell, so the entries the player
-## sees are the ones asserted.
 func test_the_rail_folds_to_six_entries_and_the_fitting_tile_retires() -> void:
 	assert_eq(
 		StationScript.MODULE_LABELS,
@@ -433,6 +398,8 @@ func test_the_rail_folds_to_six_entries_and_the_fitting_tile_retires() -> void:
 		"one drawer entry per module plus OVERVIEW (S30 P16)"
 	)
 	var host := screen.get_node("%HostMargin") as MarginContainer
+	screen.call(&"pane_for", StationScript.Module.OUTFITTING)
+	screen.call(&"pane_for", StationScript.Module.LAUNCH)
 	assert_true(host.get_node_or_null(^"Armory") != null, "the shell loads the ARMORY pane")
 	assert_true(host.get_node_or_null(^"Fitting") == null, "and no FITTING pane with it")
 	assert_true(host.get_node_or_null(^"Repairs") == null, "and no REPAIRS pane")
@@ -661,12 +628,12 @@ func test_the_owned_rows_are_the_inventory_in_pin_order() -> void:
 			"%s's meta is its slot and draw" % module_id
 		)
 		assert_eq(
-			_cell_text(row, "Owned"),
+			Support.cell_text(row, "Owned"),
 			WORDING_OWNED % int(owned[module_id]),
 			"%s's OWNED cell is its inventory count" % module_id
 		)
 		assert_eq(
-			_cell_text(row, "Action"), WORDING_SELECT, "%s's ACTION waits for a cell" % module_id
+			Support.cell_text(row, "Action"), WORDING_SELECT, "%s's ACTION waits for a cell" % module_id
 		)
 	## An id the catalogue does not ship never becomes a row, and neither does a zero count.
 	_profile.set(
@@ -780,7 +747,7 @@ func test_an_unfit_hulls_first_install_through_the_pane_succeeds() -> void:
 		"the selection line reads the delivered laser, never EMPTY"
 	)
 	assert_eq(
-		_cell_text(_row(panel, CANNON), "Action"),
+		Support.cell_text(_row(panel, CANNON), "Action"),
 		String(PanelScript.ACTION_SWAP),
 		"and the cannon's row offers the swap that fit allows"
 	)
@@ -809,7 +776,7 @@ func test_a_swap_returns_the_displaced_module() -> void:
 	_seed_account(HULL, {CANNON: 1}, true)
 	var panel := _mount()
 	assert_true(panel.call(&"select_cell", WEAPON_SLOT, 0), "W1 is selected")
-	assert_eq(_cell_text(_row(panel, CANNON), "Action"), "SWAP", "the row offers SWAP")
+	assert_eq(Support.cell_text(_row(panel, CANNON), "Action"), "SWAP", "the row offers SWAP")
 	_press(panel, CANNON)
 	assert_eq(_cells(HULL, WEAPON_SLOT)[0], String(CANNON), "W1 took the cannon")
 	assert_eq(_owned(CANNON), 0, "the cannon left the inventory")
@@ -1009,7 +976,7 @@ func test_profile_changed_drives_the_refresh() -> void:
 		panel.call(&"module_row_ids"), [CANNON, RAILGUN] as Array[StringName],
 		"the railgun row arrived on profile_changed(&modules)"
 	)
-	assert_eq(_cell_text(_row(panel, RAILGUN), "Owned"), WORDING_OWNED % 1, "with its count")
+	assert_eq(Support.cell_text(_row(panel, RAILGUN), "Owned"), WORDING_OWNED % 1, "with its count")
 	## &"fits": a fit write moves the meter and the footer line.
 	var before: String = panel.call(&"meter_text")
 	_profile.call(&"set_fit_slot", HULL, WEAPON_SLOT, 1, RAILGUN)
@@ -1154,7 +1121,7 @@ func test_the_owned_rows_expand_into_one_subrow_per_instance() -> void:
 	)
 	var row := _row(panel, PLASMA)
 	assert_true(row != null, "the base id has its aggregate row")
-	assert_eq(_cell_text(row, "Owned"), WORDING_OWNED % 2, "OWNED ×2, as today's aggregate")
+	assert_eq(Support.cell_text(row, "Owned"), WORDING_OWNED % 2, "OWNED ×2, as today's aggregate")
 	assert_eq(
 		_row_name(row),
 		String(ModuleData.module(PLASMA)[&"name"]),
@@ -1191,11 +1158,11 @@ func test_the_owned_rows_expand_into_one_subrow_per_instance() -> void:
 		_token(panel, &"rarity_rare"),
 		"and the second with Rare's"
 	)
-	assert_eq(_cell_text(subs[0], "Action"), WORDING_SELECT, "each sub-row carries its own ACTION")
-	assert_eq(_cell_text(subs[1], "Action"), WORDING_SELECT, "waiting for a cell of its type")
+	assert_eq(Support.cell_text(subs[0], "Action"), WORDING_SELECT, "each sub-row carries its own ACTION")
+	assert_eq(Support.cell_text(subs[1], "Action"), WORDING_SELECT, "waiting for a cell of its type")
 	assert_true(panel.call(&"select_cell", WEAPON_SLOT, 1), "W2 is selected")
-	assert_eq(_cell_text(subs[0], "Action"), "FIT", "and both sub-rows offer the fit it allows")
-	assert_eq(_cell_text(subs[1], "Action"), "FIT", "each on its own instance")
+	assert_eq(Support.cell_text(subs[0], "Action"), "FIT", "and both sub-rows offer the fit it allows")
+	assert_eq(Support.cell_text(subs[1], "Action"), "FIT", "each on its own instance")
 
 
 ## A base id owning exactly one instance carries no expander (the pin's own rule), and its row is
@@ -1216,7 +1183,7 @@ func test_a_single_instance_row_carries_its_rolled_name_and_no_expander() -> voi
 		_token(panel, &"rarity_magic"),
 		"in its rarity tint"
 	)
-	assert_eq(_cell_text(row, "Owned"), WORDING_OWNED % 1, "with the base id's own total")
+	assert_eq(Support.cell_text(row, "Owned"), WORDING_OWNED % 1, "with the base id's own total")
 	assert_false(panel.call(&"toggle_expander", LIGHT_PLATE), "and it does not open")
 
 

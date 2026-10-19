@@ -1,4 +1,5 @@
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s22_balance: wave S22's flight and balance rows, the S22-B3 subset - the
 ## seeker fuze's two thresholds (A9 / L25, ticks T-feel-1/1b; 18_engine_spec.md
 ## section 13's Rocket fuze row), the NPC midline drag's twin (A9 / L103, tick
@@ -74,7 +75,7 @@ func teardown() -> void:
 
 func suite_teardown() -> void:
 	teardown()
-	_delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_PROFILE)
 
 
 ## ---------------------------------------------------------------------------
@@ -389,7 +390,7 @@ func _rocket(lock: Node2D) -> Node2D:
 		&"direction": Vector2.RIGHT,
 		&"target": lock,
 	})
-	_fixture_host().add_child(shot)
+	Support.fixture_host().add_child(shot)
 	shot.global_position = Vector2.ZERO
 	_shots.append(shot)
 	return shot
@@ -405,7 +406,7 @@ func _step(shot: Node2D, delta: float) -> void:
 func _npc(at: Vector2 = Vector2.ZERO) -> Node2D:
 	var npc: Node2D = NpcShipScript.new()
 	npc.name = "BalanceNpc"
-	_fixture_host().add_child(npc)
+	Support.fixture_host().add_child(npc)
 	npc.global_position = at
 	npc.call(
 		&"setup",
@@ -437,7 +438,7 @@ func _launch(hull_id: StringName) -> Array:
 	var ship: Node2D = PlayerShipScene.instantiate() as Node2D
 	if ship == null:
 		return [null, null]
-	_fixture_host().add_child(ship)
+	Support.fixture_host().add_child(ship)
 	ship.global_position = Vector2.ZERO
 	ship.call(&"setup", stats, state, ShipFitScript.fitted_ids(ShipFitScript.STANDARD_FIT))
 	ship.call(&"set_aim_point", Vector2.ZERO)
@@ -496,19 +497,3 @@ func _scratch_profile() -> Node:
 	var profile := ProfileScript.new()
 	profile.set(&"save_path", SCRATCH_PROFILE)
 	return profile
-
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
-## Where a fixture may enter the tree: the `PlayerProfile` autoload is already in it and
-## takes children all through the run, whereas the root viewport is busy adding the
-## runner scene during `_ready` (see `test_engine2_fixes.gd`).
-func _fixture_host() -> Node:
-	var tree := Engine.get_main_loop() as SceneTree
-	var root: Node = tree.root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root

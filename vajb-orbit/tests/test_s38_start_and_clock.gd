@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s38_start_and_clock: wave S38 - the hub's cold start and the board's clock.
 ## 14_station_services.md's 2026-10-08 S38 block (H1 the cold-start place, H2 the countdown,
 ## H3 the re-roll) and docs/design/STATION_HUB.md section 15.2's U22 row.
@@ -55,7 +56,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 		&"docked_station": StringName(_profile.call(&"docked_station")),
 	}
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_wipe()
 
 
@@ -86,7 +87,7 @@ func suite_teardown() -> void:
 				_profile.call(&"set_docked_station", value)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", String(_previous[&"save_path"]))
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_previous = {}
 	_profile = null
 
@@ -112,13 +113,6 @@ func _free_station() -> void:
 	if _station != null and is_instance_valid(_station):
 		_station.get_parent().free()
 	_station = null
-
-
-func _delete_file(path: String) -> void:
-	var absolute := ProjectSettings.globalize_path(path)
-	if FileAccess.file_exists(absolute):
-		DirAccess.remove_absolute(absolute)
-
 
 func _mount() -> Control:
 	var host := Control.new()

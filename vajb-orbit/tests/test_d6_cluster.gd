@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite d6_cluster: the cockpit instrument cluster (UI_SPEC section 3.7, CONTRACTS
 ## section 18), **re-aimed to the Mockup v5/v7 surface by wave D7** (UI_SPEC section 3.7's
 ## 2026-09-24 amendments). The cluster is the same widget the D6 wave introduced, so this
@@ -48,27 +49,13 @@ func setup() -> void:
 		fail_setup("hud.tscn did not instantiate")
 		return
 	_hud.theme = HudTheme
-	_fixture_host().add_child(_hud)
+	Support.fixture_host().add_child(_hud)
 
 
 func teardown() -> void:
 	if _hud != null and is_instance_valid(_hud):
 		_hud.free()
 	_hud = null
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-## Where a fixture may enter the tree; see `test_engine2_hud.gd` for why the profile autoload
-## is the host rather than the busy root viewport.
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root
-
-
 func _row(key: StringName) -> Node:
 	var cockpit: Control = _hud.call(&"cockpit")
 	if cockpit == null:

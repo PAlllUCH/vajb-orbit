@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s3_auction: the AUCTION house -- `game/auction.gd`'s rotation, weights, hot slot,
 ## F lot, prices and transactions, and the pane that renders them (STATION_HUB section
 ## 5.10's 2026-09-22 S3 amendment, docs/gameplay/10_ship_acquisition.md sections 2/2.2/2.3,
@@ -91,8 +92,8 @@ func suite_name() -> String:
 
 
 func setup() -> void:
-	_delete_file(PROFILE_PATH)
-	_delete_file(ROTATION_PATH)
+	Support.delete_file(PROFILE_PATH)
+	Support.delete_file(ROTATION_PATH)
 
 
 func teardown() -> void:
@@ -117,8 +118,8 @@ func teardown() -> void:
 
 
 func suite_teardown() -> void:
-	_delete_file(PROFILE_PATH)
-	_delete_file(ROTATION_PATH)
+	Support.delete_file(PROFILE_PATH)
+	Support.delete_file(ROTATION_PATH)
 
 
 ## ---------------------------------------------------------------------------
@@ -175,7 +176,7 @@ func _borrow_autoload() -> Node:
 	_previous_auction = profile.call(&"auction")
 	_previous_counter = int(profile.get(&"_instance_counter"))
 	profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	return profile
 
 
@@ -184,7 +185,7 @@ func _mount(theme: Theme) -> Control:
 	host.name = "AuctionHost"
 	host.theme = theme
 	host.size = Vector2(1920.0, 1080.0)
-	_fixture_host().add_child(host)
+	Support.profile().add_child(host)
 	_host = host
 	_panel = PanelScene.instantiate() as Control
 	_host.add_child(_panel)
@@ -194,14 +195,6 @@ func _mount(theme: Theme) -> Control:
 		_panel.connect(&"confirm_requested", _on_ask)
 	return _panel
 
-
-func _fixture_host() -> Node:
-	var tree := Engine.get_main_loop() as SceneTree
-	if tree == null:
-		return null
-	return tree.root.get_node_or_null(NodePath(PROFILE_SERVICE))
-
-
 func _on_status(message: String, danger: bool) -> void:
 	_status.append(message)
 	_danger.append(danger)
@@ -210,14 +203,6 @@ func _on_status(message: String, danger: bool) -> void:
 func _on_ask(payload: Dictionary) -> void:
 	_asks.append(payload)
 
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
-## The row set of one of the pane's three lists, in render order.
 func _rows_of(panel: Control, box: String) -> Array[Button]:
 	var container := panel.get_node("%" + box) as VBoxContainer
 	var rows: Array[Button] = []
@@ -228,15 +213,6 @@ func _rows_of(panel: Control, box: String) -> Array[Button]:
 		if row != null:
 			rows.append(row)
 	return rows
-
-
-func _cell_text(row: Button, cell_name: String) -> String:
-	var cell := row.find_child(cell_name, true, false) as Control
-	if cell == null:
-		return ""
-	var value := cell.get_node_or_null(^"Value") as Label
-	return value.text if value != null else ""
-
 
 func _cell_caption(row: Button, cell_name: String) -> String:
 	var cell := row.find_child(cell_name, true, false) as Control
@@ -793,13 +769,13 @@ func test_the_pane_renders_the_shelf_the_sell_list_and_its_own_footer() -> void:
 			String(row.get_meta(&"id", &"")), String(entry[&"id"]), "row %d is the shelf's own id" % index
 		)
 		assert_eq(
-			_digits_only(_cell_text(row, "Price")),
+			_digits_only(Support.cell_text(row, "Price")),
 			str(int(entry[&"price"])),
 			"row %d charges the shelf's price" % index
 		)
 		var meta := row.find_child("Meta", true, false) as Label
 		assert_eq(meta.text, String(entry[&"meta"]), "row %d's meta is the pinned line" % index)
-		var status := _cell_text(row, "Status")
+		var status := Support.cell_text(row, "Status")
 		if bool(entry[&"faction_lot"]):
 			assert_eq(status, AuctionScript.FACTION_LOT_TAG, "the F lot carries its tag")
 		else:
@@ -863,12 +839,12 @@ func test_the_pane_renders_the_shelf_the_sell_list_and_its_own_footer() -> void:
 	## id's aggregate.
 	var sell_row := _rows_of(panel, "SellRows")[0]
 	assert_eq(
-		_digits_only(_cell_text(sell_row, "Price")),
+		_digits_only(Support.cell_text(sell_row, "Price")),
 		str(ModuleData.sell_price(LASER, ModuleData.RARITY_MAGIC)),
 		"the sell row pays base x rarity x 60 %"
 	)
-	assert_eq(_cell_text(sell_row, "Owned"), "OWNED ×1", "and counts the base id's instances")
-	assert_eq(_cell_text(sell_row, "Action"), PanelScript.ACTION_SELL, "with a SELL action")
+	assert_eq(Support.cell_text(sell_row, "Owned"), "OWNED ×1", "and counts the base id's instances")
+	assert_eq(Support.cell_text(sell_row, "Action"), PanelScript.ACTION_SELL, "with a SELL action")
 	assert_eq(String(sell_row.get_meta(&"id", &"")), String(kept), "the row is the instance's own")
 	## The pane's own footer: the restock reading and its idle line, never the shell's copy.
 	assert_eq(
@@ -1026,6 +1002,7 @@ func test_the_shell_mounts_the_auction_pane_behind_its_rail_entry() -> void:
 			"the same icon family as EXCHANGE, its own neighbour (section 5.10)"
 		)
 	var host_margin := screen.get_node("%HostMargin") as MarginContainer
+	screen.call(&"pane_for", StationScript.Module.AUCTION)
 	var pane := host_margin.get_node_or_null(^"Auction")
 	assert_true(pane != null, "the shell loaded the AUCTION pane")
 	if pane == null:
@@ -1045,7 +1022,7 @@ func _mount_shell() -> Control:
 	_host.name = "ShellHost"
 	_host.theme = ThemeRes
 	_host.size = Vector2(1920.0, 1080.0)
-	_fixture_host().add_child(_host)
+	Support.profile().add_child(_host)
 	var screen := StationScene.instantiate() as Control
 	_host.add_child(screen)
 	return screen

@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite p2b_services: the SHIPYARD's slot-layout hover line and LAUNCH's two station service
 ## rows - the two smaller deliverables of the P2-B proper wave (owner requests 1 and 4).
 ##
@@ -102,7 +103,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_vitals = _profile.get(&"_vitals")
 	_previous_counter = int(_profile.get(&"_instance_counter"))
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 func suite_teardown() -> void:
@@ -119,7 +120,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_instance_counter", _previous_counter)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile = null
 
 
@@ -131,7 +132,7 @@ func setup() -> void:
 	_host.name = "ServicesHost"
 	_host.theme = ThemeRes
 	_host.size = _viewport_size()
-	_fixture_host().add_child(_host)
+	Support.profile().add_child(_host)
 	_shipyard = _mount(ShipyardScene)
 	_launch = _mount(LaunchScene)
 
@@ -156,17 +157,6 @@ func _seed_account() -> void:
 	_profile.set(&"_vitals", {})
 	_profile.set(&"_modules", {String(LASER): {"base_id": String(LASER), "count": OWNED_LASERS}})
 	_profile.call(&"set_fit", HULL, ShipFit.standard_fit(HULL))
-
-
-## The runner calls every test from inside its own `_ready`, so the root viewport is still busy
-## adding the runner scene and `root.add_child(...)` fails. The profile autoload entered the
-## tree before the main scene, so it hosts the fixture (suite p2b_fitting_panel's own reason).
-func _fixture_host() -> Node:
-	var tree := Engine.get_main_loop() as SceneTree
-	if tree == null:
-		return null
-	return tree.root.get_node_or_null(NodePath(&"PlayerProfile"))
-
 
 func _viewport_size() -> Vector2:
 	var width := float(ProjectSettings.get_setting("display/window/size/viewport_width", 1920))
@@ -291,15 +281,6 @@ func _recharge_button() -> Button:
 
 
 ## ------------------------------------------------------------------------- profile readers
-
-
-func _delete_file(path: String) -> void:
-	if not FileAccess.file_exists(path):
-		return
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
 
 func _credits() -> int:
 	return int(_profile.call(&"credits"))

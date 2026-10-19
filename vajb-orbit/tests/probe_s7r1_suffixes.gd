@@ -1,4 +1,5 @@
 extends Node
+const Support := preload("res://tests/support.gd")
 ## S7-R1 reviewer probe D: the suffix seams and the Ledger arithmetic, re-measured
 ## with the reviewer's own fixtures.
 ##
@@ -55,8 +56,8 @@ func _ready() -> void:
 		return
 	_previous_path = String(_profile.get(&"save_path"))
 	_previous_log = Log.log_path
-	_delete(SCRATCH_PROFILE)
-	_delete(SCRATCH_LOG)
+	Support.delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_LOG)
 	_profile.set(&"save_path", SCRATCH_PROFILE)
 	Log.log_path = SCRATCH_LOG
 	GameScript._transit_destination = &""
@@ -72,8 +73,8 @@ func _ready() -> void:
 	_profile.call(&"reset_to_defaults")
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete(SCRATCH_PROFILE)
-	_delete(SCRATCH_LOG)
+	Support.delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_LOG)
 	print("[S7R1-D] done failures=%d" % [_fail])
 	get_tree().quit(0)
 
@@ -82,18 +83,6 @@ func _check(ok: bool, label: String, detail: String) -> void:
 	if not ok:
 		_fail += 1
 	print("[S7R1-D] %s %s %s" % ["OK " if ok else "BAD", label, detail])
-
-
-func _near(a: float, b: float) -> bool:
-	return absf(a - b) <= 0.0001
-
-
-func _delete(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
 func _fresh() -> Node:
 	var script := load("res://autoload/player_profile.gd") as GDScript
 	var profile: Node = script.new()
@@ -242,7 +231,7 @@ func _leeches() -> void:
 		"[S7R1-D] leeches control hull_before=%.3f after=%.3f flag=%s"
 		% [control_before, control_state.hull, str(AffixesScript.has_suffix(control.get(&"_launch_summary"), &"leeches"))]
 	)
-	_check(_near(control_state.hull, control_before), "no Leeches, no heal", "%.3f" % [control_state.hull])
+	_check(Support.near(control_state.hull, control_before), "no Leeches, no heal", "%.3f" % [control_state.hull])
 	control.free()
 
 	# The fitted case: a Leeches instance in the launch's W cell.
@@ -275,7 +264,7 @@ func _leeches() -> void:
 	)
 	_check(fitted, "a Leeches instance fits the launch", "%s" % [id])
 	_check(kills_after == kills_before + 1, "the handler credited the kill", "%d -> %d" % [kills_before, kills_after])
-	_check(_near(state.hull, expected), "5 % of hull_max paid back", "%.3f" % [state.hull])
+	_check(Support.near(state.hull, expected), "5 % of hull_max paid back", "%.3f" % [state.hull])
 	scene.free()
 	profile.call(&"clear_fit_slot", ship, &"weapons", 0)
 
@@ -386,7 +375,7 @@ func _launch_alignment() -> void:
 	_check(weapons.size() == 2 and String(weapons[0]) == "", "the mining cell is a family-less slot", str(weapons))
 	_check(affixes.size() == 2, "one affix entry per weapon slot", "%d" % [affixes.size()])
 	_check(row0.is_empty(), "the mining cell carries nothing", str(row0))
-	_check(_near(float(row1.get(&"keen", 0.0)), 0.15), "cell 2's Keen rides slot 1", str(row1))
+	_check(Support.near(float(row1.get(&"keen", 0.0)), 0.15), "cell 2's Keen rides slot 1", str(row1))
 	_check(_barrel_slots(scene) == [1], "the only barrel reads slot 1", str(_barrel_slots(scene)))
 	scene.free()
 
@@ -412,7 +401,7 @@ func _launch_alignment() -> void:
 		"[S7R1-D] alignment mirror weapons=%s affixes=%s slots=%s"
 		% [str(mirror_state.weapons), str(mirror_affixes), str(_barrel_slots(mirror))]
 	)
-	_check(_near(float(mirror0.get(&"keen", 0.0)), 0.16), "cell 1's Keen rides slot 0", str(mirror0))
+	_check(Support.near(float(mirror0.get(&"keen", 0.0)), 0.16), "cell 1's Keen rides slot 0", str(mirror0))
 	_check(mirror1.is_empty(), "cell 2 stays empty", str(mirror1))
 	_check(_barrel_slots(mirror) == [0, 1], "both barrels read their own slots", str(_barrel_slots(mirror)))
 	mirror.free()
@@ -434,8 +423,8 @@ func _launch_alignment() -> void:
 		"[S7R1-D] launch computer damage_mult=%.6f component_scale=%.6f"
 		% [stats.damage_mult, float(guns.call(&"_damage_scale"))]
 	)
-	_check(_near(stats.damage_mult, 1.15), "the launch resolves 1.15", "%.6f" % [stats.damage_mult])
-	_check(_near(float(guns.call(&"_damage_scale")), 1.15), "the component reads the snapshot", "%.6f" % [float(guns.call(&"_damage_scale"))])
+	_check(Support.near(stats.damage_mult, 1.15), "the launch resolves 1.15", "%.6f" % [stats.damage_mult])
+	_check(Support.near(float(guns.call(&"_damage_scale")), 1.15), "the component reads the snapshot", "%.6f" % [float(guns.call(&"_damage_scale"))])
 	armed.free()
 
 	# Embers rides the launch's flags into the shot's configure dict.
@@ -459,7 +448,7 @@ func _launch_alignment() -> void:
 	)
 	_check(flags.has(&"embers"), "the state carries the launch flag", str(flags))
 	_check(bool(shot.get(&"embers")), "the shot carries it", str(shot.get(&"embers")))
-	_check(_near(float(shot.get(&"damage_mult")), 1.0), "no computer, 1.0", "%.6f" % [float(shot.get(&"damage_mult"))])
+	_check(Support.near(float(shot.get(&"damage_mult")), 1.0), "no computer, 1.0", "%.6f" % [float(shot.get(&"damage_mult"))])
 	shot.free()
 	embered.free()
 	profile.call(&"clear_fit", ship)

@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s3_migration: the save v5 -> v6 flag day (15 section 8, CONTRACTS section 15) -
 ## every v5 `{base_id, count}` inventory record becomes `count` **Common** instances with
 ## their own minted ids, once, and `_load_profile` is its only production caller.
@@ -35,7 +36,7 @@ func suite_name() -> String:
 
 
 func setup() -> void:
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 func teardown() -> void:
@@ -46,7 +47,7 @@ func teardown() -> void:
 
 
 func suite_teardown() -> void:
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 ## ---------------------------------------------------------------------------
@@ -82,9 +83,9 @@ func test_a_v5_stacked_record_becomes_that_many_common_instances() -> void:
 			"%s is Common: v5 stock was never rolled" % id
 		)
 		assert_true(
-			_deep_eq(record[Profile.KEY_PREFIXES], []), "%s carries no prefix row" % id
+			Support.deep_eq(record[Profile.KEY_PREFIXES], []), "%s carries no prefix row" % id
 		)
-		assert_true(_deep_eq(record[Profile.KEY_SUFFIXES], []), "%s carries no suffix" % id)
+		assert_true(Support.deep_eq(record[Profile.KEY_SUFFIXES], []), "%s carries no suffix" % id)
 		assert_eq(int(record[Profile.KEY_COUNT]), 1, "%s is in the bag" % id)
 
 	## The flag day wrote the file itself: v6, three records, no stacked key.
@@ -131,7 +132,7 @@ func test_a_v6_bag_and_an_empty_bag_have_nothing_to_migrate() -> void:
 	assert_eq(profile.module_count(id), 1, "it is left exactly as it was")
 	assert_eq(String(profile.instance(id)[Profile.KEY_RARITY]), "magic", "affixes and all")
 	assert_true(
-		_deep_eq(
+		Support.deep_eq(
 			profile.instance(id)[Profile.KEY_PREFIXES], [{"id": "sturdy", "value": 0.15}]
 		),
 		"and its prefix row"
@@ -174,7 +175,7 @@ func test_a_mixed_bag_converts_only_the_short_records() -> void:
 		"the record that already had an instance_id keeps its mint and its rarity"
 	)
 	assert_true(
-		_deep_eq(
+		Support.deep_eq(
 			profile.instance(&"mod_0009")[Profile.KEY_PREFIXES],
 			[{"id": "sturdy", "value": 0.2}]
 		),
@@ -247,37 +248,3 @@ func _fresh():
 	profile.save_path = PROFILE_PATH
 	_profiles.append(profile)
 	return profile
-
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
-
-## Structural equality: `==` on nested dictionaries is not dependable across a
-## ConfigFile round trip, where key order is not preserved.
-func _deep_eq(a: Variant, b: Variant) -> bool:
-	if a is Dictionary and b is Dictionary:
-		var left: Dictionary = a
-		var right: Dictionary = b
-		if left.size() != right.size():
-			return false
-		for key: Variant in left.keys():
-			if not right.has(key):
-				return false
-			if not _deep_eq(left[key], right[key]):
-				return false
-		return true
-	if a is Array and b is Array:
-		var left_array: Array = a
-		var right_array: Array = b
-		if left_array.size() != right_array.size():
-			return false
-		for index: int in range(left_array.size()):
-			if not _deep_eq(left_array[index], right_array[index]):
-				return false
-		return true
-	if (a is float) or (b is float):
-		return is_equal_approx(float(a), float(b))
-	return a == b

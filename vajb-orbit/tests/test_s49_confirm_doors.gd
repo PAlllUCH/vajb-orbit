@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s49_confirm_doors: wave S49's four buy-confirmation doors on the surfaces
 ## D24's A series left untouched - the AUCTION's hull buy and its module listing buy,
 ## the INSURANCE opt-in (off->on only) and the VAULTS rent per tier (UI_SPEC section 17
@@ -98,7 +99,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	_previous_vaults = _profile.call(&"vaults")
 	_previous_standing = (_profile.get(&"_standing") as Dictionary).duplicate(true)
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 func suite_teardown() -> void:
@@ -118,7 +119,7 @@ func suite_teardown() -> void:
 	_profile.set(&"_standing", _previous_standing)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _previous_path)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile = null
 
 
@@ -183,13 +184,6 @@ func _on_confirm_requested(payload: Dictionary) -> void:
 func _on_status_requested(message: String, danger: bool) -> void:
 	_statuses.append(message)
 	_danger.append(danger)
-
-
-func _delete_file(path: String) -> void:
-	var absolute := ProjectSettings.globalize_path(path)
-	if FileAccess.file_exists(absolute):
-		DirAccess.remove_absolute(absolute)
-
 
 func _read_source(path: String) -> String:
 	return FileAccess.get_file_as_string(path)

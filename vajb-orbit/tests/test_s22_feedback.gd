@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s22_feedback: wave S22's feedback seams, the S22-B1 subset - the hit marker's
 ## delivery seam (A1 / L28), the ram contact cue + spark (A2 / L56), the muzzle flash's
 ## nose anchor (A3 / L51), the mining chip burst (A4 / L52+L65, verify-only), the low-hull
@@ -91,7 +92,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 	if _scene == null:
 		fail_setup("game.tscn did not instantiate")
 		return
-	_fixture_host().add_child(_scene)
+	Support.fixture_host().add_child(_scene)
 	_ship = _scene.get_node_or_null(NodePath("PlayerShip")) as Node2D
 	_hud = _scene.get_node_or_null(NodePath("Hud")) as Control
 	_state = _scene.get(&"_state")
@@ -526,7 +527,7 @@ func _flash_of(guns: Node) -> AnimatedSprite2D:
 func _last_shot() -> Node2D:
 	if _ship == null:
 		return null
-	for node: Node in _tree().get_nodes_in_group(ProjectileScript.PROJECTILE_GROUP):
+	for node: Node in Support.tree().get_nodes_in_group(ProjectileScript.PROJECTILE_GROUP):
 		var shot := node as Node2D
 		if shot != null and shot.has_method(&"source") and shot.call(&"source") == _ship:
 			return shot
@@ -536,7 +537,7 @@ func _last_shot() -> Node2D:
 func _free_shots() -> void:
 	if _ship == null or not is_instance_valid(_ship):
 		return
-	for node: Node in _tree().get_nodes_in_group(ProjectileScript.PROJECTILE_GROUP):
+	for node: Node in Support.tree().get_nodes_in_group(ProjectileScript.PROJECTILE_GROUP):
 		if node.has_method(&"source") and node.call(&"source") == _ship:
 			node.free()
 
@@ -574,7 +575,7 @@ func _last_fx(root: Node, sheet: String) -> Node:
 ## Whether `cue` (or one of its pool's takes) was the last thing the manager played -
 ## the same read `test_weapon_fx_f2.gd` uses, tolerant of the pool's take resolution.
 func _played_impact(cue: StringName) -> bool:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		return false
 	var played := StringName(audio.call(&"last_sfx"))
@@ -582,12 +583,6 @@ func _played_impact(cue: StringName) -> bool:
 		return true
 	return AudioScript.CUE_POOLS.get(cue, {}).get(&"takes", []).has(played)
 
-
-func _audio() -> Node:
-	return _tree().root.get_node_or_null(NodePath(AUDIO_SERVICE))
-
-
-## A real NPC hull of the shipped registry, placed by hand (the wiring suite's fixture).
 func _spawn_hull(position: Vector2) -> Node2D:
 	var hull: Node2D = NpcShipScript.new()
 	hull.name = "SuitePirate"
@@ -612,13 +607,8 @@ func _rock(parent: Node2D) -> RigidBody2D:
 	_roots.append(rock)
 	return rock
 
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
 func _profile() -> Node:
-	return _tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
+	return Support.tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
 
 
 ## The fixture's fit and packs, written before the scene is instantiated and handed back
@@ -661,10 +651,3 @@ func _restore_fixture() -> void:
 	_previous_ammo = {}
 	_previous_cargo = {}
 	_previous_rem = {}
-
-
-## Where the scene may enter the tree (the runner's own `_ready` has `/root` busy).
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root

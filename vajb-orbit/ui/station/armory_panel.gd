@@ -1,4 +1,4 @@
-extends Control
+extends "res://ui/station/station_panel.gd"
 ## ARMORY (the OUTFITTING pane renamed, STATION_HUB section 5.11's 2026-09-23 S5
 ## amendment) as **UI_SPEC section 3.10 Amendment 3 (the D13 rework, wave S18)** rules its
 ## layout: the **landscape console 1360x516** at the pinned (452,214)+1392x610 host, five
@@ -358,18 +358,6 @@ const PLATE_SIZE := 48.0
 const PLATE_SEPARATION := 4
 const PLATE_ICON_INSET := 6.0
 const HARDPOINT_CAPTION := "SLOT LAYOUT · %d CELLS · %d ENGINES"
-const SLOT_GLYPHS: Dictionary = {
-	&"engines": "engine",
-	&"power": "power",
-	&"weapons": "w",
-	&"shields": "s",
-	&"armour": "h",
-	&"computers": "c",
-	&"boosters": "b",
-	&"utility": "u",
-}
-const SLOT_GLYPH_DIR := "res://assets/icons/slot/"
-const SLOT_GLYPH_TEMPLATE := "icon_slot_%s.svg"
 const SLOT_KEY_ALIASES: Dictionary = {&"engine": &"engines"}
 const METER_IDLE := "PWR %d / %d"
 const METER_PREVIEW := "PWR %d / %d · IF FITTED %d / %d"
@@ -963,7 +951,6 @@ var _payloads: Array[Dictionary] = []
 ## whose `_drop_data` started the write is still alive while that write finishes.
 var _rack_views: Array[Dictionary] = []
 var _selected_row: Button = null
-var _tweens: Array[Tween] = []
 ## S30: the payload `station_inspect` (N34) inspects - the focused row or cell - and the
 ## P2 cluster's own INSPECT chip (N37).
 var _focused_payload: Dictionary = {}
@@ -1013,18 +1000,6 @@ func _notification(what: int) -> void:
 		_apply_tokens()
 		_lay()
 
-
-func _exit_tree() -> void:
-	for tween: Tween in _tweens:
-		if tween.is_valid():
-			tween.kill()
-
-
-## -------------------------------------------------------------- the two modes (P32)
-##
-## The two-entry switch (P2 `ActionInline` pair, UI_SPEC section 8) sits in the header band.
-## `set_mode` is a pure visibility operation (A5.5/N24): it hides the other mode root and
-## swaps the one hint label's text, never a size, a position or a tree shape.
 func _build_modes() -> void:
 	if _mode_fit != null:
 		_mode_fit.text = MODE_FIT_LABEL
@@ -3250,19 +3225,6 @@ func _weapon_cells(profile: ProfileScript) -> Array:
 static func _is_weapon_base(base_id: StringName) -> bool:
 	return ModuleData.fit_slot_of(base_id) == WEAPON_SLOT
 
-
-func _active_hull(profile: ProfileScript) -> StringName:
-	if profile == null:
-		return &""
-	return StringName(profile.call(&"active_ship"))
-
-
-func _base_id(profile: ProfileScript, entry: StringName) -> StringName:
-	if profile == null or entry == &"":
-		return entry
-	return StringName(profile.call(&"base_module_id", entry))
-
-
 func _module_name(module_id: StringName) -> String:
 	var name_text := String(ModuleData.module(module_id).get(&"name", ""))
 	return name_text.to_upper() if not name_text.is_empty() else String(module_id).to_upper()
@@ -3281,21 +3243,6 @@ func _refresh_all() -> void:
 	_refresh_cell_info()
 	_sync_equipped()
 
-
-func _profile() -> ProfileScript:
-	## Autoloads are children of /root; STATION_HUB section 12.4 names a bare
-	## ^"PlayerProfile" path, which would resolve against this node instead, so the
-	## lookup is anchored at the tree root the way router.gd anchors its services.
-	if not is_inside_tree():
-		return null
-	var service := get_tree().root.get_node_or_null(NodePath(PROFILE_SERVICE))
-	if service == null:
-		return null
-	var profile: ProfileScript = service
-	return profile
-
-
-## The docked station's own row (14's 2026-10-08 block), empty when no place is filed.
 func _docked_station() -> Dictionary:
 	return StationRegistryScript.docked_station(_profile())
 
@@ -3311,53 +3258,6 @@ func _station_standing() -> int:
 	if profile == null or not profile.has_method(&"standing_of"):
 		return 0
 	return int(profile.call(&"standing_of", StringName(station.get(&"faction", &""))))
-
-
-## V1+V2 (12's 2026-10-08 block): one module's list price at this station - the catalogue's
-## own `cost` through the registry's one factor. A26 (2026-10-16): the armory's module rows
-## carry no price any more (the AUCTION is the one equipment door), so the armory's own read
-## of this factor retires with its loop; the station's pack cards price through
-## `Catalog.ammo_pack_price`, which wraps the same reader.
-func _pulse(node: CanvasItem) -> void:
-	if node == null:
-		return
-	var tween := _make_tween()
-	tween.tween_property(node, "modulate:a", PULSE_MIN_ALPHA, PULSE_DOWN_SECONDS).set_trans(Tween.TRANS_SINE)
-	tween.tween_property(node, "modulate:a", 1.0, PULSE_UP_SECONDS).set_trans(Tween.TRANS_SINE)
-	tween.tween_property(node, "modulate:a", PULSE_MIN_ALPHA, PULSE_DOWN_SECONDS).set_trans(Tween.TRANS_SINE)
-	tween.tween_property(node, "modulate:a", 1.0, PULSE_UP_SECONDS).set_trans(Tween.TRANS_SINE)
-
-
-func _make_tween() -> Tween:
-	for index in range(_tweens.size() - 1, -1, -1):
-		if not _tweens[index].is_valid():
-			_tweens.remove_at(index)
-	var tween := create_tween()
-	_tweens.append(tween)
-	return tween
-
-
-func _format_int(value: int) -> String:
-	var digits := str(absi(value))
-	var grouped := ""
-	var count := 0
-	for index in range(digits.length() - 1, -1, -1):
-		grouped = digits[index] + grouped
-		count += 1
-		if count % 3 == 0 and index > 0:
-			grouped = " " + grouped
-	return ("-" if value < 0 else "") + grouped
-
-
-## ================================================== the merged grid (P4's left half)
-##
-## STATION_HUB section 17.1: "Left: the ship grid exactly as FITTING ships it" - 48 px
-## `SlotButtonWeapon` plates, gaps as empty Controls, the glyph inset 6, separations 4,
-## the `SLOT LAYOUT` caption and the footer power meter on FITTING's own numbers
-## (`fitting_panel.gd:18-70,148-149`). The cells stay selectable and drop-accepting;
-## the fit arithmetic below ports `fitting_panel.gd`'s own (the composed calls are the
-## profile's, CONTRACTS section 13).
-
 
 func _build_grid_surface() -> void:
 	_grid.add_theme_constant_override(&"h_separation", PLATE_SEPARATION)
@@ -3527,21 +3427,6 @@ func _make_grid_cell(cell: Dictionary) -> Dictionary:
 	plate.mouse_exited.connect(_on_cell_hovered.bind(payload, false))
 	return payload
 
-
-## 09 section 1's shipped slot glyph for a slot-type key (`fitting_panel.gd:565-574`'s
-## own table), null for a type with no glyph so the cell draws its plate alone.
-func _slot_glyph(slot_key: StringName) -> Texture2D:
-	var stem := String(SLOT_GLYPHS.get(slot_key, ""))
-	if stem.is_empty():
-		return null
-	var path := SLOT_GLYPH_DIR + SLOT_GLYPH_TEMPLATE % stem
-	if not ResourceLoader.exists(path):
-		return null
-	return load(path) as Texture2D
-
-
-## The cell's own slot caption word (the label P10 flashes and the word P9's refusal
-## names): the fit's own slot key in upper case, `WEAPONS` / `ENGINES` / `POWER` / ...
 func _slot_word(slot_key: StringName) -> String:
 	return String(slot_key).to_upper()
 

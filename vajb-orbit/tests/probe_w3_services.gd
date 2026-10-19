@@ -1,4 +1,5 @@
 extends Node
+const Support := preload("res://tests/support.gd")
 ## W3 evidence probe: the shipyard's slot-plate hover line and LAUNCH's two station service rows,
 ## measured in memory with the shipped scenes and theme. No shipped file is written and the
 ## owner's profile is borrowed and handed back (the suite `test_p2b_services`'s own hygiene), so
@@ -73,7 +74,7 @@ func _borrow() -> void:
 		&"vitals": _profile.get(&"_vitals"),
 	}
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 func _return() -> void:
@@ -85,16 +86,7 @@ func _return() -> void:
 	_profile.set(&"_vitals", _saved[&"vitals"])
 	_profile.call(&"flush")
 	_profile.set(&"save_path", _saved[&"path"])
-	_delete_file(PROFILE_PATH)
-
-
-func _delete_file(path: String) -> void:
-	if not FileAccess.file_exists(path):
-		return
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())
-
+	Support.delete_file(PROFILE_PATH)
 
 func _seed() -> void:
 	_profile.set(&"_credits", int(Catalog.ship(HULL).get(&"cost", 0)))

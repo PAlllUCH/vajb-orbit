@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite slice2_5_feel: the speed fantasy and damage states of engine slice 2.5 (worker
 ## S1, 2026-09-21) — the nine deliverables of
 ## `.agents/gen/slice2_5_feel_wave_task.md` section 1, one test apiece plus the wiring
@@ -100,18 +101,18 @@ func teardown() -> void:
 
 
 func test_the_blur_is_zero_below_the_onset_and_rises_to_the_dash_strength() -> void:
-	assert_true(_near(SpeedFantasyScript.blur_for(0.0), 0.0), "a hull at rest has no blur")
+	assert_true(Support.near(SpeedFantasyScript.blur_for(0.0), 0.0), "a hull at rest has no blur")
 	for quiet: float in [0.1, 0.5, 0.69, 0.70]:
 		assert_true(
-			_near(SpeedFantasyScript.blur_for(quiet), 0.0),
+			Support.near(SpeedFantasyScript.blur_for(quiet), 0.0),
 			"%.2f is below (or at) the 0.70 onset, so the strength is zero" % quiet
 		)
 	assert_true(
-		_near(SpeedFantasyScript.blur_for(0.9), 0.5667, 1e-3),
+		Support.near(SpeedFantasyScript.blur_for(0.9), 0.5667, 1e-3),
 		"0.9 is two thirds up the band: 0.1 + 0.7 * 2/3"
 	)
 	assert_true(
-		_near(SpeedFantasyScript.blur_for(1.0), 0.8),
+		Support.near(SpeedFantasyScript.blur_for(1.0), 0.8),
 		"full speed is section 5's own 0.8"
 	)
 	var fantasy: Variant = _fantasy()
@@ -125,11 +126,11 @@ func test_the_blur_is_zero_below_the_onset_and_rises_to_the_dash_strength() -> v
 	assert_true(material != null, "on the shipped screen-space shader")
 	assert_eq(material.shader.resource_path, BLUR_SHADER, "which is `speed_blur.gdshader`")
 	assert_true(
-		_near(float(material.get_shader_parameter(&"blur_strength")), 0.5667, 1e-3),
+		Support.near(float(material.get_shader_parameter(&"blur_strength")), 0.5667, 1e-3),
 		"the uniform carries the strength"
 	)
 	assert_true(
-		_near(float(material.get_shader_parameter(&"chromatic_aberration")), 0.5667, 1e-3),
+		Support.near(float(material.get_shader_parameter(&"chromatic_aberration")), 0.5667, 1e-3),
 		"and the channel split rides the same strength (section 5's 'scales with strength')"
 	)
 	assert_true(
@@ -162,32 +163,32 @@ func test_the_pull_back_stacks_with_the_wheel_and_never_writes_the_wheel_back() 
 	fantasy.call(&"bind_camera", camera)
 	fantasy.call(&"set_wheel_zoom", 1.0)
 	fantasy.call(&"set_ratio", 0.5, Vector2.RIGHT)
-	assert_true(_near(float(fantasy.call(&"pullback")), 1.0), "below the onset it is 1.0")
-	assert_true(_near(float(fantasy.call(&"applied_zoom")), 1.0), "so the wheel applies 1:1")
-	assert_true(_near(camera.zoom.x, 1.0), "which is what the camera carries")
+	assert_true(Support.near(float(fantasy.call(&"pullback")), 1.0), "below the onset it is 1.0")
+	assert_true(Support.near(float(fantasy.call(&"applied_zoom")), 1.0), "so the wheel applies 1:1")
+	assert_true(Support.near(camera.zoom.x, 1.0), "which is what the camera carries")
 	fantasy.call(&"set_ratio", 0.9, Vector2.RIGHT)
 	assert_true(
-		_near(float(fantasy.call(&"applied_zoom")), 0.88, 1e-3),
+		Support.near(float(fantasy.call(&"applied_zoom")), 0.88, 1e-3),
 		"at 0.9 the wheel's 1.0 applies as 0.88 (lerp(1.0, 0.82, 2/3))"
 	)
-	assert_true(_near(camera.zoom.x, 0.88, 1e-3), "and the camera carries the applied value")
+	assert_true(Support.near(camera.zoom.x, 0.88, 1e-3), "and the camera carries the applied value")
 	fantasy.call(&"set_wheel_zoom", 1.30)
 	assert_true(
-		_near(float(fantasy.call(&"applied_zoom")), 1.144, 1e-3),
+		Support.near(float(fantasy.call(&"applied_zoom")), 1.144, 1e-3),
 		"the wheel at 1.30 applies 1.144 at the same ratio: the pull-back multiplies it"
 	)
 	assert_true(
-		_near(float(fantasy.call(&"wheel_zoom")), 1.30),
+		Support.near(float(fantasy.call(&"wheel_zoom")), 1.30),
 		"the pull-back is never written back into the wheel's own value"
 	)
-	assert_true(_near(camera.zoom.x, 1.144, 1e-3), "and the camera has exactly one writer")
+	assert_true(Support.near(camera.zoom.x, 1.144, 1e-3), "and the camera has exactly one writer")
 	fantasy.call(&"set_ratio", 1.0, Vector2.RIGHT)
 	assert_true(
-		_near(float(fantasy.call(&"applied_zoom")), 1.30 * 0.82, 1e-3),
+		Support.near(float(fantasy.call(&"applied_zoom")), 1.30 * 0.82, 1e-3),
 		"at full speed the wheel is multiplied by section 5's 0.82 end"
 	)
 	assert_true(
-		_near(SpeedFantasyScript.pullback_for(1.0), 0.82),
+		Support.near(SpeedFantasyScript.pullback_for(1.0), 0.82),
 		"the pull-back's own floor is the spec's 0.82"
 	)
 
@@ -202,24 +203,24 @@ func test_the_wheel_still_clamps_and_tweens_and_the_stage_owns_the_camera() -> v
 	)
 	_scene.call(&"_set_camera_zoom", 2.0)
 	assert_true(
-		_near(float(_scene.get(&"_camera_zoom")), 1.50),
+		Support.near(float(_scene.get(&"_camera_zoom")), 1.50),
 		"the wheel still clamps at CAMERA_ZOOM_MAX 1.50"
 	)
 	var tween := _scene.get(&"_camera_zoom_tween") as Tween
 	assert_true(tween != null and tween.is_valid(), "and still owns a live tween")
 	assert_true(
-		_near(float(_scene.get(&"_camera_zoom_shown")), 1.0, 1e-6),
+		Support.near(float(_scene.get(&"_camera_zoom_shown")), 1.0, 1e-6),
 		"the value the camera reads is the tween's; it has not stepped, so it is still 1.0"
 	)
 	_scene.call(&"_set_camera_zoom", 0.10)
 	assert_true(
-		_near(float(_scene.get(&"_camera_zoom")), 0.70),
+		Support.near(float(_scene.get(&"_camera_zoom")), 0.70),
 		"and at CAMERA_ZOOM_MIN 0.70"
 	)
 	var fantasy = _scene.get_node_or_null(NodePath(&"SpeedFantasy"))
 	_scene.call(&"_push_speedometer")
 	assert_true(
-		_near(float(fantasy.call(&"applied_zoom")), 1.0),
+		Support.near(float(fantasy.call(&"applied_zoom")), 1.0),
 		"a hull at rest applies the shown wheel zoom untouched (no pull-back below onset)"
 	)
 
@@ -231,12 +232,12 @@ func test_the_dust_emits_only_above_the_onset_and_lies_along_the_velocity() -> v
 	var quiet := SpeedFantasyScript.dust_read(0.5)
 	assert_false(bool(quiet[&"on"]), "below the onset the dust is off")
 	assert_eq(int(quiet[&"count"]), 0, "so it emits nothing")
-	assert_true(_near(float(quiet[&"alpha"]), 0.0), "at no alpha at all")
+	assert_true(Support.near(float(quiet[&"alpha"]), 0.0), "at no alpha at all")
 	var loud := SpeedFantasyScript.dust_read(0.9)
 	assert_true(bool(loud[&"on"]), "above it the dust is on")
-	assert_true(_near(float(loud[&"rate"]), 30.0), "at section 5's own 30/s")
-	assert_true(_near(float(loud[&"lifetime"]), 0.5), "over its own 0.5 s lifetime")
-	assert_true(_near(float(loud[&"length"]), 12.0), "12 u long")
+	assert_true(Support.near(float(loud[&"rate"]), 30.0), "at section 5's own 30/s")
+	assert_true(Support.near(float(loud[&"lifetime"]), 0.5), "over its own 0.5 s lifetime")
+	assert_true(Support.near(float(loud[&"length"]), 12.0), "12 u long")
 	assert_eq(int(loud[&"count"]), 15, "which is 30/s over that lifetime")
 	var fantasy: Variant = _fantasy()
 	var camera := _camera()
@@ -244,7 +245,7 @@ func test_the_dust_emits_only_above_the_onset_and_lies_along_the_velocity() -> v
 	var dust := fantasy.call(&"dust") as GPUParticles2D
 	assert_true(dust != null, "the emitter is built when the camera arrives")
 	assert_eq(dust.get_parent(), camera, "and parented to the camera (section 5 row 3)")
-	assert_true(_near(dust.lifetime, 0.5), "with the row's own lifetime")
+	assert_true(Support.near(dust.lifetime, 0.5), "with the row's own lifetime")
 	assert_eq(dust.amount, 15, "and a capacity of the rate over that lifetime")
 	assert_false(dust.emitting, "off until the ratio is high")
 	assert_true(
@@ -254,14 +255,14 @@ func test_the_dust_emits_only_above_the_onset_and_lies_along_the_velocity() -> v
 	)
 	var process := dust.process_material as ParticleProcessMaterial
 	assert_true(process != null, "its process material carries the low alpha")
-	assert_true(_near(process.color.a, 0.35), "which is the ember trail's own alpha floor")
+	assert_true(Support.near(process.color.a, 0.35), "which is the ember trail's own alpha floor")
 	var frame := dust.texture as AtlasTexture
 	assert_true(frame != null, "the streak is the art's own ink box in its re-cut frame")
 	assert_eq(frame.atlas.resource_path, DUST_SHEET, "which is `fx_dust_streak_f1.png`")
 	assert_eq(frame.region, ProjectileScript.FEEDBACK[&"dust"][&"region"], "the measured object")
 	fantasy.call(&"set_ratio", 0.9, Vector2(0.0, 100.0))
 	assert_true(dust.emitting and dust.visible, "at speed it emits")
-	assert_true(_near(dust.rotation, Vector2.DOWN.angle()), "with the streaks along the velocity")
+	assert_true(Support.near(dust.rotation, Vector2.DOWN.angle()), "with the streaks along the velocity")
 	fantasy.call(&"set_ratio", 0.5, Vector2.RIGHT)
 	assert_false(dust.emitting, "and it is off again below the onset")
 
@@ -271,7 +272,7 @@ func test_the_dust_emits_only_above_the_onset_and_lies_along_the_velocity() -> v
 
 func test_the_hull_critical_vignette_pulses_and_is_removed_above_the_line() -> void:
 	assert_true(
-		_near(ProjectileScript.LOW_HULL_FRACTION, 0.25),
+		Support.near(ProjectileScript.LOW_HULL_FRACTION, 0.25),
 		"the states' one line is section 1.8's own 25 %"
 	)
 	var fantasy: Variant = _fantasy()
@@ -288,35 +289,35 @@ func test_the_hull_critical_vignette_pulses_and_is_removed_above_the_line() -> v
 	assert_true(bool(fantasy.call(&"vignette_active")), "20 % is below the line")
 	assert_true(rect.visible, "so the overlay is up")
 	assert_true(
-		_near(float(fantasy.call(&"vignette_alpha")), 0.8, 1e-3),
+		Support.near(float(fantasy.call(&"vignette_alpha")), 0.8, 1e-3),
 		"at the sine's midpoint on the frame it comes up"
 	)
 	fantasy.call(&"_process", 0.3)
 	assert_true(
-		_near(float(fantasy.call(&"vignette_alpha")), 1.0, 1e-3),
+		Support.near(float(fantasy.call(&"vignette_alpha")), 1.0, 1e-3),
 		"a quarter of the 1.2 s period later it is at section 1.8's 1.0"
 	)
 	fantasy.call(&"_process", 0.6)
 	assert_true(
-		_near(float(fantasy.call(&"vignette_alpha")), 0.6, 1e-3),
+		Support.near(float(fantasy.call(&"vignette_alpha")), 0.6, 1e-3),
 		"and three quarters through the period at its 0.6"
 	)
 	fantasy.call(&"_process", 0.3)
 	assert_true(
-		_near(float(fantasy.call(&"vignette_alpha")), 0.8, 1e-3),
+		Support.near(float(fantasy.call(&"vignette_alpha")), 0.8, 1e-3),
 		"a whole 1.2 s returns the pulse to where it started"
 	)
 	assert_true(
-		_near(float(rect.modulate.a), float(fantasy.call(&"vignette_alpha")), 1e-3),
+		Support.near(float(rect.modulate.a), float(fantasy.call(&"vignette_alpha")), 1e-3),
 		"and the overlay's own modulate is the pulse"
 	)
 	fantasy.call(&"set_hull_fraction", 0.3)
 	assert_false(bool(fantasy.call(&"vignette_active")), "30 % is above the line")
 	assert_false(rect.visible, "so the overlay is removed")
-	assert_true(_near(float(rect.modulate.a), 0.0), "and draws nothing")
+	assert_true(Support.near(float(rect.modulate.a), 0.0), "and draws nothing")
 	fantasy.call(&"set_hull_fraction", 0.2)
 	assert_true(
-		_near(float(fantasy.call(&"vignette_alpha")), 0.8, 1e-3),
+		Support.near(float(fantasy.call(&"vignette_alpha")), 0.8, 1e-3),
 		"re-entering the state restarts the pulse rather than resuming an old phase"
 	)
 
@@ -327,7 +328,7 @@ func test_the_hull_critical_vignette_pulses_and_is_removed_above_the_line() -> v
 func test_the_low_hull_arcs_fire_on_the_sections_cadence_through_the_shipped_row() -> void:
 	var rig := _ship_at(0.20)
 	var ship: Node2D = rig[&"ship"]
-	var audio := _audio()
+	var audio := Support.audio()
 	assert_true(audio != null, "the AudioManager autoload is live")
 	assert_eq(int(ship.call(&"arc_count")), 0, "a fresh hull has fired none")
 	var frames := int(round(ARC_SECONDS / PHYSICS_STEP))
@@ -355,7 +356,7 @@ func test_the_low_hull_arcs_fire_on_the_sections_cadence_through_the_shipped_row
 			"which does not loop (section 7.3's one-shot rows)"
 		)
 		assert_true(
-			_near(sprite.global_position.distance_to(ship.global_position), float(ship.call(&"_hull_radius")), 1e-3),
+			Support.near(sprite.global_position.distance_to(ship.global_position), float(ship.call(&"_hull_radius")), 1e-3),
 			"and it snaps on the hull's own radius, not at an invented distance"
 		)
 	assert_true(
@@ -385,13 +386,13 @@ func test_the_thruster_trail_is_one_emitter_per_anchor_shaped_by_the_ratio() -> 
 		"the trail row carries the drawn frame's own ink box"
 	)
 	var low := ProjectileScript.trail_read(0.15, source)
-	assert_true(_near(float(low[&"rate"]), 20.0), "20 streaks/s at the amendment's 0.15 floor")
-	assert_true(_near(float(low[&"length"]), 24.0), "24 u long there")
-	assert_true(_near(float(low[&"width"]), 6.0), "6 u wide, the row's single constant")
-	assert_true(_near(float(low[&"alpha"]), 0.35), "at alpha 0.35")
+	assert_true(Support.near(float(low[&"rate"]), 20.0), "20 streaks/s at the amendment's 0.15 floor")
+	assert_true(Support.near(float(low[&"length"]), 24.0), "24 u long there")
+	assert_true(Support.near(float(low[&"width"]), 6.0), "6 u wide, the row's single constant")
+	assert_true(Support.near(float(low[&"alpha"]), 0.35), "at alpha 0.35")
 	assert_eq(int(low[&"amount"]), 24, "the emitter's capacity is the top rate over the lifetime")
 	assert_true(
-		_near(float(low[&"amount_ratio"]), 20.0 / 60.0, 1e-4),
+		Support.near(float(low[&"amount_ratio"]), 20.0 / 60.0, 1e-4),
 		"and the floor rate rides a third of that capacity"
 	)
 	assert_true(
@@ -399,10 +400,10 @@ func test_the_thruster_trail_is_one_emitter_per_anchor_shaped_by_the_ratio() -> 
 		"the quad scale reads the frame's pixels as 24 x 6 u"
 	)
 	var high := ProjectileScript.trail_read(1.0, source)
-	assert_true(_near(float(high[&"rate"]), 60.0), "60 streaks/s at full speed")
-	assert_true(_near(float(high[&"length"]), 56.0), "56 u long")
-	assert_true(_near(float(high[&"alpha"]), 0.85), "at alpha 0.85")
-	assert_true(_near(float(high[&"amount_ratio"]), 1.0), "the whole capacity")
+	assert_true(Support.near(float(high[&"rate"]), 60.0), "60 streaks/s at full speed")
+	assert_true(Support.near(float(high[&"length"]), 56.0), "56 u long")
+	assert_true(Support.near(float(high[&"alpha"]), 0.85), "at alpha 0.85")
+	assert_true(Support.near(float(high[&"amount_ratio"]), 1.0), "the whole capacity")
 	assert_true(
 		(high[&"scale"] as Vector2).is_equal_approx(Vector2(56.0 / source.x, 6.0 / source.y)),
 		"56 x 6 u"
@@ -425,9 +426,9 @@ func test_the_thruster_trail_is_one_emitter_per_anchor_shaped_by_the_ratio() -> 
 	assert_eq(trails.size(), 1, "one emitter for the one anchor")
 	var trail := trails[0] as GPUParticles2D
 	assert_true(trail.emitting and trail.visible, "emitting while the thrust is held")
-	assert_true(_near(trail.lifetime, 0.4), "each streak lives the amendment's own 0.4 s")
+	assert_true(Support.near(trail.lifetime, 0.4), "each streak lives the amendment's own 0.4 s")
 	assert_false(trail.local_coords, "and trails in world space, as the amendment requires")
-	assert_true(_near(trail.rotation, PI), "turned half a turn so the streak's head is the anchor")
+	assert_true(Support.near(trail.rotation, PI), "turned half a turn so the streak's head is the anchor")
 	assert_true(
 		trail.scale.is_equal_approx(Vector2.ONE),
 		"the node itself is unscaled: its `scale` does not reach what is drawn (S2 section 2.2)"
@@ -437,7 +438,7 @@ func test_the_thruster_trail_is_one_emitter_per_anchor_shaped_by_the_ratio() -> 
 		"the draw pass carries 56 x 6 u at full speed"
 	)
 	assert_true(
-		_near(trail.amount_ratio, 1.0),
+		Support.near(trail.amount_ratio, 1.0),
 		"emitting its whole capacity"
 	)
 	assert_true(
@@ -453,7 +454,7 @@ func test_the_thruster_trail_is_one_emitter_per_anchor_shaped_by_the_ratio() -> 
 	assert_eq(frame.atlas.resource_path, TRAIL_SHEET, "which is `fx_engine_trail_f1.png`")
 	assert_eq(frame.region, row[&"region"], "the measured streak, not the frame's canvas")
 	var material := trail.process_material as ParticleProcessMaterial
-	assert_true(_near(material.color.a, 0.85), "and the row's own alpha is on the particle")
+	assert_true(Support.near(material.color.a, 0.85), "and the row's own alpha is on the particle")
 	## The active rule: the thrust input, or the ratio's own 0.15 floor (the drift case).
 	ship.call(&"set_speed_ratio", 0.0)
 	ship.call(&"_update_thrust_feedback", false)
@@ -505,7 +506,7 @@ func test_the_trail_seam_takes_one_emitter_per_anchor_and_drops_the_extra() -> v
 ## this reads the voice itself: the cue's own file and `playing` true from the first frame,
 ## and never the file the voice held before.
 func test_the_thruster_beds_voice_plays_its_own_stream_from_its_first_frame() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -529,8 +530,8 @@ func test_the_thruster_beds_voice_plays_its_own_stream_from_its_first_frame() ->
 		"the voice plays the bed's own cue, not whatever it held before"
 	)
 	assert_true(
-		_near(float(voice[&"pitch_scale"]), 0.973529, 1e-4)
-		and _near(float(voice[&"volume_db"]), -19.058823, 1e-4),
+		Support.near(float(voice[&"pitch_scale"]), 0.973529, 1e-4)
+		and Support.near(float(voice[&"volume_db"]), -19.058823, 1e-4),
 		"at the curve's own level for 0.5"
 	)
 	## A fresh voice is the shipped case (the first time a hull flies): the same read.
@@ -554,13 +555,13 @@ func test_the_thruster_beds_voice_plays_its_own_stream_from_its_first_frame() ->
 
 
 func test_the_thruster_bed_holds_by_ratio_with_hysteresis_and_its_own_cue() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
 	assert_true(
-		_near(AudioScript.thruster_ramp(0.15), 0.0)
-		and _near(AudioScript.thruster_ramp(1.0), 1.0),
+		Support.near(AudioScript.thruster_ramp(0.15), 0.0)
+		and Support.near(AudioScript.thruster_ramp(1.0), 1.0),
 		"the curve runs 0 at its 0.15 floor to 1 at full speed"
 	)
 	assert_true(
@@ -577,8 +578,8 @@ func test_the_thruster_bed_holds_by_ratio_with_hysteresis_and_its_own_cue() -> v
 	)
 	var state := audio.call(&"bed_state", THRUSTER_CUE) as Dictionary
 	assert_true(bool(state[&"sounding"]), "and the bed is sounding")
-	assert_true(_near(float(state[&"pitch_scale"]), 0.85), "at the curve's own floor pitch")
-	assert_true(_near(float(state[&"volume_db"]), -24.0), "and -24 dB")
+	assert_true(Support.near(float(state[&"pitch_scale"]), 0.85), "at the curve's own floor pitch")
+	assert_true(Support.near(float(state[&"volume_db"]), -24.0), "and -24 dB")
 	assert_true(
 		bool(audio.call(&"hold_thruster_bed", 0.12, false)),
 		"the hysteresis keeps it while the released ratio stays above 0.10"
@@ -594,8 +595,8 @@ func test_the_thruster_bed_holds_by_ratio_with_hysteresis_and_its_own_cue() -> v
 	assert_true(bool(audio.call(&"hold_thruster_bed", 0.15, false)), "0.15 does")
 	assert_true(bool(audio.call(&"hold_thruster_bed", 1.0, false)), "and it holds at speed")
 	state = audio.call(&"bed_state", THRUSTER_CUE) as Dictionary
-	assert_true(_near(float(state[&"pitch_scale"]), 1.15), "1.15 at full speed")
-	assert_true(_near(float(state[&"volume_db"]), -12.0), "and -12 dB")
+	assert_true(Support.near(float(state[&"pitch_scale"]), 1.15), "1.15 at full speed")
+	assert_true(Support.near(float(state[&"volume_db"]), -12.0), "and -12 dB")
 	assert_true(
 		(audio.call(&"sounding_loops") as Array).has(THRUSTER_CUE),
 		"the manager reports the bed sounding"
@@ -613,7 +614,7 @@ func test_the_thruster_bed_holds_by_ratio_with_hysteresis_and_its_own_cue() -> v
 
 
 func test_the_thruster_bed_cannot_stop_another_holders_bed() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -641,7 +642,7 @@ func test_the_thruster_bed_cannot_stop_another_holders_bed() -> void:
 func test_the_afterburner_activation_fires_the_boost_cue_and_the_dash_charge_once() -> void:
 	var rig := _ship_at(1.0, true)
 	var ship: Node2D = rig[&"ship"]
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		assert_true(false, "the AudioManager autoload is live")
 		return
@@ -675,11 +676,11 @@ func test_the_afterburner_activation_fires_the_boost_cue_and_the_dash_charge_onc
 		row.get(&"source", Vector2.ONE) as Vector2, float(row.get(&"world", 0.0))
 	)
 	assert_true(
-		_near(charge.scale.x, expected),
+		Support.near(charge.scale.x, expected),
 		"engine-scaled to section 7.1's proposed 32 u"
 	)
 	assert_true(
-		_near(charge.global_position.distance_to(ship.global_position), 0.0, 1e-3),
+		Support.near(charge.global_position.distance_to(ship.global_position), 0.0, 1e-3),
 		"and drawn on the hull that lit it"
 	)
 	## A second press while the burn is running lights nothing: the activation is the event.
@@ -796,7 +797,7 @@ func test_the_mine_family_owns_its_sprite_and_its_burst() -> void:
 	assert_eq(row[&"frames"], sprite[&"frames"], "the burst is that same art, frame for frame")
 	assert_eq(row[&"region"], sprite[&"region"], "read at the same measured box")
 	assert_true(
-		_near(float(row[&"world"]), float(sprite[&"world"])),
+		Support.near(float(row[&"world"]), float(sprite[&"world"])),
 		"and at the same 22 u read, so the burst invents no size"
 	)
 	var shot: Variant = ProjectileScript.new()
@@ -826,7 +827,7 @@ func test_the_mine_family_owns_its_sprite_and_its_burst() -> void:
 		"blended with the sheet's own alpha"
 	)
 	assert_true(
-		_near(burst.global_position.distance_to(Vector2(10.0, 20.0)), 0.0, 1e-3),
+		Support.near(burst.global_position.distance_to(Vector2(10.0, 20.0)), 0.0, 1e-3),
 		"where the mine went off"
 	)
 	assert_eq(
@@ -853,18 +854,18 @@ func test_the_stage_pushes_one_ratio_to_the_stack_and_to_the_hull() -> void:
 	var state: Variant = _scene.get(&"_state")
 	assert_true(fantasy != null and ship != null and state != null, "the scene built its ship and stack")
 	_scene.call(&"_push_speedometer")
-	assert_true(_near(float(fantasy.call(&"ratio")), 0.0), "a hull at rest reads the dial's zero")
+	assert_true(Support.near(float(fantasy.call(&"ratio")), 0.0), "a hull at rest reads the dial's zero")
 	assert_true(
-		_near(float(ship.call(&"speed_ratio")), 0.0),
+		Support.near(float(ship.call(&"speed_ratio")), 0.0),
 		"and the hull's own thruster driver got the same frame's ratio"
 	)
 	var expected := clampf(float(state.hull) / float(state.hull_max), 0.0, 1.0)
 	assert_true(
-		_near(float(fantasy.call(&"hull_fraction")), expected),
+		Support.near(float(fantasy.call(&"hull_fraction")), expected),
 		"the hull fraction is PlayerState's own, pushed every frame"
 	)
 	assert_true(
-		_near(float(fantasy.call(&"applied_zoom")), 1.0),
+		Support.near(float(fantasy.call(&"applied_zoom")), 1.0),
 		"and the camera's zoom is this node's to write, at rest 1:1 with the wheel"
 	)
 	assert_true(
@@ -965,15 +966,8 @@ func _source_path(texture: Texture2D) -> String:
 		return atlas.resource_path if atlas != null else ""
 	return texture.resource_path
 
-
-func _audio() -> Node:
-	return _tree().root.get_node_or_null(NodePath(AUDIO_SERVICE))
-
-
-## The beds this suite could leave sounding are put out between tests, so one test cannot
-## hear another's state (audio is not reset by the runner).
 func _clear_loops() -> void:
-	var audio := _audio()
+	var audio := Support.audio()
 	if audio == null:
 		return
 	audio.call(&"stop_bed", THRUSTER_CUE)
@@ -991,14 +985,6 @@ func _release_pressed() -> void:
 ## takes children all through the run, whereas the root viewport is busy adding the
 ## runner scene during `_ready` (the `test_flight_feel_g1` idiom).
 func _host() -> Node:
-	var root := _tree().root
+	var root := Support.tree().root
 	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
 	return host if host != null else root
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-func _near(a: float, b: float, tolerance: float = TOL) -> bool:
-	return absf(a - b) <= tolerance

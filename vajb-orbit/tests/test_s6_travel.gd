@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s6_travel: wave S6's travel core - the sector registry's spine rows, the jump
 ## gate's fee and transaction law, the border corridor's presence hold and the sector
 ## transition through the `loading` route.
@@ -91,14 +92,14 @@ func suite_teardown() -> void:
 	_free_scenes()
 	_free_bare()
 	GameScript._transit_destination = &""
-	var profile := _store()
+	var profile := Support.profile()
 	if profile != null:
 		profile.call(&"reset_to_defaults")
 		profile.call(&"flush")
 		profile.set(&"save_path", _previous_path)
 	Log.log_path = Log.DEFAULT_PATH
-	_delete_file(SCRATCH_PROFILE)
-	_delete_file(SCRATCH_LOG)
+	Support.delete_file(SCRATCH_PROFILE)
+	Support.delete_file(SCRATCH_LOG)
 
 
 ## ---------------------------------------------------------------------------
@@ -270,7 +271,7 @@ func test_gate_jump_charges_once_and_signals_after_two_seconds() -> void:
 
 
 func test_gate_refusal_on_the_live_profile_is_byte_identical() -> void:
-	var profile := _store()
+	var profile := Support.profile()
 	assert_true(profile != null, "the PlayerProfile autoload is the gate's store")
 	if profile == null:
 		return
@@ -380,7 +381,7 @@ func test_launch_labels_the_registry_sector_name() -> void:
 
 func test_gate_prompt_rides_the_prompt_line_and_refuses_at_outlaw() -> void:
 	_reset_profile()
-	var profile := _store()
+	var profile := Support.profile()
 	assert_true(profile != null, "the PlayerProfile autoload is the prompt's heat owner")
 	if profile == null:
 		return
@@ -412,7 +413,7 @@ func test_gate_prompt_rides_the_prompt_line_and_refuses_at_outlaw() -> void:
 
 func test_transition_files_the_vitals_and_keeps_the_hold_across_the_crossing() -> void:
 	_reset_profile()
-	var profile := _store()
+	var profile := Support.profile()
 	assert_true(profile != null, "the PlayerProfile autoload is the transition's store")
 	if profile == null:
 		return
@@ -498,26 +499,6 @@ func _corridor(dest: int, band: Rect2):
 	_bare.append(corridor)
 	corridor.setup(dest, band)
 	return corridor
-
-
-## Where a fixture may enter the tree: the runner calls every test from inside its own
-## `_ready`, when the root viewport is still busy adding the runner scene, so
-## `root.add_child(...)` fails there. The profile autoload takes children all run long
-## (the same host `test_engine2_dock.gd` uses).
-func _fixture_host() -> Node:
-	var root := _tree().root
-	var host := root.get_node_or_null(NodePath(&"PlayerProfile"))
-	return host if host != null else root
-
-
-func _tree() -> SceneTree:
-	return Engine.get_main_loop() as SceneTree
-
-
-func _store() -> Node:
-	return _tree().root.get_node_or_null(NodePath(&"PlayerProfile"))
-
-
 func _open_game() -> Node2D:
 	var packed := load(GAME_SCENE) as PackedScene
 	if packed == null:
@@ -525,7 +506,7 @@ func _open_game() -> Node2D:
 	var scene := packed.instantiate() as Node2D
 	if scene == null:
 		return null
-	_fixture_host().add_child(scene)
+	Support.fixture_host().add_child(scene)
 	_scenes.append(scene)
 	return scene
 
@@ -553,7 +534,7 @@ func _free_bare() -> void:
 ## The store the suite owns for its length: repointed before anything can write, then
 ## reset to the deterministic default inside the scratch path.
 func _stage_scratch_store() -> void:
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		return
 	_previous_path = String(profile.get(&"save_path"))
@@ -564,7 +545,7 @@ func _stage_scratch_store() -> void:
 
 
 func _reset_profile() -> void:
-	var profile := _store()
+	var profile := Support.profile()
 	if profile == null:
 		return
 	profile.call(&"reset_to_defaults")
@@ -590,9 +571,3 @@ func _pickup_count(node: Node) -> int:
 			count += 1
 		count += _pickup_count(child)
 	return count
-
-
-func _delete_file(path: String) -> void:
-	var directory := DirAccess.open(path.get_base_dir())
-	if directory != null:
-		directory.remove(path.get_file())

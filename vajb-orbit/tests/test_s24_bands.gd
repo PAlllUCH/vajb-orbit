@@ -1,5 +1,6 @@
 @tool
 extends McpTestSuite
+const Support := preload("res://tests/support.gd")
 ## Suite s24_bands: wave S24's world identity, builder 2's half - `12_factions.md`'s
 ## 2026-10-08 block (V3-V7: `contracts_visible`, the Known hot pair, the Trusted reserved
 ## slot, the shelf bias and the insurance seam, plus the auction's price-law gap),
@@ -95,7 +96,7 @@ func suite_setup(_ctx: Dictionary) -> void:
 		&"auction": (_profile.call(&"auction") as Dictionary).duplicate(true),
 	}
 	_profile.set(&"save_path", PROFILE_PATH)
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 	_profile.set(&"_active_ship", SHIP)
 	_profile.set(&"_owned_ships", [SHIP] as Array[StringName])
 	_profile.set(&"_modules", {})
@@ -149,20 +150,13 @@ func suite_teardown() -> void:
 				_profile.call(&"set_auction", value)
 	_profile.call(&"flush")
 	_profile.set(&"save_path", String(_previous[&"save_path"]))
-	_delete_file(PROFILE_PATH)
+	Support.delete_file(PROFILE_PATH)
 
 
 ## ---------------------------------------------------------------------------
 ## Harnesses
 ## ---------------------------------------------------------------------------
 
-
-func _delete_file(path: String) -> void:
-	if FileAccess.file_exists(path):
-		DirAccess.remove_absolute(ProjectSettings.globalize_path(path))
-
-
-## A throwaway profile whose store is the scratch file, never the live account.
 func _fresh() -> Node:
 	var profile := ProfileScript.new()
 	profile.save_path = PROFILE_PATH
